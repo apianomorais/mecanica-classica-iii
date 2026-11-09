@@ -1959,6 +1959,217 @@
     registrarRedesenho(desenhar);
   };
 
+
+  /* =================================================================
+     19. Dois pêndulos acoplados
+     O sistema de dois graus de liberdade em que tudo se vê: os dois
+     modos normais oscilam com uma frequência só e mantêm a forma, e
+     qualquer outra condição inicial é uma soma dos dois, que produz o
+     batimento.
+     ================================================================= */
+  REGISTRO.doispendulos = function (raiz) {
+    var corpo = moldura(raiz, 'Os dois modos e a soma deles');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var kappa = 0.4;     /* 2k/m dividido por g/l */
+    var caso = 2;        /* 0 modo 1, 1 modo 2, 2 só um pêndulo deslocado */
+    var t = 0, animando = true;
+
+    opcoes(corpo, [{ rot: 'Modo 1 (juntos)', v: 0 }, { rot: 'Modo 2 (opostos)', v: 1 },
+                   { rot: 'Um só deslocado', v: 2 }], 2,
+      function (v) { caso = v; t = 0; });
+    deslizante(corpo, 'Acoplamento \\(2k/m\\) em unidades de \\(g/\\ell\\):',
+      0.02, 1.5, 0.02, kappa, function (v) { kappa = v; t = 0; },
+      function (v) { return F.fmt(v, 2); });
+
+    var bot = el('div', { class: 'botoes' });
+    var bAnim = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(bAnim); corpo.appendChild(bot);
+    bAnim.addEventListener('click', function () {
+      animando = !animando; bAnim.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\omega_1\\)', k: 'w1' }, { rot: '\\(\\omega_2\\)', k: 'w2' },
+      { rot: 'Período do batimento', k: 'bat' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function freq() {
+      return [1, Math.sqrt(1 + kappa)];   /* em unidades de √(g/ℓ) */
+    }
+
+    function estado(tt) {
+      var w = freq();
+      if (caso === 0) return [Math.cos(w[0] * tt), Math.cos(w[0] * tt)];
+      if (caso === 1) return [Math.cos(w[1] * tt), -Math.cos(w[1] * tt)];
+      return [0.5 * (Math.cos(w[0] * tt) + Math.cos(w[1] * tt)),
+              0.5 * (Math.cos(w[0] * tt) - Math.cos(w[1] * tt))];
+    }
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(300, Math.max(230, cv.clientWidth * 0.46)));
+      var ct = p.ct;
+      var q = estado(t), amp = 0.5;
+      var base = p.A * 0.13, comp = p.A * 0.42;
+      [0, 1].forEach(function (i) {
+        var x0 = p.L * (0.35 + 0.3 * i);
+        var ang = q[i] * amp;
+        var x = x0 + comp * Math.sin(ang), y = base + comp * Math.cos(ang);
+        ct.strokeStyle = '#c8d0d7'; ct.lineWidth = 1;
+        ct.beginPath(); ct.moveTo(x0 - 26, base); ct.lineTo(x0 + 26, base); ct.stroke();
+        ct.strokeStyle = '#6b7682'; ct.lineWidth = 2.5;
+        ct.beginPath(); ct.moveTo(x0, base); ct.lineTo(x, y); ct.stroke();
+        ct.beginPath(); ct.arc(x, y, 13, 0, 2 * Math.PI);
+        ct.fillStyle = i ? G.COR.azul : G.COR.mestra; ct.fill();
+      });
+
+      /* a mola entre as duas massas, desenhada em ziguezague */
+      var xa = p.L * 0.35 + comp * 0.55 * Math.sin(q[0] * amp);
+      var xb = p.L * 0.65 + comp * 0.55 * Math.sin(q[1] * amp);
+      var ym = base + comp * 0.55;
+      ct.strokeStyle = G.COR.bronze; ct.lineWidth = 1.8;
+      ct.beginPath();
+      for (var i = 0; i <= 24; i++) {
+        var f = i / 24;
+        var xx = xa + (xb - xa) * f;
+        var yy = ym + (i % 2 ? 6 : -6) * (i > 0 && i < 24 ? 1 : 0);
+        if (i === 0) ct.moveTo(xx, yy); else ct.lineTo(xx, yy);
+      }
+      ct.stroke();
+
+      /* o traço temporal das duas coordenadas */
+      var y0 = p.A * 0.82, alt = p.A * 0.14, larg = p.L * 0.86, xi = p.L * 0.07;
+      ct.strokeStyle = '#e4ebef'; ct.lineWidth = 1;
+      ct.beginPath(); ct.moveTo(xi, y0); ct.lineTo(xi + larg, y0); ct.stroke();
+      [0, 1].forEach(function (c) {
+        ct.beginPath();
+        for (var i = 0; i <= 240; i++) {
+          var tt = t - 40 + 40 * i / 240;
+          var v = estado(tt)[c];
+          var x = xi + larg * i / 240, y = y0 - alt * v;
+          if (i === 0) ct.moveTo(x, y); else ct.lineTo(x, y);
+        }
+        ct.strokeStyle = c ? G.COR.azul : G.COR.mestra; ct.lineWidth = 1.5; ct.stroke();
+      });
+
+      var w = freq();
+      var Tb = 2 * Math.PI / (w[1] - w[0]);
+      mostrar({
+        w1: F.fmt(w[0], 3), w2: F.fmt(w[1], 3),
+        bat: caso === 2 ? F.fmt(Tb, 1) : 'não há'
+      });
+
+      saida.innerHTML = caso === 2
+        ? 'Deslocando um pêndulo só, os dois modos entram com a mesma amplitude. Como as '
+          + 'frequências são diferentes, eles entram e saem de fase, e a energia passa '
+          + 'inteira de um pêndulo para o outro e volta, com período \\('
+          + F.fmt(Tb, 1) + '\\sqrt{\\ell/g}\\). Isso é o <strong>batimento</strong>, e não '
+          + 'é um modo normal: é a soma de dois.'
+        : caso === 0
+          ? 'No primeiro modo os dois pêndulos andam juntos e a mola nunca estica. Ela '
+            + 'poderia não existir, e por isso \\(\\omega_1=\\sqrt{g/\\ell}\\), exatamente '
+            + 'o pêndulo isolado.'
+          : 'No segundo modo eles andam em oposição, e a mola é esticada ao máximo. A '
+            + 'restauração é maior e a frequência também: \\(\\omega_2=\\sqrt{g/\\ell+2k/m}'
+            + '\\). Em ambos os modos a forma do movimento não muda com o tempo.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() {
+      if (!animando) return;
+      t += 0.06;
+      desenhar();
+      requestAnimationFrame(laco);
+    }
+
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
+  /* =================================================================
+     20. As coordenadas normais
+     A troca de variáveis que desacopla o sistema é uma rotação no
+     espaço das coordenadas. O widget mostra a mesma trajetória nos
+     dois sistemas: embaralhada em q₁q₂ e trivialmente separada em
+     Q₁Q₂.
+     ================================================================= */
+  REGISTRO.coordnormais = function (raiz) {
+    var corpo = moldura(raiz, 'A mesma trajetória em dois sistemas de coordenadas');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var kappa = 0.6, t = 0, animando = true;
+
+    deslizante(corpo, 'Acoplamento:', 0.05, 1.5, 0.05, kappa,
+      function (v) { kappa = v; t = 0; }, function (v) { return F.fmt(v, 2); });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(b); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(300, Math.max(230, cv.clientWidth * 0.45)));
+      var ct = p.ct;
+      var w1 = 1, w2 = Math.sqrt(1 + kappa);
+      var meia = p.L / 2;
+
+      [0, 1].forEach(function (painel) {
+        var cx = meia * (0.5 + painel), cy = p.A * 0.48, esc = Math.min(meia, p.A) * 0.32;
+        ct.strokeStyle = '#cfd6dc'; ct.lineWidth = 1;
+        ct.beginPath();
+        ct.moveTo(cx - esc * 1.3, cy); ct.lineTo(cx + esc * 1.3, cy);
+        ct.moveTo(cx, cy - esc * 1.3); ct.lineTo(cx, cy + esc * 1.3);
+        ct.stroke();
+
+        ct.beginPath();
+        for (var i = 0; i <= 900; i++) {
+          var tt = i * 0.06;
+          var Q1 = Math.cos(w1 * tt), Q2 = Math.cos(w2 * tt);
+          var a = painel === 0 ? (Q1 + Q2) / 2 : Q1;
+          var bb = painel === 0 ? (Q1 - Q2) / 2 : Q2;
+          var x = cx + esc * a, y = cy - esc * bb;
+          if (i === 0) ct.moveTo(x, y); else ct.lineTo(x, y);
+        }
+        ct.strokeStyle = 'rgba(122,58,107,.35)'; ct.lineWidth = 1.1; ct.stroke();
+
+        var Q1 = Math.cos(w1 * t), Q2 = Math.cos(w2 * t);
+        var a = painel === 0 ? (Q1 + Q2) / 2 : Q1;
+        var bb = painel === 0 ? (Q1 - Q2) / 2 : Q2;
+        ct.beginPath(); ct.arc(cx + esc * a, cy - esc * bb, 6, 0, 2 * Math.PI);
+        ct.fillStyle = G.COR.vinho; ct.fill();
+
+        rotulo(ct, painel === 0 ? 'q₁' : 'Q₁', cx + esc * 1.3 + 12, cy + 12, '#6b7682');
+        rotulo(ct, painel === 0 ? 'q₂' : 'Q₂', cx + 14, cy - esc * 1.3 - 8, '#6b7682');
+        rotulo(ct, painel === 0 ? 'coordenadas originais' : 'coordenadas normais',
+               cx, p.A * 0.95, '#4a5560');
+      });
+
+      saida.innerHTML = 'À esquerda, as coordenadas dos dois pêndulos: a trajetória preenche '
+        + 'um retângulo e não se repete, a menos que as frequências sejam comensuráveis. À '
+        + 'direita, as coordenadas normais \\(Q_1=(q_1+q_2)/2\\) e \\(Q_2=(q_1-q_2)/2\\): '
+        + 'cada uma oscila sozinha, com a sua frequência, e a figura é apenas uma figura de '
+        + 'Lissajous. É a mesma trajetória, vista em dois sistemas de eixos.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() { if (!animando) return; t += 0.05; desenhar(); requestAnimationFrame(laco); }
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

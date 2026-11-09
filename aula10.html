@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 10: Modos normais e coordenadas normais | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091429">
+<script src="assets/js/comum.js?v=202611091429"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+      <a href="aula10.html" class="num ativo" title="Aula 10: Modos normais e coordenadas normais">10</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Dois pêndulos acoplados</a></li>
+    <li><a href="#s2">2. A superposição e o batimento</a></li>
+    <li><a href="#s3">3. Coordenadas normais</a></li>
+    <li><a href="#s4">4. Simetria, degenerescência e modos de frequência nula</a></li>
+    <li><a href="#s5">5. Exercícios resolvidos</a></li>
+    <li><a href="#s6">6. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 10 · Pequenas vibrações</p>
+  <h1>Modos normais e coordenadas normais</h1>
+  <p class="subtitulo">Um modo normal é um movimento em que todas as coordenadas oscilam com a mesma frequência e a figura não muda. Achá-los é resolver o sistema de uma vez por todas: qualquer outro movimento é uma soma deles, e o batimento é o exemplo mais audível disso.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Resolver o problema de dois pêndulos acoplados;</li>
+      <li>Identificar modos normais e o que os distingue de outros movimentos;</li>
+      <li>Escrever a solução geral como superposição e obter o batimento;</li>
+      <li>Construir coordenadas normais e desacoplar a lagrangiana;</li>
+      <li>Usar a ortogonalidade na métrica da matriz de massa;</li>
+      <li>Prever modos por simetria e interpretar frequências nulas.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Dois pêndulos acoplados</h2>
+
+  <p>O sistema mais simples em que o acoplamento aparece tem dois graus de liberdade: dois
+  pêndulos iguais, de comprimento \(\ell\) e massa \(m\), ligados por uma mola de constante
+  \(k\). Chamando \(x_1\) e \(x_2\) os deslocamentos horizontais a partir do repouso, e
+  supondo-os pequenos,</p>
+
+  <p>\[\Lag=\frac{m}{2}\left(\dot x_1^2+\dot x_2^2\right)
+  -\frac{mg}{2\ell}\left(x_1^2+x_2^2\right)-\frac{k}{2}\left(x_2-x_1\right)^2.\]</p>
+
+  <p>As matrizes da aula 9 saem por leitura direta:</p>
+
+  <p>\[\Ten{M}=m\begin{pmatrix}1&0\\0&1\end{pmatrix},\qquad
+  \Ten{K}=\begin{pmatrix}mg/\ell+k&-k\\-k&mg/\ell+k\end{pmatrix}.\]</p>
+
+  <p>O determinante característico é</p>
+
+  <p>\[\left(\frac{mg}{\ell}+k-m\omega^2\right)^2-k^2=0
+  \;\Longrightarrow\;\frac{mg}{\ell}+k-m\omega^2=\pm k,\]</p>
+
+  <p>e as duas raízes saem sem esforço:</p>
+
+  <div class="destaque">
+    <span class="anuncio">As duas frequências próprias</span>
+    \[\omega_1^2=\frac{g}{\ell},\qquad
+    \omega_2^2=\frac{g}{\ell}+\frac{2k}{m}.\]
+  </div>
+
+  <p>Substituindo cada uma de volta no sistema, obtêm-se os vetores de amplitude. Para
+  \(\omega_1\), sai \(x_1=x_2\): os dois pêndulos andam juntos, e a mola nunca estica, o que
+  explica a frequência ser a do pêndulo isolado. Para \(\omega_2\), sai \(x_1=-x_2\): eles
+  andam em oposição, a mola é esticada ao máximo e a frequência é maior.</p>
+
+  <div data-widget="doispendulos"></div>
+
+  <p>Um <strong>modo normal</strong> é um movimento em que todas as coordenadas oscilam com a
+  <em>mesma</em> frequência e mantêm as proporções fixas. A figura do movimento não muda com o
+  tempo, só a sua escala. Essa é a propriedade que o distingue de qualquer outro movimento do
+  sistema, e é a razão de procurar os modos em primeiro lugar.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A superposição e o batimento</h2>
+
+  <p>Um sistema deslocado de qualquer jeito não oscila num modo normal. A solução geral é a
+  superposição dos modos, com amplitudes e fases fixadas pelas condições iniciais:</p>
+
+  <p>\[\vet{q}(t)=\sum_{r=1}^{N}C_r\,\vet{a}^{(r)}\cos\left(\omega_rt+\delta_r\right).\]</p>
+
+  <p>No caso dos dois pêndulos, deslocar apenas o primeiro corresponde a somar os dois modos
+  com pesos iguais. Usando as identidades de soma para produto,</p>
+
+  <p>\[x_1=\frac{A}{2}\left(\cos\omega_1t+\cos\omega_2t\right)
+  =A\cos\left(\frac{\omega_2-\omega_1}{2}t\right)
+  \cos\left(\frac{\omega_1+\omega_2}{2}t\right),\]</p>
+
+  <p>e o mesmo para \(x_2\) com seno no lugar do primeiro cosseno. O resultado é uma oscilação
+  rápida, na média das duas frequências, dentro de um envelope lento, na diferença delas. O
+  envelope de um pêndulo cresce enquanto o do outro diminui: a energia passa inteira de um
+  para o outro e volta.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Período do batimento</span>
+    \[T_{\text{bat}}=\frac{2\pi}{\omega_2-\omega_1}.\]
+  </div>
+
+  <p>Para acoplamento fraco, \(\omega_2-\omega_1\approx k/m\omega_1\), e o batimento é muito
+  mais lento que a oscilação. É o que se ouve ao afinar duas cordas de violão quase iguais: o
+  som pulsa, e a pulsação some quando as frequências coincidem. O mesmo fenômeno aparece em
+  física quântica como oscilação entre dois estados acoplados, com a mesma matemática e outra
+  interpretação.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Coordenadas normais</h2>
+
+  <p>Se a solução geral é uma soma de modos, por que não usar as amplitudes dos modos como
+  coordenadas? Essa troca de variáveis é a melhor ideia do assunto. Defina</p>
+
+  <p>\[Q_1=\frac{x_1+x_2}{2},\qquad Q_2=\frac{x_1-x_2}{2}.\]</p>
+
+  <p>Em termos delas, a lagrangiana se separa em duas parcelas independentes:</p>
+
+  <p>\[\Lag=m\left(\dot Q_1^2+\dot Q_2^2\right)
+  -m\omega_1^2Q_1^2-m\omega_2^2Q_2^2,\]</p>
+
+  <p>que são dois osciladores desacoplados. As equações de movimento viram
+  \(\ddot Q_r+\omega_r^2Q_r=0\), cada uma resolvida separadamente. O acoplamento não foi
+  eliminado por aproximação nenhuma: ele estava na escolha das coordenadas, e sumiu com ela.</p>
+
+  <div data-widget="coordnormais"></div>
+
+  <p>No caso geral, as <strong>coordenadas normais</strong> são as projeções do vetor de
+  deslocamento sobre os modos. A projeção não usa o produto escalar comum, e sim o produto
+  definido pela matriz de massa:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Ortogonalidade dos modos</span>
+    \[\vet{a}^{(r)}\cdot\Ten{M}\,\vet{a}^{(s)}=0\quad\text{para }\omega_r\neq\omega_s.\]
+  </div>
+
+  <p>A demonstração é a mesma de três linhas da aula 3, trocando a identidade pela matriz de
+  massa. De \(\Ten{K}\vet{a}^{(r)}=\omega_r^2\Ten{M}\vet{a}^{(r)}\), multiplique por
+  \(\vet{a}^{(s)}\), faça o mesmo com os papéis trocados e subtraia: a simetria das duas
+  matrizes cancela os lados esquerdos e sobra
+  \(\left(\omega_r^2-\omega_s^2\right)\vet{a}^{(s)}\cdot\Ten{M}\vet{a}^{(r)}=0\).</p>
+
+  <p>Normalizando os modos de modo que \(\vet{a}^{(r)}\cdot\Ten{M}\vet{a}^{(r)}=1\), a energia
+  cinética e a potencial ficam ambas diagonais e a energia total se separa em parcelas, uma
+  por modo:</p>
+
+  <p>\[E=\sum_r\frac12\left(\dot Q_r^2+\omega_r^2Q_r^2\right).\]</p>
+
+  <p>Cada modo guarda a sua energia e não a empresta aos outros. O batimento da seção 2 não
+  contradiz isso: lá a energia passeia entre os <em>pêndulos</em>, que não são modos, enquanto
+  a energia de cada modo fica constante o tempo todo.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Simetria, degenerescência e modos de frequência nula</h2>
+
+  <p>Quando o sistema tem simetria, os modos podem ser adivinhados antes de qualquer conta.
+  Nos dois pêndulos, trocar os rótulos 1 e 2 deixa a lagrangiana igual. Essa operação, aplicada
+  duas vezes, devolve o sistema ao estado original, de modo que os seus autovalores só podem
+  ser \(+1\) e \(-1\). Os modos são, portanto, o simétrico e o antissimétrico, que é o
+  resultado obtido na seção 1 com álgebra.</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">A molécula linear triatômica</span>
+    <p>Três átomos numa linha, com o do meio de massa \(M\) e os das pontas de massa \(m\),
+    ligados por molas de constante \(k\). O sistema tem três graus de liberdade e, pela
+    simetria de reflexão, os modos são:</p>
+    <ul>
+      <li><strong>Translação</strong>, \(\omega=0\): os três andam juntos. A frequência nula
+      aparece porque a molécula isolada pode se deslocar sem custo de energia;</li>
+      <li><strong>Modo simétrico</strong>, \(\omega^2=k/m\): as pontas se afastam e se
+      aproximam, e o átomo central fica parado;</li>
+      <li><strong>Modo antissimétrico</strong>, \(\omega^2=\dfrac{k}{m}\left(1+\dfrac{2m}{M}
+      \right)\): as duas pontas andam juntas para um lado enquanto o centro vai para o
+      outro.</li>
+    </ul>
+    <p>Para o CO₂, com \(m=16\) e \(M=12\), a razão entre as duas frequências não nulas é
+    \(\sqrt{1+32/12}=1{,}915\). As frequências medidas por espectroscopia infravermelha são
+    1388 cm⁻¹ e 2349 cm⁻¹, cuja razão é 1,69: um modelo de três bolas e duas molas chega a
+    13 % do valor medido.</p>
+  </div>
+
+  <p>Vale notar o que o modo de frequência nula significa. Ele não é uma oscilação, e sim um
+  deslocamento uniforme: a solução correspondente é \(Q=a+bt\). Sempre que o sistema tem uma
+  simetria contínua, como a liberdade de transladar ou de girar no espaço, aparece um modo
+  assim. Contar os modos de frequência nula é contar as simetrias, e é por isso que uma
+  molécula não linear de \(n\) átomos tem \(3n-6\) modos de vibração verdadeiros: seis dos
+  \(3n\) são translações e rotações.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 10.1</span>
+    <p><strong>Duas massas iguais ligadas por três molas, as das pontas com constante \(k\) e
+    a do meio com \(k'\), entre paredes fixas. Ache os modos.</strong></p>
+    <p>Do exercício 9.2, \(\Ten{K}=\begin{pmatrix}k+k'&-k'\\-k'&k+k'\end{pmatrix}\) e
+    \(\Ten{M}=m\Ten{1}\). Pela simetria, os modos são \(x_1=\pm x_2\). Substituindo:</p>
+    <p>\[x_1=x_2:\quad \left(k+k'\right)-k'=k\;\Longrightarrow\;\omega_1=\sqrt{k/m};\qquad
+    x_1=-x_2:\quad \omega_2=\sqrt{\left(k+2k'\right)/m}.\]</p>
+    <p>No primeiro modo a mola do meio não trabalha, e a frequência não depende de \(k'\). No
+    segundo, ela é comprimida e esticada ao dobro do deslocamento de cada massa, e por isso
+    entra com \(2k'\).</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 10.2</span>
+    <p><strong>Mostre que, para os dois pêndulos acoplados, a energia de cada modo normal se
+    conserva separadamente.</strong></p>
+    <p>Nas coordenadas normais a lagrangiana é a soma de dois osciladores independentes, e
+    cada um deles tem a sua equação de movimento \(\ddot Q_r=-\omega_r^2Q_r\). Multiplicando
+    por \(\dot Q_r\),</p>
+    <p>\[\der{}{t}\left(\frac12\dot Q_r^2+\frac12\omega_r^2Q_r^2\right)=0.\]</p>
+    <p>Logo cada parcela é constante. A energia que passa de um pêndulo para o outro no
+    batimento é apenas a redistribuição, entre as coordenadas \(x_1\) e \(x_2\), de duas
+    parcelas que individualmente não mudam.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 10.3</span>
+    <p><strong>Um pêndulo duplo de hastes iguais \(\ell\) e massas iguais \(m\). Ache as
+    frequências próprias para pequenas oscilações.</strong></p>
+    <p>Com \(\theta_1\) e \(\theta_2\) os ângulos das duas hastes com a vertical, a expansão
+    até segunda ordem dá</p>
+    <p>\[\Ten{M}=m\ell^2\begin{pmatrix}2&1\\1&1\end{pmatrix},\qquad
+    \Ten{K}=mg\ell\begin{pmatrix}2&0\\0&1\end{pmatrix}.\]</p>
+    <p>Note que a matriz de massa não é diagonal: as duas hastes trocam momento entre si. O
+    determinante de \(\Ten{K}-\omega^2\Ten{M}\) dá, com \(u=\omega^2\ell/g\),</p>
+    <p>\[\left(2-2u\right)\left(1-u\right)-u^2=u^2-4u+2=0
+    \;\Longrightarrow\;u=2\pm\sqrt2.\]</p>
+    <p>As frequências são \(\omega=\sqrt{\left(2\mp\sqrt2\right)g/\ell}\), ou seja
+    \(0{,}765\sqrt{g/\ell}\) e \(1{,}848\sqrt{g/\ell}\). No modo lento as duas hastes andam
+    no mesmo sentido, e no rápido em sentidos opostos. A razão entre as frequências é 2,41, e
+    por não ser um número inteiro o pêndulo duplo de amplitude pequena já traça figuras que
+    não se fecham.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>10.1</b> Dois pêndulos acoplados têm \(\ell=0{,}50\) m, \(m=0{,}20\) kg e
+      \(k=0{,}80\) N/m. Calcule as duas frequências próprias e o período do batimento quando
+      um deles é deslocado sozinho.</li>
+
+      <li><b>10.2</b> Verifique explicitamente que os dois modos dos pêndulos acoplados são
+      ortogonais no sentido da matriz de massa, e normalize-os.</li>
+
+      <li><b>10.3</b> Resolva o sistema de três massas e quatro molas entre paredes fixas, com
+      massas e constantes iguais. Mostre que as frequências são proporcionais a
+      \(\sen(n\pi/8)\) com \(n=1,2,3\), e antecipe o resultado geral da aula 11.</li>
+
+      <li><b>10.4</b> Para a molécula triatômica da seção 4, obtenha as três frequências pela
+      equação secular e confirme os resultados anunciados pela simetria.</li>
+
+      <li><b>10.5</b> Um sistema tem \(\Ten{M}=\begin{pmatrix}2&0\\0&1\end{pmatrix}\) e
+      \(\Ten{K}=\begin{pmatrix}3&-1\\-1&1\end{pmatrix}\). Ache as frequências e os modos, e
+      verifique que os modos <em>não</em> são ortogonais no produto escalar comum.</li>
+
+      <li><b>10.6</b> Mostre que, se dois modos têm a mesma frequência, qualquer combinação
+      linear deles também é modo. Dê um exemplo físico de degenerescência.</li>
+
+      <li><b>10.7</b> Escreva um programa em Python que monte \(\Ten{M}\) e \(\Ten{K}\) de um
+      sistema de \(N\) massas e molas, resolva o problema generalizado com
+      <code>scipy.linalg.eigh(K, M)</code> e anime os modos. Teste com \(N=2\) e \(N=3\).</li>
+
+      <li><b>10.8</b> No pêndulo duplo do exercício resolvido 10.3, calcule a razão entre as
+      amplitudes das duas hastes em cada modo e diga qual delas se move mais em cada
+      caso.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula09.html"><small>Aula anterior</small>← 9. Pequenas oscilações</a>
+    <span class="em-breve"><small>Em preparação</small>11. Cadeia de osciladores</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091429"></script>
+</body>
+</html>
