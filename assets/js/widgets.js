@@ -604,6 +604,161 @@
     registrarRedesenho(desenhar);
   };
 
+
+  /* =================================================================
+     5. A equação secular e as suas raízes
+     O polinômio característico é abstrato; o gráfico dele não é. O
+     aluno mexe no produto de inércia e vê as três raízes saírem de um
+     ponto triplo, se separarem e, em certos valores, voltarem a
+     coincidir duas a duas. A degenerescência deixa de ser um caso
+     excepcional de livro e passa a ser uma coisa que se vê.
+     ================================================================= */
+  REGISTRO.secular = function (raiz) {
+    var corpo = moldura(raiz, 'As raízes do polinômio característico');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var b = -3;   /* produto de inércia, em unidades de μ = Ma²/12 */
+
+    deslizante(corpo, 'Produto de inércia \\(I_{xy}=I_{xz}=I_{yz}\\):', -4, 4, 0.1, b,
+      function (v) { b = v; desenhar(); }, function (v) { return F.fmt(v, 1) + ' μ'; });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\lambda_1/\\mu\\)', k: 'l1' }, { rot: '\\(\\lambda_2/\\mu\\)', k: 'l2' },
+      { rot: '\\(\\lambda_3/\\mu\\)', k: 'l3' }, { rot: 'Soma', k: 'tr' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* matriz 8 na diagonal e b fora: as raízes saem em forma fechada */
+    function raizes() { return [8 + 2 * b, 8 - b, 8 - b]; }
+
+    function pol(x) {
+      return (x - (8 + 2 * b)) * (x - (8 - b)) * (x - (8 - b));
+    }
+
+    function desenhar() {
+      var r = raizes();
+      var lo = Math.min.apply(null, r) - 3, hi = Math.max.apply(null, r) + 3;
+      var m = 0;
+      for (var x = lo; x <= hi; x += (hi - lo) / 200) m = Math.max(m, Math.abs(pol(x)));
+      var g = G.eixos(cv, {
+        xmin: lo, xmax: hi, ymin: -m, ymax: m, divY: 4,
+        altura: Math.min(300, Math.max(220, cv.clientWidth * 0.42)),
+        rotX: 'λ / μ', formataY: function () { return ''; },
+        marcasX: G.marcasLineares(lo, hi, 6, 0)
+      });
+      G.curva(g, pol, G.COR.mestra, 2.2);
+      var ct = g.ct;
+      ct.strokeStyle = '#c8d0d7'; ct.lineWidth = 1;
+      ct.beginPath(); ct.moveTo(g.X(lo), g.Y(0)); ct.lineTo(g.X(hi), g.Y(0)); ct.stroke();
+      r.forEach(function (v, i) {
+        ct.beginPath(); ct.arc(g.X(v), g.Y(0), 5, 0, 2 * Math.PI);
+        ct.fillStyle = i === 0 ? G.COR.vinho : G.COR.azul; ct.fill();
+      });
+      rotulo(ct, 'diagonal do cubo', g.X(r[0]), g.Y(0) - 16, G.COR.vinho);
+      rotulo(ct, 'duas raízes iguais', g.X(r[1]), g.Y(0) + 18, G.COR.azul);
+
+      mostrar({ l1: F.fmt(r[0], 2), l2: F.fmt(r[1], 2), l3: F.fmt(r[2], 2),
+                tr: F.fmt(r[0] + r[1] + r[2], 2) });
+
+      saida.innerHTML = Math.abs(b) < 0.05
+        ? 'Com os produtos de inércia nulos a matriz já é diagonal e as três raízes '
+          + 'coincidem: todo eixo pelo ponto é principal, como acontece no centro do cubo '
+          + 'e em qualquer esfera.'
+        : 'A soma das três raízes é 24 \\(\\mu\\) qualquer que seja o produto de inércia, '
+          + 'porque o traço é invariante. Para \\(I_{xy}=-3\\mu\\), que é o cubo pelo '
+          + 'vértice, as raízes são \\(2\\mu\\) e \\(11\\mu\\) duas vezes.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+  /* =================================================================
+     6. O elipsoide de inércia
+     A afirmação de Poinsot, de que L é normal à superfície do
+     elipsoide no ponto em que ω a fura, é geométrica e fica evidente
+     num corte bidimensional: a tangente desenhada no ponto é sempre
+     perpendicular à seta vermelha.
+     ================================================================= */
+  REGISTRO.elipsoide = function (raiz) {
+    var corpo = moldura(raiz, 'L é normal ao elipsoide de inércia');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var I1 = 1, I2 = 3, dir = 35;
+
+    deslizante(corpo, 'Direção de \\(\\vet{\\omega}\\):', 0, 180, 1, dir,
+      function (v) { dir = v; desenhar(); }, function (v) { return v.toFixed(0) + '°'; });
+    deslizante(corpo, '\\(I_2/I_1\\):', 1, 6, 0.1, I2,
+      function (v) { I2 = v; desenhar(); }, function (v) { return F.fmt(v, 1); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\angle(\\vet{L},\\vet{\\omega})\\)', k: 'ang' },
+      { rot: '\\(I_{\\text{eixo}}/I_1\\)', k: 'ief' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(320, Math.max(240, cv.clientWidth * 0.5)));
+      var ct = p.ct, cx = p.L / 2, cy = p.A / 2, esc = Math.min(p.L, p.A) * 0.32;
+      var th = dir * Math.PI / 180;
+
+      ct.strokeStyle = '#cfd6dc'; ct.lineWidth = 1;
+      ct.beginPath(); ct.moveTo(cx - esc * 1.8, cy); ct.lineTo(cx + esc * 1.8, cy);
+      ct.moveTo(cx, cy - esc * 1.8); ct.lineTo(cx, cy + esc * 1.8); ct.stroke();
+
+      /* elipse ω·I·ω = 1, com semieixos 1/√Iᵢ */
+      ct.beginPath();
+      ct.ellipse(cx, cy, esc / Math.sqrt(I1), esc / Math.sqrt(I2), 0, 0, 2 * Math.PI);
+      ct.fillStyle = 'rgba(122,58,107,.1)';
+      ct.strokeStyle = G.COR.mestra; ct.lineWidth = 2;
+      ct.fill(); ct.stroke();
+
+      /* ponto em que ω fura a elipse */
+      var c = Math.cos(th), sn = Math.sin(th);
+      var r = 1 / Math.sqrt(I1 * c * c + I2 * sn * sn);
+      var px = cx + esc * r * c, py = cy - esc * r * sn;
+      seta(ct, cx, cy, px, py, G.COR.azul, 2.4);
+
+      /* normal: L ∝ I·ω */
+      var Lx = I1 * r * c, Ly = I2 * r * sn;
+      var Lm = Math.sqrt(Lx * Lx + Ly * Ly);
+      seta(ct, px, py, px + 52 * Lx / Lm, py - 52 * Ly / Lm, G.COR.vinho, 2.4);
+
+      /* plano tangente */
+      ct.strokeStyle = '#9aa6b1'; ct.lineWidth = 1.4; ct.setLineDash([5, 4]);
+      ct.beginPath();
+      ct.moveTo(px - 70 * Ly / Lm, py - 70 * Lx / Lm);
+      ct.lineTo(px + 70 * Ly / Lm, py + 70 * Lx / Lm);
+      ct.stroke(); ct.setLineDash([]);
+
+      rotulo(ct, 'ω', cx + (px - cx) * 0.55 - 14, cy + (py - cy) * 0.55 - 10, G.COR.azul);
+      rotulo(ct, 'L', px + 62 * Lx / Lm, py - 62 * Ly / Lm - 10, G.COR.vinho);
+
+      var cosA = (Lx * r * c + Ly * r * sn) / (Lm * r);
+      var ang = Math.acos(Math.max(-1, Math.min(1, cosA))) * 180 / Math.PI;
+      mostrar({ ang: F.fmt(ang, 2) + '°',
+                ief: F.fmt(I1 * c * c + I2 * sn * sn, 3) });
+
+      saida.innerHTML = ang < 0.3
+        ? 'Nesta direção \\(\\vet{L}\\) acompanha \\(\\vet{\\omega}\\): a seta vermelha é '
+          + 'radial e o plano tangente é perpendicular ao raio. É um eixo principal, e os '
+          + 'eixos principais são exatamente os eixos de simetria do elipsoide.'
+        : 'A seta vermelha é sempre perpendicular à reta tangente, qualquer que seja a '
+          + 'direção escolhida: é esse o conteúdo geométrico de \\(\\vet{L}=\\Ten{I}\\cdot'
+          + '\\vet{\\omega}\\). Ela só fica radial, e portanto paralela a \\(\\vet{\\omega}'
+          + '\\), nas direções dos eixos do elipsoide.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 3: Eixos principais e a equação secular | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091401">
+<script src="assets/js/comum.js?v=202611091401"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num ativo" title="Aula 3: Eixos principais e a equação secular">3</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. O que é um eixo principal</a></li>
+    <li><a href="#s2">2. A equação secular</a></li>
+    <li><a href="#s3">3. Os momentos principais do cubo</a></li>
+    <li><a href="#s4">4. Os autovetores: as três direções</a></li>
+    <li><a href="#s5">5. O elipsoide de inércia</a></li>
+    <li><a href="#s6">6. Quando a simetria entrega a resposta</a></li>
+    <li><a href="#s7">7. Exercícios resolvidos</a></li>
+    <li><a href="#s8">8. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 3 · Álgebra tensorial e corpo rígido</p>
+  <h1>Eixos principais e a equação secular</h1>
+  <p class="subtitulo">O teorema espectral garante que as três direções existem. Esta aula mostra como achá-las: a equação secular, os autovetores, a base em que o tensor é diagonal e o elipsoide de inércia, que torna geométrico tudo o que a álgebra diz.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Montar e resolver a equação secular de um tensor de inércia;</li>
+      <li>Obter os autovetores e normalizá-los;</li>
+      <li>Reconhecer piões simétricos e esféricos pela degenerescência dos autovalores;</li>
+      <li>Usar a simetria do corpo para anular contas;</li>
+      <li>Interpretar o elipsoide de inércia e a normalidade de \(\vet{L}\) à sua superfície;</li>
+      <li>Conferir todo resultado pelos invariantes.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. O que é um eixo principal</h2>
+
+  <p>A aula 2 terminou com uma promessa feita pelo teorema espectral: como o tensor de inércia
+  é simétrico, existem sempre três direções perpendiculares entre si em que \(\vet{L}\) sai
+  paralelo a \(\vet{\omega}\). Essas direções são os <strong>eixos principais de inércia</strong>
+  do corpo em relação ao ponto escolhido, e os momentos de inércia correspondentes são os
+  <strong>momentos principais</strong>, que escreveremos \(\lambda_1\), \(\lambda_2\) e
+  \(\lambda_3\).</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Definição</span>
+    <p>Um eixo pelo ponto \(O\) é principal quando uma rotação em torno dele produz momento
+    angular ao longo dele mesmo:</p>
+    <p>\[\Ten{I}\cdot\vet{\omega}=\lambda\,\vet{\omega}.\]</p>
+    <p>Na base formada pelos três eixos principais, o tensor é diagonal,
+    \(\Ten{I}=\mathrm{diag}(\lambda_1,\lambda_2,\lambda_3)\), e as relações do corpo rígido
+    ficam tão simples quanto no caso de eixo fixo de MC II:</p>
+    <p>\[L_1=\lambda_1\omega_1,\quad L_2=\lambda_2\omega_2,\quad L_3=\lambda_3\omega_3,
+    \qquad
+    T=\tfrac12\left(\lambda_1\omega_1^2+\lambda_2\omega_2^2+\lambda_3\omega_3^2\right).\]</p>
+  </div>
+
+  <p>Vale insistir num ponto que confunde: essas relações <em>não</em> dizem que \(\vet{L}\) é
+  paralelo a \(\vet{\omega}\). Elas dizem que cada componente de um é proporcional à
+  componente correspondente do outro, com constantes diferentes. Só quando \(\vet{\omega}\)
+  tem uma componente apenas, ou quando os três \(\lambda\) são iguais, é que os dois vetores
+  se alinham.</p>
+
+  <p>Achar os eixos principais é portanto resolver um problema de autovalor. Há dois
+  caminhos: olhar para a simetria do corpo, que às vezes entrega a resposta de graça, e fazer
+  a conta, que funciona sempre. Esta aula faz os dois, nessa ordem inversa, porque a conta é a
+  que precisa ser aprendida.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A equação secular</h2>
+
+  <p>Escrevendo a condição \(\Ten{I}\cdot\vet{\omega}=\lambda\vet{\omega}\) em componentes e
+  passando tudo para o mesmo lado,</p>
+
+  <p>\[\left(I_{ij}-\lambda\delta_{ij}\right)\omega_j=0,\]</p>
+
+  <p>ou, em forma matricial,</p>
+
+  <p>\[\begin{pmatrix}
+  I_{xx}-\lambda & I_{xy} & I_{xz}\\
+  I_{xy} & I_{yy}-\lambda & I_{yz}\\
+  I_{xz} & I_{yz} & I_{zz}-\lambda\end{pmatrix}
+  \begin{pmatrix}\omega_x\\\omega_y\\\omega_z\end{pmatrix}=
+  \begin{pmatrix}0\\0\\0\end{pmatrix}.\]</p>
+
+  <p>Esse sistema homogêneo tem sempre a solução trivial \(\vet{\omega}=0\), que não interessa.
+  Para haver outra, o determinante da matriz precisa ser nulo:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Equação secular</span>
+    \[\det\left(\Ten{I}-\lambda\Ten{1}\right)=0.\]
+  </div>
+
+  <p>Expandido, o determinante é um polinômio de grau três em \(\lambda\), e os coeficientes
+  são os invariantes da aula 1:</p>
+
+  <p>\[-\lambda^3+\left(\Tr\Ten{I}\right)\lambda^2-\left(\textstyle\sum\text{menores
+  principais}\right)\lambda+\det\Ten{I}=0.\]</p>
+
+  <p>Como o tensor é real e simétrico, as três raízes são reais, e como a forma quadrática da
+  energia cinética é definida positiva, as três são positivas. Elas são os momentos
+  principais.</p>
+
+  <div data-widget="secular"></div>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Raízes repetidas</span>
+    <p>Quando duas raízes coincidem, o corpo se diz um <strong>pião simétrico</strong>, e
+    qualquer eixo no plano dos dois autovetores correspondentes também é principal: o problema
+    de autovalor não escolhe direções dentro desse plano, e qualquer base ortonormal dele
+    serve. Quando as três coincidem, o corpo é um <strong>pião esférico</strong>, e todo eixo
+    pelo ponto é principal. É o caso do cubo em torno do centro, que se comporta como uma
+    esfera nesse aspecto.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Os momentos principais do cubo</h2>
+
+  <p>Retomemos o cubo da aula 2, com a origem num vértice, escrevendo \(\mu=Ma^2/12\) para
+  poupar tinta:</p>
+
+  <p>\[\Ten{I}=\mu\begin{pmatrix}8&-3&-3\\-3&8&-3\\-3&-3&8\end{pmatrix}.\]</p>
+
+  <p>A equação secular fica</p>
+
+  <p>\[\det\begin{pmatrix}8\mu-\lambda&-3\mu&-3\mu\\-3\mu&8\mu-\lambda&-3\mu\\
+  -3\mu&-3\mu&8\mu-\lambda\end{pmatrix}=0.\]</p>
+
+  <p>Essa matriz tem uma estrutura que evita a expansão bruta. Escrevendo
+  \(u=8\mu-\lambda\), o determinante é \(u^3-3u(3\mu)^2-2(3\mu)^3\), que fatora como</p>
+
+  <p>\[\left(u-6\mu\right)\left(u+3\mu\right)^2=0.\]</p>
+
+  <p>As raízes são \(u=6\mu\) e \(u=-3\mu\) duas vezes, ou seja,</p>
+
+  <div class="destaque">
+    <span class="anuncio">Momentos principais do cubo pelo vértice</span>
+    \[\lambda_1=2\mu=\frac{1}{6}Ma^2,\qquad
+    \lambda_2=\lambda_3=11\mu=\frac{11}{12}Ma^2.\]
+  </div>
+
+  <p>Confira pelos invariantes antes de seguir, que é o hábito que evita erro de sinal: a soma
+  das raízes é \(2\mu+11\mu+11\mu=24\mu\), igual ao traço \(3\cruz8\mu\). O produto é
+  \(2\cruz11\cruz11\,\mu^3=242\mu^3\), que é o determinante da matriz original.</p>
+
+  <p>O autovalor repetido diz que o cubo girando em torno de um vértice é um pião simétrico, o
+  que à primeira vista soa estranho para um corpo tão pouco parecido com um pião. A razão está
+  na simetria de ordem três em torno da diagonal: um corpo invariante por rotação de 120° em
+  torno de um eixo tem, obrigatoriamente, os outros dois momentos principais iguais.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Os autovetores: as três direções</h2>
+
+  <p>Cada autovalor devolvido pela equação secular tem a sua direção, obtida substituindo
+  \(\lambda\) de volta no sistema. Para \(\lambda_1=2\mu\):</p>
+
+  <p>\[\mu\begin{pmatrix}6&-3&-3\\-3&6&-3\\-3&-3&6\end{pmatrix}
+  \begin{pmatrix}\omega_x\\\omega_y\\\omega_z\end{pmatrix}=0
+  \;\Longrightarrow\;
+  \begin{cases}2\omega_x-\omega_y-\omega_z=0\\
+  -\omega_x+2\omega_y-\omega_z=0\end{cases}\]</p>
+
+  <p>Subtraindo as duas equações sai \(3(\omega_x-\omega_y)=0\), portanto
+  \(\omega_x=\omega_y\), e qualquer uma delas dá então \(\omega_z=\omega_x\). A direção é</p>
+
+  <p>\[\vers{e}_1=\frac{1}{\sqrt3}\left(1,1,1\right),\]</p>
+
+  <p>que é a diagonal do cubo que sai da origem, exatamente a direção em que o simulador da
+  aula 2 marcava ângulo zero. As três equações do sistema são linearmente dependentes, como
+  tinham que ser: o determinante foi anulado de propósito, e por isso o autovetor fica
+  determinado a menos de um fator, que a normalização fixa.</p>
+
+  <p>Para \(\lambda_2=\lambda_3=11\mu\), o sistema se reduz a uma única equação:</p>
+
+  <p>\[-3\omega_x-3\omega_y-3\omega_z=0\;\Longrightarrow\;
+  \omega_x+\omega_y+\omega_z=0,\]</p>
+
+  <p>que é a equação do plano perpendicular a \(\vers{e}_1\). Qualquer direção nesse plano
+  serve, confirmando a degenerescência. Duas escolhas convenientes, ortogonais entre si,
+  são</p>
+
+  <p>\[\vers{e}_2=\frac{1}{\sqrt2}\left(1,-1,0\right),\qquad
+  \vers{e}_3=\frac{1}{\sqrt6}\left(1,1,-2\right).\]</p>
+
+  <p>Na base \(\{\vers{e}_1,\vers{e}_2,\vers{e}_3\}\) o tensor é
+  \(\mathrm{diag}(2\mu,11\mu,11\mu)\). A matriz que faz a mudança de base é a matriz cujas
+  linhas são esses três versores, e ela é ortogonal porque os versores são ortonormais:
+  é a mesma matriz \(\Ten{R}\) de MC II, módulo 5, agora encontrada e não dada.</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">Verificação</span>
+    <p>Posto o cubo a girar em torno de uma aresta, \(\vet{\omega}=\omega\vers{x}\), as
+    componentes na base principal são
+    \(\omega_1=\omega/\sqrt3\), \(\omega_2=\omega/\sqrt2\) e \(\omega_3=\omega/\sqrt6\).
+    A energia cinética sai</p>
+    <p>\[T=\frac12\left(2\mu\frac{\omega^2}{3}+11\mu\frac{\omega^2}{2}
+    +11\mu\frac{\omega^2}{6}\right)=\frac12\,\omega^2\mu\left(\frac23+\frac{11}{2}
+    +\frac{11}{6}\right)=\frac12\,8\mu\,\omega^2=\frac12\cdot\frac23Ma^2\omega^2,\]</p>
+    <p>que é o mesmo \(I_{xx}=\frac23Ma^2\) calculado por integração. Os dois caminhos
+    precisam concordar, porque a energia cinética é um escalar.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. O elipsoide de inércia</h2>
+
+  <p>Há uma maneira de ver os eixos principais que dispensa contas e que
+  <a href="https://pt.wikipedia.org/wiki/Louis_Poinsot">Louis Poinsot</a> introduziu em 1834.
+  Considere a superfície varrida pelos vetores \(\vet{\omega}\) que dão a mesma energia
+  cinética:</p>
+
+  <p>\[I_{ij}\omega_i\omega_j=1.\]</p>
+
+  <p>Como a forma quadrática é definida positiva, essa superfície é um elipsoide, chamado
+  <strong>elipsoide de inércia</strong>. Os seus três eixos de simetria são exatamente os
+  eixos principais, e os semieixos valem \(1/\sqrt{\lambda_i}\): o eixo mais longo do
+  elipsoide corresponde ao menor momento de inércia, que é a direção em que o corpo gira mais
+  facilmente.</p>
+
+  <p>A propriedade geométrica que faz o elipsoide valer a pena é esta: o momento angular é
+  <strong>normal à superfície</strong> no ponto em que \(\vet{\omega}\) a fura. A demonstração
+  é um gradiente,</p>
+
+  <p>\[\nabla_{\vet{\omega}}\left(\tfrac12I_{ij}\omega_i\omega_j\right)_k
+  =I_{kj}\omega_j=L_k,\]</p>
+
+  <p>e o gradiente de uma função é perpendicular às suas superfícies de nível. Assim, dizer
+  que uma direção é principal é dizer que nela a normal à superfície é radial, o que só
+  acontece nos eixos de simetria do elipsoide.</p>
+
+  <div data-widget="elipsoide"></div>
+
+  <p>Essa imagem vai trabalhar duro na aula 4. Quando o corpo gira livremente, sem torque, a
+  energia e o momento angular são ambos constantes, e Poinsot mostrou que o movimento equivale
+  ao elipsoide de inércia rolando sem deslizar sobre um plano fixo perpendicular a
+  \(\vet{L}\). A curva que o ponto de contato descreve no corpo chama-se polhodia, e é o que
+  se vê na porca de Dzhanibekov.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Quando a simetria entrega a resposta</h2>
+
+  <p>Fazer a conta sempre funciona e nem sempre é necessário. As regras da aula 2 resolvem
+  muitos casos de cabeça:</p>
+
+  <ul>
+    <li>um eixo perpendicular a um plano de simetria é principal;</li>
+    <li>um eixo de simetria de rotação é principal, e se a simetria for de ordem três ou
+    maior, os outros dois momentos são iguais;</li>
+    <li>se o tensor numa base qualquer já sai diagonal, aquela base já é a principal.</li>
+  </ul>
+
+  <div class="bloco ex">
+    <span class="rotulo">Exemplo: o cone maciço</span>
+    <p>Um cone homogêneo de massa \(M\), raio da base \(R\) e altura \(h\), com a origem no
+    vértice e o eixo \(z\) ao longo do eixo de simetria. Os planos \(xz\) e \(yz\) são planos
+    de simetria, logo todos os produtos de inércia se anulam e os eixos já são principais.
+    Resta calcular três integrais, das quais só duas são diferentes.</p>
+    <p>Em coordenadas cilíndricas, com o raio da seção crescendo como \(r(z)=Rz/h\) e
+    \(\rho=3M/\pi R^2h\),</p>
+    <p>\[\lambda_3=I_{zz}=\int\rho\,\varrho^2\,d^3r
+    =2\pi\rho\int_0^h\frac{r(z)^4}{4}dz=\frac{1}{10}\pi\rho R^4h=\frac{3}{10}MR^2.\]</p>
+    <p>Para \(I_{xx}\), note que \(\int\rho y^2 d^3r=\frac12 I_{zz}\) por simetria entre
+    \(x\) e \(y\), e que a outra parcela é</p>
+    <p>\[\int\rho z^2\,d^3r=\pi\rho\frac{R^2}{h^2}\int_0^h z^4dz=\frac{3}{5}Mh^2,\]</p>
+    <p>de modo que</p>
+    <p>\[\lambda_1=\lambda_2=I_{xx}=\frac{3}{20}MR^2+\frac35Mh^2
+    =\frac{3}{20}M\left(R^2+4h^2\right).\]</p>
+    <p>O cone é um pião simétrico, como era de esperar, e o seu elipsoide de inércia é de
+    revolução em torno de \(z\). Para \(R=2h\) os três momentos coincidem e o cone gira como
+    uma esfera: é o exercício 3.4.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s7">7. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 3.1</span>
+    <p><strong>Ache os eixos principais de
+    \(\Ten{I}=I_0\begin{pmatrix}2&1&0\\1&2&0\\0&0&3\end{pmatrix}\).</strong></p>
+    <p>A terceira linha e a terceira coluna já estão desacopladas, de modo que \(\vers{z}\) é
+    principal com \(\lambda=3I_0\). No bloco restante, a equação secular é
+    \((2I_0-\lambda)^2-I_0^2=0\), ou \(\lambda=2I_0\pm I_0\).</p>
+    <p>Para \(\lambda=3I_0\), o sistema dá \(\omega_x=\omega_y\): a direção é
+    \((1,1,0)/\sqrt2\). Para \(\lambda=I_0\), dá \(\omega_x=-\omega_y\): a direção é
+    \((1,-1,0)/\sqrt2\).</p>
+    <p>Há portanto dois autovalores iguais a \(3I_0\), correspondentes a \(\vers{z}\) e a
+    \((1,1,0)/\sqrt2\), e qualquer direção no plano gerado por esses dois também é principal.
+    O corpo é um pião simétrico, com o eixo de simetria do elipsoide ao longo de
+    \((1,-1,0)\).</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 3.2</span>
+    <p><strong>Uma placa quadrada homogênea de lado \(a\) e massa \(M\) está no plano \(xy\)
+    com um vértice na origem. Ache os momentos principais em relação a esse vértice.</strong></p>
+    <p>O plano da placa é plano de simetria, logo \(\vers{z}\) é principal. Para uma
+    distribuição plana, \(I_{zz}=I_{xx}+I_{yy}\). As integrais dão
+    \(I_{xx}=I_{yy}=\frac13Ma^2\), \(I_{zz}=\frac23Ma^2\) e
+    \(I_{xy}=-\frac14Ma^2\).</p>
+    <p>No bloco \(xy\), a equação secular é \((\frac13Ma^2-\lambda)^2=(\frac14Ma^2)^2\), que
+    dá \(\lambda=\frac13Ma^2\pm\frac14Ma^2\), ou seja \(\frac{7}{12}Ma^2\) e
+    \(\frac{1}{12}Ma^2\). As direções são as duas diagonais da placa: a que passa pela origem
+    tem o menor momento, \(\frac{1}{12}Ma^2\), porque é a direção em que a massa está mais
+    perto do eixo.</p>
+    <p>Confira o traço: \(\frac{7}{12}+\frac{1}{12}+\frac{8}{12}=\frac{16}{12}Ma^2\), e a
+    soma da diagonal original é \(\frac13+\frac13+\frac23=\frac{4}{3}Ma^2\). Confere.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 3.3</span>
+    <p><strong>Mostre que, se \(\lambda_1=\lambda_2\), então todo eixo no plano
+    \(\vers{e}_1\vers{e}_2\) é principal.</strong></p>
+    <p>Seja \(\vers{n}=\cos\alpha\,\vers{e}_1+\sen\alpha\,\vers{e}_2\). Aplicando o tensor,
+    que na base principal é diagonal,</p>
+    <p>\[\Ten{I}\cdot\vers{n}=\lambda_1\cos\alpha\,\vers{e}_1+\lambda_2\sen\alpha\,\vers{e}_2
+    =\lambda_1\left(\cos\alpha\,\vers{e}_1+\sen\alpha\,\vers{e}_2\right)=\lambda_1\vers{n},\]</p>
+    <p>onde a segunda igualdade usa \(\lambda_2=\lambda_1\). Logo \(\vers{n}\) é autovetor com
+    o mesmo autovalor, para qualquer \(\alpha\). O elipsoide de inércia é, nesse caso, um
+    elipsoide de revolução, e qualquer par de eixos perpendiculares no plano equatorial serve
+    como base principal.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s8">8. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>3.1</b> Ache os momentos e os eixos principais de
+      \(\Ten{I}=I_0\begin{pmatrix}4&0&1\\0&3&0\\1&0&4\end{pmatrix}\) e confira pelo traço e
+      pelo determinante.</li>
+
+      <li><b>3.2</b> Mostre que o cubo em torno do <em>centro</em> tem
+      \(\Ten{I}=\frac16Ma^2\Ten{1}\), e explique em duas frases por que isso faz o cubo girar
+      como uma esfera, apesar de não ter nada de esférico.</li>
+
+      <li><b>3.3</b> Para o cubo pelo vértice, verifique explicitamente que \(\vers{e}_2\) e
+      \(\vers{e}_3\) da seção 4 são ortogonais entre si e a \(\vers{e}_1\), e monte a matriz
+      \(\Ten{R}\) que diagonaliza \(\Ten{I}\). Confirme numericamente que
+      \(\Ten{R}\,\Ten{I}\,\Ten{R}^{\mathsf T}\) é diagonal.</li>
+
+      <li><b>3.4</b> Para que razão \(R/h\) o cone da seção 6 tem os três momentos principais
+      iguais? Qual é o valor comum?</li>
+
+      <li><b>3.5</b> Um paralelepípedo homogêneo de lados \(a\), \(b\) e \(c\) gira em torno
+      de um vértice. Escreva o tensor de inércia e diga, sem resolver a equação secular, o que
+      acontece com os momentos principais quando \(a=b\).</li>
+
+      <li><b>3.6</b> Desenhe o elipsoide de inércia de um disco fino, de um bastão fino e de
+      uma esfera, e diga em cada caso qual é o eixo de giro mais fácil.</li>
+
+      <li><b>3.7</b> Escreva um programa em Python que monte o tensor de inércia de um corpo
+      descrito por uma nuvem de pontos com massas, diagonalize-o com
+      <code>numpy.linalg.eigh</code> e desenhe o elipsoide de inércia correspondente. Aplique
+      ao cubo pelo vértice e confirme os momentos \(2\mu\) e \(11\mu\).</li>
+
+      <li><b>3.8</b> Mostre que, entre todos os eixos que passam por um ponto, o momento de
+      inércia é máximo ao longo de um eixo principal e mínimo ao longo de outro. Use
+      \(I_n=\vers{n}\cdot\Ten{I}\cdot\vers{n}\) escrito na base principal e o vínculo
+      \(n_1^2+n_2^2+n_3^2=1\).</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula02.html"><small>Aula anterior</small>← 2. Tensor de inércia</a>
+    <span class="em-breve"><small>Em preparação</small>4. Equações de Euler</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091401"></script>
+</body>
+</html>
