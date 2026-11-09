@@ -2170,6 +2170,203 @@
     laco();
   };
 
+
+  /* =================================================================
+     21. A cadeia de N osciladores
+     Cada modo é uma onda estacionária, e o número de nós cresce com a
+     ordem do modo. Com N grande, os modos de ordem baixa não sabem que
+     a cadeia é feita de bolinhas: é o limite contínuo acontecendo na
+     tela.
+     ================================================================= */
+  REGISTRO.cadeia = function (raiz) {
+    var corpo = moldura(raiz, 'Os modos de uma cadeia de massas e molas');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var N = 12, modo = 1, t = 0, animando = true;
+
+    deslizante(corpo, 'Número de massas \\(N\\):', 2, 40, 1, N,
+      function (v) { N = v; modo = Math.min(modo, N); });
+    var dModo = deslizante(corpo, 'Modo \\(n\\):', 1, 40, 1, modo,
+      function (v) { modo = v; }, function (v) { return v.toFixed(0); });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(b); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\omega_n/\\sqrt{k/m}\\)', k: 'w' },
+      { rot: 'Comprimento de onda', k: 'lam' },
+      { rot: 'Nós internos', k: 'nos' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var n = Math.min(modo, N);
+      var p = G.preparar(cv, Math.min(300, Math.max(220, cv.clientWidth * 0.42)));
+      var ct = p.ct;
+      var w = 2 * Math.sin(n * Math.PI / (2 * (N + 1)));
+      var x0 = p.L * 0.07, larg = p.L * 0.86, y = p.A * 0.42;
+      var dx = larg / (N + 1), amp = Math.min(26, dx * 0.9);
+
+      /* paredes */
+      ct.strokeStyle = '#9aa6b1'; ct.lineWidth = 2;
+      [x0, x0 + larg].forEach(function (xx) {
+        ct.beginPath(); ct.moveTo(xx, y - 34); ct.lineTo(xx, y + 34); ct.stroke();
+      });
+
+      /* posições de equilíbrio e deslocadas */
+      var pos = [];
+      for (var i = 1; i <= N; i++) {
+        var u = Math.sin(i * n * Math.PI / (N + 1)) * Math.cos(w * t);
+        pos.push([x0 + i * dx + amp * u, u]);
+      }
+
+      /* molas como segmentos */
+      ct.strokeStyle = '#c9b2c4'; ct.lineWidth = 1.6;
+      var ant = x0;
+      pos.forEach(function (q) {
+        ct.beginPath(); ct.moveTo(ant, y); ct.lineTo(q[0], y); ct.stroke();
+        ant = q[0];
+      });
+      ct.beginPath(); ct.moveTo(ant, y); ct.lineTo(x0 + larg, y); ct.stroke();
+
+      /* a forma do modo, desenhada como curva contínua por cima */
+      ct.beginPath();
+      for (var s = 0; s <= 200; s++) {
+        var xi = s / 200 * (N + 1);
+        var uu = Math.sin(xi * n * Math.PI / (N + 1)) * Math.cos(w * t);
+        var xx = x0 + xi * dx, yy = y - 42 * uu;
+        if (s === 0) ct.moveTo(xx, yy); else ct.lineTo(xx, yy);
+      }
+      ct.strokeStyle = 'rgba(122,58,107,.35)'; ct.lineWidth = 1.4; ct.stroke();
+
+      pos.forEach(function (q) {
+        ct.beginPath(); ct.arc(q[0], y, Math.min(9, dx * 0.3), 0, 2 * Math.PI);
+        ct.fillStyle = G.COR.mestra; ct.fill();
+      });
+
+      /* a relação de dispersão, com o ponto do modo atual */
+      var gx0 = p.L * 0.15, gl = p.L * 0.7, gy = p.A * 0.9, ga = p.A * 0.3;
+      ct.strokeStyle = '#dde3e8'; ct.lineWidth = 1;
+      ct.beginPath(); ct.moveTo(gx0, gy); ct.lineTo(gx0 + gl, gy); ct.stroke();
+      ct.beginPath();
+      for (s = 0; s <= 120; s++) {
+        var qq = s / 120 * Math.PI;
+        var ww = 2 * Math.sin(qq / 2);
+        var xx2 = gx0 + gl * qq / Math.PI, yy2 = gy - ga * ww / 2;
+        if (s === 0) ct.moveTo(xx2, yy2); else ct.lineTo(xx2, yy2);
+      }
+      ct.strokeStyle = G.COR.azul; ct.lineWidth = 1.8; ct.stroke();
+      var qn = n * Math.PI / (N + 1);
+      ct.beginPath();
+      ct.arc(gx0 + gl * qn / Math.PI, gy - ga * w / 2, 5, 0, 2 * Math.PI);
+      ct.fillStyle = G.COR.vinho; ct.fill();
+      rotulo(ct, 'ω(q)', gx0 + gl + 22, gy - ga * 0.5, G.COR.azul);
+      rotulo(ct, 'q = π/a', gx0 + gl, gy + 14, '#9aa6b1');
+      rotulo(ct, '0', gx0, gy + 14, '#9aa6b1');
+
+      mostrar({ w: F.fmt(w, 4),
+                lam: F.fmt(2 * (N + 1) / n, 2) + ' a',
+                nos: String(n - 1) });
+
+      saida.innerHTML = n === 1
+        ? 'No modo mais baixo todas as massas andam para o mesmo lado, com amplitudes que '
+          + 'desenham meia onda de seno. O comprimento de onda é o dobro do comprimento da '
+          + 'cadeia, e a frequência é a menor possível.'
+        : n >= N - 0.5
+          ? 'No modo mais alto cada massa anda em oposição às vizinhas, o comprimento de '
+            + 'onda chega a dois espaçamentos e a frequência satura em \\(2\\sqrt{k/m}\\). '
+            + 'Abaixo desse comprimento de onda não há nada a descrever: a cadeia não tem '
+            + 'estrutura menor que o espaçamento.'
+          : 'O modo \\(n\\) tem \\(n-1\\) nós internos e comprimento de onda \\('
+            + F.fmt(2 * (N + 1) / n, 2) + 'a\\). Enquanto o comprimento de onda for muito '
+            + 'maior que o espaçamento, o ponto vermelho fica na parte reta da curva de '
+            + 'dispersão, e a cadeia se comporta como um meio contínuo.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() { if (!animando) return; t += 0.08; desenhar(); requestAnimationFrame(laco); }
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
+  /* =================================================================
+     22. Dispersão, velocidade de fase e velocidade de grupo
+     A relação ω = 2√(k/m)|sen(qa/2)| coincide com a reta ω = vq só
+     perto da origem. O afastamento é o que faz um pulso se deformar ao
+     viajar pela cadeia, e a velocidade de grupo zera na borda da zona.
+     ================================================================= */
+  REGISTRO.dispersao = function (raiz) {
+    var corpo = moldura(raiz, 'Onde a cadeia deixa de parecer contínua');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var q = 0.6;   /* em unidades de π/a */
+
+    deslizante(corpo, 'Número de onda \\(qa/\\pi\\):', 0.02, 1, 0.01, q,
+      function (v) { q = v; desenhar(); }, function (v) { return F.fmt(v, 2); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\omega/\\sqrt{k/m}\\)', k: 'w' },
+      { rot: 'Velocidade de fase', k: 'vf' },
+      { rot: 'Velocidade de grupo', k: 'vg' },
+      { rot: 'Erro da aproximação linear', k: 'er' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var g = G.eixos(cv, {
+        xmin: 0, xmax: 1, ymin: 0, ymax: 3.3, divY: 3,
+        altura: Math.min(290, Math.max(210, cv.clientWidth * 0.4)),
+        rotX: 'q a / π', rotY: 'ω / √(k/m)',
+        marcasX: G.marcasLineares(0, 1, 5, 1),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+      g.ct.save(); g.ct.beginPath();
+      g.ct.rect(g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0); g.ct.clip();
+      G.curva(g, function (x) { return 2 * Math.sin(Math.PI * x / 2); },
+              G.COR.mestra, 2.2);
+      G.curva(g, function (x) { return Math.PI * x; }, '#b9c3cc', 1.6, [5, 4]);
+      g.ct.restore();
+      G.vertical(g, q, G.COR.vinho, '', [4, 4]);
+      G.legenda(g, [{ texto: 'cadeia discreta', cor: G.COR.mestra },
+                    { texto: 'ω = v q (contínuo)', cor: '#b9c3cc' }]);
+
+      var w = 2 * Math.sin(Math.PI * q / 2);
+      var lin = Math.PI * q;
+      var vf = w / (Math.PI * q);                       /* em unidades de v = a√(k/m) */
+      var vg = Math.cos(Math.PI * q / 2);
+      mostrar({ w: F.fmt(w, 3), vf: F.fmt(vf, 3) + ' v', vg: F.fmt(vg, 3) + ' v',
+                er: F.pct((lin - w) / w, 1) });
+
+      saida.innerHTML = q < 0.25
+        ? 'Para comprimentos de onda longos a curva e a reta se confundem: a velocidade de '
+          + 'fase e a de grupo são quase iguais, um pulso viaja sem se deformar, e a cadeia '
+          + 'é indistinguível de uma corda contínua. É esse regime que a aula 13 descreve '
+          + 'com a equação de onda.'
+        : q > 0.93
+          ? 'Na borda da zona a velocidade de grupo vai a zero: a onda não anda, fica '
+            + 'parada oscilando. Massas vizinhas em oposição formam uma onda estacionária '
+            + 'e nenhuma energia se propaga. É a origem das bandas proibidas num cristal.'
+          : 'A curva já se afastou da reta em ' + F.pct((lin - w) / w, 1) + '. As duas '
+            + 'velocidades deixam de coincidir, e um pulso formado por várias componentes '
+            + 'se espalha enquanto viaja: isso é <strong>dispersão</strong>, e é uma '
+            + 'propriedade do meio discreto que o contínuo não tem.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 11: A cadeia de N osciladores e o limite contínuo | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091431">
+<script src="assets/js/comum.js?v=202611091431"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+      <a href="aula10.html" class="num" title="Aula 10: Modos normais e coordenadas normais">10</a>
+      <a href="aula11.html" class="num ativo" title="Aula 11: A cadeia de N osciladores e o limite contínuo">11</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. A cadeia e o palpite de onda</a></li>
+    <li><a href="#s2">2. Os modos permitidos</a></li>
+    <li><a href="#s3">3. A zona de Brillouin e as duas velocidades</a></li>
+    <li><a href="#s4">4. O limite contínuo</a></li>
+    <li><a href="#s5">5. Exercícios resolvidos</a></li>
+    <li><a href="#s6">6. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 11 · Pequenas vibrações</p>
+  <h1>A cadeia de N osciladores e o limite contínuo</h1>
+  <p class="subtitulo">Com muitas massas o determinante deixa de ser o caminho, e o palpite de onda resolve o problema inteiro. Dele saem a relação de dispersão, o teto de frequência, a zona de Brillouin e, no limite de comprimentos de onda longos, a equação de onda.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Resolver a cadeia de \(N\) massas pelo palpite de onda;</li>
+      <li>Obter e interpretar a relação de dispersão;</li>
+      <li>Impor condições de contorno e contar os modos permitidos;</li>
+      <li>Reconhecer a zona de Brillouin e o limite de amostragem;</li>
+      <li>Distinguir velocidade de fase de velocidade de grupo;</li>
+      <li>Fazer o limite contínuo e obter a equação de onda.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. A cadeia e o palpite de onda</h2>
+
+  <p>Aumentar o número de graus de liberdade não muda o método, muda o tamanho do
+  determinante. Para \(N\) massas iguais, ligadas por molas iguais, entre duas paredes fixas,
+  a equação de movimento da \(j\)-ésima massa é</p>
+
+  <p>\[m\ddot u_j=k\left(u_{j+1}-u_j\right)-k\left(u_j-u_{j-1}\right)
+  =k\left(u_{j+1}-2u_j+u_{j-1}\right),\]</p>
+
+  <p>com \(u_0=u_{N+1}=0\) nas paredes. A matriz \(\Ten{K}\) é tridiagonal, com \(2k\) na
+  diagonal e \(-k\) nas duas vizinhas. Calcular o determinante de uma matriz dessas por
+  expansão é desagradável e desnecessário.</p>
+
+  <p>O atalho é observar que a equação é a mesma para toda massa interior, o que sugere
+  procurar soluções em que a amplitude dependa do índice de maneira regular:</p>
+
+  <p>\[u_j(t)=A\,e^{\,i\left(qja-\omega t\right)},\]</p>
+
+  <p>com \(a\) o espaçamento de equilíbrio e \(q\) um número de onda a determinar. Esse
+  palpite transforma a equação de diferenças em uma equação algébrica, porque
+  \(u_{j\pm1}=u_je^{\pm iqa}\):</p>
+
+  <p>\[-m\omega^2=k\left(e^{\,iqa}+e^{-iqa}-2\right)=-4k\sen^2\frac{qa}{2}.\]</p>
+
+  <div class="destaque">
+    <span class="anuncio">Relação de dispersão</span>
+    \[\omega(q)=2\sqrt{\frac{k}{m}}\,\left|\sen\frac{qa}{2}\right|.\]
+  </div>
+
+  <p>Essa expressão é o resultado central da aula. Ela diz que a cadeia não deixa passar
+  qualquer frequência: há um teto, \(\omega_{\max}=2\sqrt{k/m}\), acima do qual nenhuma onda
+  se propaga. Um meio contínuo não tem teto nenhum, e é essa a primeira diferença entre o
+  discreto e o contínuo.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. Os modos permitidos</h2>
+
+  <p>Falta impor as paredes. Combinando as soluções de \(+q\) e \(-q\) para formar uma onda
+  estacionária que se anule em \(j=0\), fica \(u_j\propto\sen(qja)\), e a condição na outra
+  parede, \(u_{N+1}=0\), exige</p>
+
+  <p>\[q\left(N+1\right)a=n\pi,\qquad n=1,2,\dots,N.\]</p>
+
+  <p>São exatamente \(N\) valores permitidos, como tinha que ser: \(N\) graus de liberdade dão
+  \(N\) modos. As frequências próprias saem substituindo na relação de dispersão:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Modos da cadeia com extremidades fixas</span>
+    \[u_j^{(n)}=A\sen\left(\frac{jn\pi}{N+1}\right),\qquad
+    \omega_n=2\sqrt{\frac{k}{m}}\,\sen\left(\frac{n\pi}{2\left(N+1\right)}\right).\]
+  </div>
+
+  <p>Para \(N=3\), isso dá \(0{,}765\), \(1{,}414\) e \(1{,}848\) vezes \(\sqrt{k/m}\),
+  confirmando o que o exercício 10.3 pedia. O modo \(n\) tem \(n-1\) nós internos, e o modo
+  mais alto é aquele em que cada massa anda em oposição às vizinhas.</p>
+
+  <div data-widget="cadeia"></div>
+
+  <p>Vale notar que os modos de uma cadeia uniforme são senos, exatamente como os de uma corda
+  presa nas duas pontas, que a aula 14 vai obter de outra maneira. A diferença está nas
+  frequências: a corda tem \(\omega_n\propto n\), e a cadeia tem \(\omega_n\propto
+  \sen(n\pi/2(N+1))\), que só é proporcional a \(n\) enquanto o argumento do seno é
+  pequeno.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. A zona de Brillouin e as duas velocidades</h2>
+
+  <p>A função \(\sen(qa/2)\) é periódica em \(q\) com período \(2\pi/a\). Dois números de onda
+  que diferem por \(2\pi/a\) produzem exatamente os mesmos deslocamentos em todas as massas,
+  porque \(e^{\,i(q+2\pi/a)ja}=e^{\,iqja}\). Em outras palavras, a cadeia não consegue
+  distinguir entre eles.</p>
+
+  <div class="bloco int">
+    <span class="rotulo">O que isso significa</span>
+    <p>Uma onda de comprimento menor que dois espaçamentos não contém informação nova: ela é
+    indistinguível de uma onda mais longa. Por isso basta considerar \(q\) no intervalo
+    \(-\pi/a&lt;q\leq\pi/a\), chamado <strong>primeira zona de Brillouin</strong>. É o mesmo
+    fenômeno que faz a roda de carroça girar para trás no cinema, e o mesmo que o teorema da
+    amostragem de Nyquist descreve: amostrar um sinal a intervalos \(a\) limita o que se pode
+    representar a comprimentos de onda maiores que \(2a\).</p>
+  </div>
+
+  <p>Duas velocidades diferentes aparecem, e confundi-las é um erro clássico. A
+  <strong>velocidade de fase</strong>, \(v_f=\omega/q\), é a velocidade com que uma crista
+  individual caminha. A <strong>velocidade de grupo</strong>, \(v_g=d\omega/dq\), é a
+  velocidade com que um pulso, feito de várias componentes, se desloca, e é ela que transporta
+  energia:</p>
+
+  <p>\[v_f=\frac{2}{q}\sqrt{\frac{k}{m}}\,\sen\frac{qa}{2},\qquad
+  v_g=a\sqrt{\frac{k}{m}}\,\cos\frac{qa}{2}.\]</p>
+
+  <div data-widget="dispersao"></div>
+
+  <p>Na borda da zona, \(q=\pi/a\), a velocidade de grupo é zero: a onda não anda. Massas
+  vizinhas oscilam em oposição e o resultado é uma onda estacionária, por mais que se insista
+  em chamá-la de progressiva. Esse ponto é a origem das bandas proibidas de um cristal, e o
+  mesmo cálculo, com elétrons no lugar de massas, dá a estrutura de bandas dos
+  semicondutores.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. O limite contínuo</h2>
+
+  <p>Quando o comprimento de onda é muito maior que o espaçamento, \(qa\ll1\), o seno se
+  confunde com o seu argumento:</p>
+
+  <p>\[\omega\approx2\sqrt{\frac{k}{m}}\cdot\frac{qa}{2}=\left(a\sqrt{\frac{k}{m}}\right)q
+  \equiv v\,q.\]</p>
+
+  <p>A relação vira linear, as duas velocidades coincidem e valem \(v=a\sqrt{k/m}\), e nenhum
+  pulso se deforma ao viajar. A cadeia virou um meio contínuo.</p>
+
+  <p>A passagem pode ser feita também na equação de movimento, e o resultado é mais
+  instrutivo. Escreva \(u_j(t)=u(x,t)\) com \(x=ja\), e expanda os vizinhos em Taylor:</p>
+
+  <p>\[u_{j\pm1}=u(x\pm a)\approx u\pm a\pder{u}{x}+\frac{a^2}{2}\pder{^2u}{x^2},\]</p>
+
+  <p>de modo que \(u_{j+1}-2u_j+u_{j-1}\approx a^2\,\partial^2u/\partial x^2\). Substituindo
+  na equação de movimento,</p>
+
+  <div class="destaque">
+    <span class="anuncio">A equação de onda nasce da cadeia</span>
+    \[m\pder{^2u}{t^2}=ka^2\pder{^2u}{x^2}
+    \;\Longrightarrow\;
+    \pder{^2u}{t^2}=v^2\pder{^2u}{x^2},\qquad v^2=\frac{ka^2}{m}=\frac{Y}{\rho},\]
+  </div>
+
+  <p>onde, na última igualdade, \(\rho=m/a\) é a densidade linear e \(Y=ka\) faz o papel do
+  módulo de elasticidade. Essa é a equação de onda, que a unidade seguinte vai estudar por
+  conta própria. O importante aqui é a origem: ela não é um postulado sobre meios contínuos,
+  e sim o limite de longo comprimento de onda de um sistema de muitas massas acopladas.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">Quando o discreto reaparece</span>
+    <p>Num cristal, \(a\approx3\cruz10^{-10}\) m e a velocidade do som é da ordem de
+    5000 m/s, de modo que a frequência de corte \(\omega_{\max}\approx2v/a\) fica perto de
+    \(3\cruz10^{13}\) rad/s, ou 5 THz. Abaixo disso, o som se propaga como num meio contínuo;
+    perto disso, a dispersão é enorme e a descrição contínua falha. Foi medindo essa curva de
+    dispersão por espalhamento de nêutrons que se confirmou, nos anos 1950, que a matéria é
+    feita de átomos espaçados, e não de um contínuo.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 11.1</span>
+    <p><strong>Mostre que os modos da cadeia são ortogonais.</strong></p>
+    <p>Como todas as massas são iguais, \(\Ten{M}=m\Ten{1}\) e a ortogonalidade da aula 10 é a
+    usual. É preciso então mostrar que</p>
+    <p>\[\sum_{j=1}^{N}\sen\frac{jn\pi}{N+1}\,\sen\frac{jn'\pi}{N+1}=0
+    \quad\text{para }n\neq n'.\]</p>
+    <p>Use a identidade \(2\sen A\sen B=\cos(A-B)-\cos(A+B)\). Cada uma das duas somas é uma
+    progressão geométrica de razão \(e^{\,i\pi(n\mp n')/(N+1)}\), que soma zero porque a razão
+    é uma raiz da unidade diferente de 1. Para \(n=n'\), a soma vale \((N+1)/2\), o que fixa a
+    normalização.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 11.2</span>
+    <p><strong>Uma cadeia de 20 massas tem \(k/m=10^4\) s⁻². Calcule a menor e a maior
+    frequência e diga quantos modos ficam na faixa em que a aproximação contínua erra menos de
+    1 %.</strong></p>
+    <p>Com \(\sqrt{k/m}=100\) s⁻¹,</p>
+    <p>\[\omega_1=200\sen\frac{\pi}{42}=14{,}9\ \text{s}^{-1},\qquad
+    \omega_{20}=200\sen\frac{20\pi}{42}=199{,}4\ \text{s}^{-1}.\]</p>
+    <p>O erro da aproximação linear é \((\theta-\sen\theta)/\sen\theta\approx\theta^2/6\) com
+    \(\theta=n\pi/42\). Igualando a 0,01, sai \(\theta=0{,}245\), ou \(n\leq3\). Apenas os
+    três modos mais baixos de vinte se comportam como uma corda contínua, e é por isso que a
+    descrição contínua de um cristal só serve para o som, nunca para o calor.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 11.3</span>
+    <p><strong>Mostre que \(v_g=0\) na borda da zona e interprete.</strong></p>
+    <p>Derivando a relação de dispersão,</p>
+    <p>\[v_g=\der{\omega}{q}=a\sqrt{\frac{k}{m}}\cos\frac{qa}{2},\]</p>
+    <p>que se anula em \(q=\pi/a\). Nesse modo, \(u_j\propto\sen(j\pi)=0\) para as massas e
+    \(\cos(j\pi)=(-1)^j\) para a solução correspondente de contorno livre: massas vizinhas em
+    oposição exata. A figura é simétrica em relação a qualquer ponto médio entre duas massas,
+    e por isso não há direção privilegiada para a energia caminhar. O resultado é uma onda
+    estacionária, e nenhuma energia se propaga.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>11.1</b> Obtenha a relação de dispersão de uma cadeia com extremidades livres em
+      vez de fixas, e diga o que muda nos modos permitidos.</li>
+
+      <li><b>11.2</b> Para \(N=5\), calcule as cinco frequências próprias e desenhe as cinco
+      formas de modo. Confira no simulador da seção 2.</li>
+
+      <li><b>11.3</b> Uma cadeia alterna massas \(m\) e \(M\) ligadas por molas iguais. Mostre
+      que a relação de dispersão se parte em dois ramos, separados por uma faixa de
+      frequências proibidas. Esse é o modelo mais simples de um cristal iônico, e os dois
+      ramos chamam-se acústico e óptico.</li>
+
+      <li><b>11.4</b> Mostre que a energia total da cadeia é a soma das energias dos modos, e
+      que cada uma vale \(\frac12 m\left(\dot Q_n^2+\omega_n^2Q_n^2\right)\) com a
+      normalização do exercício resolvido 11.1.</li>
+
+      <li><b>11.5</b> Expanda \(\omega(q)\) até a ordem \(q^3\) e mostre que a correção à
+      equação de onda é um termo com quarta derivada espacial. Discuta como esse termo deforma
+      um pulso.</li>
+
+      <li><b>11.6</b> Estime a frequência de corte de um cristal de cobre, com
+      \(a=2{,}6\cruz10^{-10}\) m e velocidade do som de 3800 m/s. Compare com a frequência
+      típica da luz infravermelha.</li>
+
+      <li><b>11.7</b> Escreva um programa em Python que integre numericamente o movimento de
+      uma cadeia de 30 massas com um pulso gaussiano inicial, e observe o pulso se deformar
+      enquanto viaja. Compare com a solução da equação de onda contínua, que não se deforma.</li>
+
+      <li><b>11.8</b> Mostre que, no limite \(N\to\infty\) com \(Na=L\) fixo, as frequências
+      \(\omega_n\) tendem a \(n\pi v/L\), que são as da corda presa da aula 14.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula10.html"><small>Aula anterior</small>← 10. Modos normais</a>
+    <span class="em-breve"><small>Em preparação</small>12. Meios contínuos</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091431"></script>
+</body>
+</html>
