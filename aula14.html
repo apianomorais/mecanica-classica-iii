@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 14: Modos, séries de Fourier e a membrana | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091439">
+<script src="assets/js/comum.js?v=202611091439"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+      <a href="aula10.html" class="num" title="Aula 10: Modos normais e coordenadas normais">10</a>
+      <a href="aula11.html" class="num" title="Aula 11: A cadeia de N osciladores e o limite contínuo">11</a>
+      <span class="grupo">Ondas</span>
+      <a href="aula12.html" class="num" title="Aula 12: Densidade, fluxo e a equação da continuidade">12</a>
+      <a href="aula13.html" class="num" title="Aula 13: A corda vibrante e a equação de onda">13</a>
+      <a href="aula14.html" class="num ativo" title="Aula 14: Modos, séries de Fourier e a membrana">14</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Separação de variáveis</a></li>
+    <li><a href="#s2">2. A série de Fourier da corda</a></li>
+    <li><a href="#s3">3. Descontinuidades e o fenômeno de Gibbs</a></li>
+    <li><a href="#s4">4. Duas dimensões: a membrana circular</a></li>
+    <li><a href="#s5">5. Exercícios resolvidos</a></li>
+    <li><a href="#s6">6. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 14 · Meios contínuos e ondas</p>
+  <h1>Modos, séries de Fourier e a membrana</h1>
+  <p class="subtitulo">A separação de variáveis transforma a equação de onda num problema de autovalor, e os modos de uma corda presa saem senos com frequências múltiplas. Qualquer movimento é uma soma deles, e em duas dimensões a mesma receita produz as funções de Bessel.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Resolver a equação de onda por separação de variáveis;</li>
+      <li>Obter os modos e as frequências de uma corda presa;</li>
+      <li>Calcular coeficientes de Fourier e interpretar o seu decaimento;</li>
+      <li>Relacionar o ponto de excitação ao timbre;</li>
+      <li>Reconhecer o fenômeno de Gibbs;</li>
+      <li>Resolver a membrana circular e entender por que um tambor não tem altura definida.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Separação de variáveis</h2>
+
+  <p>Numa corda presa em \(x=0\) e \(x=L\), as reflexões nas duas pontas são totais e o
+  movimento é necessariamente estacionário. Em vez de acompanhar pulsos, convém procurar
+  soluções em que a dependência espacial e a temporal se separem:</p>
+
+  <p>\[y(x,t)=X(x)\,T(t).\]</p>
+
+  <p>Substituindo na equação de onda e dividindo por \(XT\),</p>
+
+  <p>\[\frac{1}{v^2}\frac{T''}{T}=\frac{X''}{X}.\]</p>
+
+  <p>O lado esquerdo só depende de \(t\) e o direito só de \(x\). Para que sejam iguais para
+  todo \(x\) e todo \(t\), os dois têm de ser a mesma constante, que chamaremos \(-k^2\). O
+  sinal negativo não é escolha arbitrária: um sinal positivo daria exponenciais em \(x\), que
+  não conseguem se anular nas duas pontas sem serem identicamente nulas.</p>
+
+  <p>Sobram duas equações de oscilador, \(X''=-k^2X\) e \(T''=-\omega^2T\) com
+  \(\omega=vk\). A solução em \(x\) é seno e cosseno, e as condições de contorno fazem o
+  resto. Em \(x=0\) o cosseno é descartado; em \(x=L\), a exigência \(\sen kL=0\) quantiza
+  \(k\):</p>
+
+  <div class="destaque">
+    <span class="anuncio">Modos de uma corda presa</span>
+    \[y_n(x,t)=A_n\sen\left(\frac{n\pi x}{L}\right)
+    \cos\left(\omega_nt+\delta_n\right),\qquad
+    \omega_n=\frac{n\pi v}{L}=n\,\omega_1.\]
+  </div>
+
+  <p>As frequências são múltiplos inteiros da fundamental, e isso é uma propriedade
+  particular da corda uniforme em uma dimensão, não um fato geral sobre sistemas vibrantes.
+  É a essa série harmônica que o ouvido atribui uma altura definida, e é ela que permite
+  afinar instrumentos de corda. A seção 4 mostra um sistema em que ela não existe.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A série de Fourier da corda</h2>
+
+  <p>Cada modo isolado é uma solução, e a soma de todos também é, porque a equação é linear.
+  A questão prática é a inversa: dada uma forma inicial qualquer, com que peso entra cada
+  modo?</p>
+
+  <p>Como os modos são senos, a resposta é a série de Fourier. Escrevendo</p>
+
+  <p>\[y(x,0)=\phi(x)=\sum_{n=1}^{\infty}A_n\sen\frac{n\pi x}{L},\]</p>
+
+  <p>os coeficientes saem da ortogonalidade dos senos, que é a mesma ortogonalidade dos modos
+  da aula 10 aplicada a um sistema com infinitos graus de liberdade:</p>
+
+  <p>\[\int_0^L\sen\frac{n\pi x}{L}\,\sen\frac{n'\pi x}{L}\,dx=\frac{L}{2}\delta_{nn'}
+  \;\Longrightarrow\;
+  A_n=\frac{2}{L}\int_0^L\phi(x)\sen\frac{n\pi x}{L}\,dx.\]</p>
+
+  <div data-widget="fourier"></div>
+
+  <p>A corda dedilhada num ponto \(x_0\) tem forma triangular, e os seus coeficientes valem</p>
+
+  <p>\[A_n=\frac{2\,h\,L^2}{n^2\pi^2x_0\left(L-x_0\right)}\sen\frac{n\pi x_0}{L},\]</p>
+
+  <p>com \(h\) a altura do triângulo. Duas coisas se leem aí dentro. Os coeficientes caem como
+  \(1/n^2\), de modo que poucos harmônicos bastam, e isso é consequência de a função ser
+  contínua, com apenas a derivada descontínua. E qualquer modo que tenha um nó em \(x_0\)
+  recebe coeficiente nulo, pelo seno no numerador.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">Por que se dedilha perto do cavalete</span>
+    <p>Dedilhar exatamente no meio da corda anula todos os harmônicos pares e produz um som
+    anasalado e pobre. Dedilhar perto do cavalete, em \(x_0\approx L/8\), distribui energia
+    por muitos harmônicos e dá o som brilhante que os violonistas chamam de
+    <em>ponticello</em>. O guitarrista escolhe o timbre escolhendo onde a palheta toca, e a
+    fórmula acima é a razão.</p>
+    <p>O mesmo princípio aparece nos martelos de um piano, posicionados para bater a
+    \(1/7\) ou \(1/8\) do comprimento: ali o sétimo harmônico, que soa dissonante com a
+    fundamental, recebe peso quase nulo.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Descontinuidades e o fenômeno de Gibbs</h2>
+
+  <p>Com uma descontinuidade na própria função, e não só na derivada, a convergência piora de
+  maneira peculiar. Os coeficientes passam a cair como \(1/n\), e perto do salto a soma
+  parcial ultrapassa o valor correto em cerca de 9 %, por mais termos que se somem. Aumentar
+  o número de termos estreita a região do repique, mas não reduz a sua altura.</p>
+
+  <p>Esse é o <strong>fenômeno de Gibbs</strong>, descoberto por Michelson ao construir um
+  analisador harmônico mecânico, em 1898, e explicado por
+  <a href="https://pt.wikipedia.org/wiki/Josiah_Willard_Gibbs">Gibbs</a> no ano seguinte. Ele
+  não é defeito do cálculo nem erro numérico: é uma propriedade da convergência de séries de
+  Fourier em pontos de descontinuidade, onde a convergência é pontual mas não uniforme.</p>
+
+  <p>O repique tem consequência prática em processamento de sinais, onde truncar o espectro
+  de um sinal com bordas abruptas produz exatamente esses artefatos. A saída usual é
+  multiplicar os coeficientes por uma janela que os leva suavemente a zero, em vez de cortá-los
+  de uma vez.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Duas dimensões: a membrana circular</h2>
+
+  <p>Em duas dimensões, a equação de onda vira</p>
+
+  <p>\[\pder{^2u}{t^2}=v^2\left(\pder{^2u}{x^2}+\pder{^2u}{y^2}\right)=v^2\nabla^2u,\]</p>
+
+  <p>e a separação \(u=\Phi(\vet{r})\,\cos\omega t\) leva à equação de Helmholtz,
+  \(\nabla^2\Phi+k^2\Phi=0\), com \(k=\omega/v\).</p>
+
+  <p>Para uma membrana circular de raio \(R\), presa na borda, convém usar coordenadas
+  polares. Separando mais uma vez, \(\Phi=f(r)\,e^{\,im\theta}\), a parte radial satisfaz</p>
+
+  <p>\[r^2f''+rf'+\left(k^2r^2-m^2\right)f=0,\]</p>
+
+  <p>que é a equação de <a href="https://pt.wikipedia.org/wiki/Friedrich_Bessel">Bessel</a>. A
+  solução regular na origem é \(f=J_m(kr)\), e a condição de borda presa, \(J_m(kR)=0\),
+  quantiza \(k\):</p>
+
+  <div class="destaque">
+    <span class="anuncio">Modos da membrana circular</span>
+    \[u_{mn}=J_m\!\left(\frac{j_{mn}r}{R}\right)\cos m\theta\,\cos\omega_{mn}t,
+    \qquad \omega_{mn}=\frac{j_{mn}\,v}{R},\]
+  </div>
+
+  <p>com \(j_{mn}\) o \(n\)-ésimo zero de \(J_m\). Os primeiros são \(j_{01}=2{,}405\),
+  \(j_{11}=3{,}832\), \(j_{21}=5{,}136\) e \(j_{02}=5{,}520\).</p>
+
+  <div data-widget="membrana"></div>
+
+  <p>A diferença em relação à corda é a que mais importa aqui. As razões
+  \(j_{mn}/j_{01}\) valem 1, 1,593, 2,136, 2,295 e assim por diante: não são números
+  inteiros. Um tambor não produz série harmônica e, por isso, não tem altura bem definida.
+  O ouvido reconhece o timbre, mas não atribui uma nota. É a mesma razão pela qual um prato
+  de bateria soa como ruído afinado e uma corda soa como nota.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 14.1</span>
+    <p><strong>Uma corda de 60 cm e 2 g/m, sob tensão de 80 N, é dedilhada no meio. Quais são
+    as três primeiras frequências e quais harmônicos aparecem?</strong></p>
+    <p>\[v=\sqrt{\frac{80}{0{,}002}}=200\ \text{m/s},\qquad
+    f_1=\frac{v}{2L}=\frac{200}{1{,}20}=166{,}7\ \text{Hz}.\]</p>
+    <p>As frequências são múltiplos: 166,7 Hz, 333,3 Hz, 500 Hz. Dedilhando no meio,
+    \(x_0=L/2\), o fator \(\sen(n\pi/2)\) anula todos os \(n\) pares. Sobram apenas os
+    harmônicos ímpares: 166,7 Hz, 500 Hz, 833,3 Hz. O segundo harmônico simplesmente não é
+    excitado.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 14.2</span>
+    <p><strong>Calcule os coeficientes de Fourier da corda percutida, que parte reta com
+    velocidade \(\psi(x)\) concentrada em \(x_0\).</strong></p>
+    <p>Agora a forma inicial é nula e a velocidade não. Escrevendo
+    \(y=\sum B_n\sen(n\pi x/L)\sen\omega_nt\), a condição inicial de velocidade dá</p>
+    <p>\[\psi(x)=\sum_nB_n\omega_n\sen\frac{n\pi x}{L}
+    \;\Longrightarrow\;
+    B_n=\frac{2}{L\omega_n}\int_0^L\psi(x)\sen\frac{n\pi x}{L}\,dx.\]</p>
+    <p>Para um impulso \(\psi=\left(p/\mu\right)\delta(x-x_0)\), a integral é imediata e</p>
+    <p>\[B_n=\frac{2p}{\mu L\omega_n}\sen\frac{n\pi x_0}{L}.\]</p>
+    <p>Os coeficientes caem como \(1/n\), bem mais devagar que os \(1/n^2\) da corda
+    dedilhada. O som é mais rico em harmônicos agudos, e essa é a diferença entre o violão e o
+    piano escrita em uma linha.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 14.3</span>
+    <p><strong>Um tímpano tem 65 cm de diâmetro, pele de 0,26 kg/m² e tensão superficial de
+    3200 N/m. Qual é a frequência do modo fundamental?</strong></p>
+    <p>A velocidade na membrana é \(v=\sqrt{T/\sigma}=\sqrt{3200/0{,}26}=110{,}9\) m/s, e
+    \(R=0{,}325\) m. Então</p>
+    <p>\[f_{01}=\frac{j_{01}v}{2\pi R}=\frac{2{,}405\cruz110{,}9}{2\pi\cruz0{,}325}
+    =130{,}6\ \text{Hz}.\]</p>
+    <p>É um dó grave aproximado, compatível com o registro do instrumento. O modo que o
+    timpanista realmente ouve como nota, porém, não é esse: é o \(m=1\), reforçado pelo ar da
+    caldeira, e o fundamental simétrico é abafado justamente por deslocar muito ar.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>14.1</b> Obtenha os modos de uma corda com uma ponta presa e a outra livre, e
+      mostre que as frequências são múltiplos ímpares de \(v/4L\).</li>
+
+      <li><b>14.2</b> Calcule os coeficientes de Fourier do triângulo da corda dedilhada por
+      integração direta e confirme a fórmula da seção 2.</li>
+
+      <li><b>14.3</b> Mostre que a energia total da corda é a soma das energias dos modos,
+      \(E=\sum_n\frac{\mu L}{4}\omega_n^2A_n^2\), e calcule a fração que fica no fundamental
+      para a corda dedilhada no meio.</li>
+
+      <li><b>14.4</b> Onde se deve dedilhar para anular o terceiro harmônico? E para anular
+      simultaneamente o terceiro e o quinto? Explique por que o segundo caso é
+      impossível.</li>
+
+      <li><b>14.5</b> Resolva a membrana retangular de lados \(a\) e \(b\) e mostre que
+      \(\omega_{mn}=\pi v\sqrt{m^2/a^2+n^2/b^2}\). Para que razão \(a/b\) aparecem modos
+      degenerados?</li>
+
+      <li><b>14.6</b> Calcule as cinco primeiras frequências de um tambor circular em unidades
+      da fundamental e compare com a série harmônica 1, 2, 3, 4, 5.</li>
+
+      <li><b>14.7</b> Escreva um programa em Python que calcule os zeros de Bessel com
+      <code>scipy.special.jn_zeros</code>, desenhe os modos da membrana e anime um deles.
+      Compare com o simulador da seção 4.</li>
+
+      <li><b>14.8</b> Mostre que o repique de Gibbs tem altura
+      \(\frac{2}{\pi}\int_0^\pi\frac{\sen u}{u}du-1\approx0{,}0895\) vezes o salto, e explique
+      por que esse número não depende da função.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula13.html"><small>Aula anterior</small>← 13. Corda vibrante</a>
+    <span class="em-breve"><small>Em preparação</small>15. Ondas sonoras</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091439"></script>
+</body>
+</html>

@@ -2800,6 +2800,251 @@
     laco();
   };
 
+
+  /* ---------- funções de Bessel, usadas pela membrana circular ----------
+     A série de potências converge bem até x ≈ 12; acima disso vale a
+     expansão assintótica. Conferidas contra tabela: J0(1)=0,765198,
+     J1(2)=0,576725, J2(5)=0,046565 e os zeros 2,404826, 3,831706 e
+     5,135622. */
+  function besselJ(m, x) {
+    if (x < 0) return (m % 2 ? -1 : 1) * besselJ(m, -x);
+    if (x < 12) {
+      var s = 0, termo = Math.pow(x / 2, m);
+      for (var i = 1; i <= m; i++) termo /= i;
+      for (var k = 0; k < 40; k++) {
+        s += termo;
+        termo *= -(x * x / 4) / ((k + 1) * (k + 1 + m));
+      }
+      return s;
+    }
+    var mu = 4 * m * m, z = 8 / x;
+    var p = 1 - (mu - 1) * (mu - 9) / (2 * Math.pow(8 * x, 2));
+    var q = (mu - 1) / (8 * x) * (1 - (mu - 9) * (mu - 25) / (6 * Math.pow(8 * x, 2)));
+    var ang = x - (0.5 * m + 0.25) * Math.PI;
+    return Math.sqrt(2 / (Math.PI * x)) * (p * Math.cos(ang) - q * Math.sin(ang));
+  }
+  function zeroBessel(m, n) {
+    var x = 0.5, achados = 0, passo = 0.02;
+    var ant = besselJ(m, x);
+    while (achados < n) {
+      x += passo;
+      var at = besselJ(m, x);
+      if (ant * at < 0) {
+        var a = x - passo, b = x;
+        for (var i = 0; i < 60; i++) {
+          var md = (a + b) / 2;
+          if (besselJ(m, a) * besselJ(m, md) <= 0) b = md; else a = md;
+        }
+        achados++;
+        if (achados === n) return (a + b) / 2;
+      }
+      ant = at;
+    }
+    return x;
+  }
+
+  /* =================================================================
+     27. A série de Fourier de uma corda
+     Somar modos até reproduzir a forma inicial é o conteúdo prático da
+     separação de variáveis. O widget mostra a convergência termo a
+     termo e o repique de Gibbs nas quinas.
+     ================================================================= */
+  REGISTRO.fourier = function (raiz) {
+    var corpo = moldura(raiz, 'Quantos modos são precisos');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var termos = 5, forma = 0, pos = 0.5;
+
+    opcoes(corpo, [{ rot: 'Dedilhada (triângulo)', v: 0 },
+                   { rot: 'Degrau', v: 1 }, { rot: 'Percutida (impulso)', v: 2 }], 0,
+      function (v) { forma = v; desenhar(); });
+    deslizante(corpo, 'Número de termos:', 1, 40, 1, termos,
+      function (v) { termos = v; desenhar(); }, function (v) { return v.toFixed(0); });
+    deslizante(corpo, 'Ponto onde se dedilha:', 0.05, 0.95, 0.01, pos,
+      function (v) { pos = v; desenhar(); }, function (v) { return F.fmt(v, 2) + ' L'; });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Erro máximo', k: 'err' },
+      { rot: 'Energia nos modos somados', k: 'ene' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function alvo(x) {
+      if (forma === 0) return x < pos ? x / pos : (1 - x) / (1 - pos);
+      if (forma === 1) return x < pos ? 1 : 0;
+      return Math.exp(-Math.pow((x - pos) / 0.03, 2));
+    }
+
+    function coef(n) {
+      if (forma === 0) {
+        return 2 * Math.sin(n * Math.PI * pos)
+               / (n * n * Math.PI * Math.PI * pos * (1 - pos));
+      }
+      if (forma === 1) {
+        return 2 * (1 - Math.cos(n * Math.PI * pos)) / (n * Math.PI);
+      }
+      /* impulso estreito: coeficientes ~ 2 sen(nπx₀) Δ */
+      return 2 * Math.sin(n * Math.PI * pos) * 0.03 * Math.sqrt(Math.PI);
+    }
+
+    function soma(x) {
+      var y = 0;
+      for (var n = 1; n <= termos; n++) y += coef(n) * Math.sin(n * Math.PI * x);
+      return y;
+    }
+
+    function desenhar() {
+      var g = G.eixos(cv, {
+        xmin: 0, xmax: 1, ymin: -0.35, ymax: 1.25, divY: 4,
+        altura: Math.min(290, Math.max(210, cv.clientWidth * 0.4)),
+        rotX: 'x / L', rotY: 'y',
+        marcasX: G.marcasLineares(0, 1, 4, 2),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+      g.ct.save(); g.ct.beginPath();
+      g.ct.rect(g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0); g.ct.clip();
+      G.curva(g, alvo, '#b9c3cc', 1.8, [5, 4]);
+      G.curva(g, soma, G.COR.mestra, 2.2);
+      g.ct.restore();
+      G.legenda(g, [{ texto: 'forma inicial', cor: '#b9c3cc' },
+                    { texto: 'soma dos modos', cor: G.COR.mestra }]);
+
+      var err = 0, tot = 0, somado = 0;
+      for (var i = 1; i < 400; i++) {
+        var x = i / 400;
+        err = Math.max(err, Math.abs(soma(x) - alvo(x)));
+      }
+      for (var n = 1; n <= 200; n++) {
+        var c = coef(n) * coef(n) * n * n;
+        tot += c;
+        if (n <= termos) somado += c;
+      }
+      mostrar({ err: F.fmt(err, 3), ene: F.pct(somado / tot, 1) });
+
+      saida.innerHTML = forma === 1
+        ? 'No degrau a soma nunca encosta: perto do salto aparece um repique de cerca de '
+          + '9 % que não some por mais termos que se acrescentem. É o '
+          + '<strong>fenômeno de Gibbs</strong>, e ele aparece sempre que a função tem '
+          + 'descontinuidade.'
+        : forma === 0
+          ? 'Dedilhando em \\(x_0=' + F.fmt(pos, 2) + 'L\\), os coeficientes caem como '
+            + '\\(1/n^2\\) e poucos termos já bastam. Note que os modos com nó no ponto '
+            + 'dedilhado recebem coeficiente nulo: dedilhar no meio da corda não excita '
+            + 'nenhum harmônico par, e é por isso que o som muda conforme onde se toca.'
+          : 'Uma percussão muito concentrada excita todos os modos com peso parecido, e por '
+            + 'isso o som é mais rico e mais áspero que o da corda dedilhada. Daí a '
+            + 'diferença de timbre entre o violão e o piano, que é percutido por um '
+            + 'martelo.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+  /* =================================================================
+     28. Os modos de uma membrana circular
+     Em duas dimensões os nós deixam de ser pontos e viram linhas. As
+     frequências deixam de ser múltiplos inteiros da fundamental, e é
+     por isso que um tambor não tem altura definida como uma corda.
+     ================================================================= */
+  REGISTRO.membrana = function (raiz) {
+    var corpo = moldura(raiz, 'Modos de um tambor');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var m = 0, n = 1, t = 0, animando = true;
+
+    deslizante(corpo, 'Ordem azimutal \\(m\\) (diâmetros nodais):', 0, 5, 1, m,
+      function (v) { m = v; }, function (v) { return v.toFixed(0); });
+    deslizante(corpo, 'Ordem radial \\(n\\) (círculos nodais):', 1, 4, 1, n,
+      function (v) { n = v; }, function (v) { return v.toFixed(0); });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(b); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Zero de Bessel \\(j_{mn}\\)', k: 'z' },
+      { rot: '\\(\\omega_{mn}/\\omega_{01}\\)', k: 'w' },
+      { rot: 'Linhas nodais', k: 'no' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(330, Math.max(250, cv.clientWidth * 0.52)));
+      var ct = p.ct, cx = p.L / 2, cy = p.A * 0.47;
+      var R = Math.min(p.L, p.A) * 0.4;
+      var jmn = zeroBessel(m, n), j01 = 2.404826;
+
+      var NR = 34, NA = 72;
+      for (var i = 0; i < NR; i++) {
+        for (var k = 0; k < NA; k++) {
+          /* as células se sobrepõem um pouco, senão as emendas aparecem
+             como uma teia de linhas claras */
+          var r1 = R * i / NR, r2 = R * (i + 1) / NR + 0.6;
+          var a1 = 2 * Math.PI * k / NA, a2 = 2 * Math.PI * (k + 1) / NA + 0.012;
+          var rm = (r1 + r2) / 2, am = (a1 + a2) / 2;
+          var u = besselJ(m, jmn * rm / R) * Math.cos(m * am) * Math.cos(t);
+          var v = Math.max(-1, Math.min(1, u * 1.6));
+          ct.beginPath();
+          ct.moveTo(cx + r1 * Math.cos(a1), cy + r1 * Math.sin(a1));
+          ct.arc(cx, cy, r1, a1, a2);
+          ct.lineTo(cx + r2 * Math.cos(a2), cy + r2 * Math.sin(a2));
+          ct.arc(cx, cy, r2, a2, a1, true);
+          ct.closePath();
+          ct.fillStyle = v >= 0
+            ? 'rgba(122,58,107,' + (0.08 + 0.72 * v) + ')'
+            : 'rgba(44,95,141,' + (0.08 - 0.72 * v) + ')';
+          ct.fill();
+        }
+      }
+
+      /* linhas nodais */
+      ct.strokeStyle = '#ffffff'; ct.lineWidth = 1.6;
+      for (var q = 1; q < n; q++) {
+        var rq = R * zeroBessel(m, q) / jmn;
+        ct.beginPath(); ct.arc(cx, cy, rq, 0, 2 * Math.PI); ct.stroke();
+      }
+      for (q = 0; q < m; q++) {
+        var ang = (q + 0.5) * Math.PI / m;
+        ct.beginPath();
+        ct.moveTo(cx - R * Math.cos(ang), cy - R * Math.sin(ang));
+        ct.lineTo(cx + R * Math.cos(ang), cy + R * Math.sin(ang));
+        ct.stroke();
+      }
+      ct.beginPath(); ct.arc(cx, cy, R, 0, 2 * Math.PI);
+      ct.strokeStyle = '#6b7682'; ct.lineWidth = 2; ct.stroke();
+
+      mostrar({ z: F.fmt(jmn, 4), w: F.fmt(jmn / j01, 4),
+                no: m + ' diâmetro' + (m === 1 ? '' : 's') + ', ' + (n - 1) + ' círculo'
+                    + (n - 1 === 1 ? '' : 's') });
+
+      saida.innerHTML = (m === 0 && n === 1)
+        ? 'O modo fundamental do tambor: a pele inteira sobe e desce junto, sem nenhuma '
+          + 'linha nodal. A frequência é \\(\\omega_{01}=2{,}405\\,v/R\\).'
+        : 'A frequência deste modo vale ' + F.fmt(jmn / j01, 3) + ' vezes a fundamental. '
+          + 'Como os zeros de Bessel não são múltiplos inteiros de \\(j_{01}\\), as '
+          + 'frequências de um tambor não formam uma série harmônica, e é por isso que '
+          + 'ele não tem altura definida como uma corda. O tímpano da orquestra contorna '
+          + 'isso em parte: a pele apoiada no ar da caldeira tem as suas frequências '
+          + 'puxadas para mais perto de uma série harmônica.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() { if (!animando) return; t += 0.08; desenhar(); requestAnimationFrame(laco); }
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {
