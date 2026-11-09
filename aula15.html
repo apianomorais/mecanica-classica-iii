@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 15: Ondas sonoras e ondas em barras | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091442">
+<script src="assets/js/comum.js?v=202611091442"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+      <a href="aula10.html" class="num" title="Aula 10: Modos normais e coordenadas normais">10</a>
+      <a href="aula11.html" class="num" title="Aula 11: A cadeia de N osciladores e o limite contínuo">11</a>
+      <span class="grupo">Ondas</span>
+      <a href="aula12.html" class="num" title="Aula 12: Densidade, fluxo e a equação da continuidade">12</a>
+      <a href="aula13.html" class="num" title="Aula 13: A corda vibrante e a equação de onda">13</a>
+      <a href="aula14.html" class="num" title="Aula 14: Modos, séries de Fourier e a membrana">14</a>
+      <a href="aula15.html" class="num ativo" title="Aula 15: Ondas sonoras e ondas em barras">15</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. A onda sonora num fluido</a></li>
+    <li><a href="#s2">2. Tubos abertos e fechados</a></li>
+    <li><a href="#s3">3. Ondas de flexão: a barra</a></li>
+    <li><a href="#s4">4. Exercícios resolvidos</a></li>
+    <li><a href="#s5">5. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 15 · Meios contínuos e ondas</p>
+  <h1>Ondas sonoras e ondas em barras</h1>
+  <p class="subtitulo">No ar, a única onda possível é longitudinal, e a velocidade sai do módulo de compressibilidade adiabático, o erro que custou um século a Newton. Numa barra que se flexiona, a equação tem quarta derivada, a dispersão aparece e a série harmônica some.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Deduzir a equação de onda sonora num fluido;</li>
+      <li>Obter a velocidade do som e entender por que ela é adiabática;</li>
+      <li>Relacionar nós de deslocamento e ventres de pressão nos tubos;</li>
+      <li>Calcular as séries de tubos abertos e fechados;</li>
+      <li>Escrever a equação de Euler-Bernoulli e a sua dispersão;</li>
+      <li>Explicar por que as lâminas de um xilofone não soam como cordas.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. A onda sonora num fluido</h2>
+
+  <p>Numa corda, o que se desloca é transversal à direção de propagação. Num fluido não há
+  rigidez a cisalhamento, e a única onda possível é <strong>longitudinal</strong>: o ar se
+  desloca na mesma direção em que a onda caminha, comprimindo-se e rarefazendo-se.</p>
+
+  <p>Seja \(s(x,t)\) o deslocamento longitudinal de um elemento de ar que, em repouso, está
+  em \(x\). Um elemento entre \(x\) e \(x+dx\) passa a ocupar um comprimento
+  \(dx\left(1+\partial s/\partial x\right)\), de modo que a variação relativa de volume é
+  \(\partial s/\partial x\). A pressão responde a essa variação pelo módulo de
+  compressibilidade \(B\):</p>
+
+  <p>\[p'=-B\,\pder{s}{x},\]</p>
+
+  <p>com \(p'\) a pressão em excesso sobre a atmosférica. Aplicando a segunda lei ao elemento,
+  com a força resultante dada pela diferença de pressões nas duas faces,</p>
+
+  <p>\[\rho\,dx\,\pder{^2s}{t^2}=-\pder{p'}{x}dx
+  \;\Longrightarrow\;
+  \pder{^2s}{t^2}=\frac{B}{\rho}\pder{^2s}{x^2}.\]</p>
+
+  <div class="destaque">
+    <span class="anuncio">Velocidade do som</span>
+    \[v=\sqrt{\frac{B}{\rho}},\qquad\text{e num gás ideal}\quad
+    v=\sqrt{\frac{\gamma p}{\rho}}=\sqrt{\frac{\gamma k_BT}{m}}.\]
+  </div>
+
+  <p>A segunda forma merece atenção. As compressões sonoras são rápidas demais para trocar
+  calor, e por isso são adiabáticas, com \(B=\gamma p\) e não \(B=p\). Foi exatamente esse o
+  erro de Newton, que calculou 290 m/s em vez de 343 m/s;
+  <a href="https://pt.wikipedia.org/wiki/Pierre-Simon_Laplace">Laplace</a> corrigiu-o um
+  século depois, ao perceber que o processo era adiabático. A discrepância de 18 % entre
+  teoria e experimento incomodou os físicos por cem anos.</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">Conferindo</span>
+    <p>Para o ar a 20 °C, \(\gamma=1{,}40\), \(p=1{,}013\cruz10^{5}\) Pa e
+    \(\rho=1{,}204\) kg/m³:</p>
+    <p>\[v=\sqrt{\frac{1{,}40\cruz1{,}013\cruz10^{5}}{1{,}204}}=343{,}2\ \text{m/s}.\]</p>
+    <p>Pela forma com a temperatura, \(v\propto\sqrt{T}\), e a velocidade não depende da
+    pressão, porque \(p/\rho\) é fixo a dada temperatura. Também não depende da frequência, de
+    modo que um acorde chega ao ouvinte com todas as notas juntas, o que não seria o caso num
+    meio dispersivo.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. Tubos abertos e fechados</h2>
+
+  <p>Dentro de um tubo, as mesmas condições de contorno de sempre, com uma troca de papéis
+  que confunde quem vê pela primeira vez. Numa extremidade <strong>fechada</strong>, o ar não
+  pode se deslocar, de modo que \(s=0\): nó de deslocamento. Como \(p'\propto\partial
+  s/\partial x\), ali a pressão tem um <strong>ventre</strong>. Numa extremidade
+  <strong>aberta</strong>, a pressão volta à atmosférica, \(p'=0\), e o deslocamento tem
+  ventre.</p>
+
+  <div data-widget="tubos"></div>
+
+  <p>As duas famílias de tubo dão séries diferentes. O tubo aberto nas duas pontas cabe meia
+  onda no modo fundamental e tem todos os harmônicos,</p>
+
+  <p>\[f_n=\frac{nv}{2L},\qquad n=1,2,3,\dots\]</p>
+
+  <p>e o tubo fechado numa ponta cabe um quarto de onda e só tem os ímpares,</p>
+
+  <p>\[f_n=\frac{\left(2n-1\right)v}{4L}.\]</p>
+
+  <p>A consequência musical é concreta. Uma flauta, aberta nas duas pontas, e um clarinete,
+  fechado na palheta, de mesmo comprimento, soam a uma oitava de distância, e o clarinete tem
+  timbre mais oco por lhe faltarem os harmônicos pares. Soprar mais forte num clarinete faz
+  saltar para o terceiro harmônico, uma décima segunda acima, e não para a oitava: é o que os
+  instrumentistas chamam de "abrir na duodécima".</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">A correção de extremidade</span>
+    <p>O ventre de deslocamento não fica exatamente na boca do tubo: a coluna de ar continua a
+    se mover um pouco para fora. O comprimento efetivo é \(L+0{,}6\,a\) por extremidade
+    aberta, com \(a\) o raio. Para um tubo estreito o efeito é pequeno, e para um tubo largo
+    ele desafina o instrumento, o que obriga o fabricante a encurtá-lo.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Ondas de flexão: a barra</h2>
+
+  <p>Nem toda onda mecânica obedece a \(\omega=vk\). Uma barra que se flexiona, como a lâmina
+  de um xilofone ou um trilho de trem, é governada por uma equação de quarta ordem no espaço,
+  a equação de <strong>Euler-Bernoulli</strong>:</p>
+
+  <p>\[\rho A\,\pder{^2y}{t^2}+YI\,\pder{^4y}{x^4}=0,\]</p>
+
+  <p>com \(Y\) o módulo de Young, \(I\) o momento de inércia de área da seção e \(A\) a área.
+  A origem da quarta derivada é geométrica: a tensão interna aqui não é tração ao longo da
+  barra, e sim o momento fletor, que é proporcional à curvatura
+  \(\partial^2y/\partial x^2\); a força transversal é a derivada do momento, e a resultante é
+  mais uma derivada.</p>
+
+  <p>Substituindo uma onda \(e^{\,i(kx-\omega t)}\), sai</p>
+
+  <div class="destaque">
+    <span class="anuncio">Dispersão da flexão</span>
+    \[\omega=\sqrt{\frac{YI}{\rho A}}\;k^2.\]
+  </div>
+
+  <p>Como \(\omega\) cresce com \(k^2\) e não com \(k\), as componentes de alta frequência
+  viajam mais depressa, e um pulso se desfaz enquanto caminha. É por isso que o impacto numa
+  extremidade de um trilho chega à outra como um assobio descendente, e não como uma pancada
+  seca.</p>
+
+  <div data-widget="viga"></div>
+
+  <p>Para uma barra livre nas duas pontas, as condições de contorno são de momento e força
+  nulos, e levam à equação transcendental \(\cos\beta L\cosh\beta L=1\), cujas raízes são
+  \(4{,}730\), \(7{,}853\), \(10{,}996\). Como \(f\propto\beta^2\), as frequências ficam na
+  razão</p>
+
+  <p>\[1\;:\;2{,}757\;:\;5{,}404\;:\;8{,}933,\]</p>
+
+  <p>que não é série harmônica nenhuma. O modo fundamental tem dois nós, a 22,4 % de cada
+  extremidade, que é onde as lâminas do xilofone são furadas para a corda de suspensão
+  passar.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">Como o fabricante conserta</span>
+    <p>Uma lâmina reta soaria com o primeiro sobretom a 2,757 vezes a fundamental, quase uma
+    décima primeira acima, e o resultado é metálico e indefinido. Escavando um arco na parte
+    de baixo da lâmina, o fabricante enfraquece a rigidez justamente no ventre do primeiro
+    modo e abaixa aquele sobretom até 4 vezes a fundamental, duas oitavas exatas. Esse ajuste
+    artesanal é a diferença entre um xilofone barato e uma marimba de concerto.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 15.1</span>
+    <p><strong>Um tubo de órgão fechado tem 1,20 m. Quais são as três primeiras frequências a
+    20 °C? E a 0 °C?</strong></p>
+    <p>Com \(v=343\) m/s, \(f_1=v/4L=343/4{,}80=71{,}5\) Hz, e a série segue com os ímpares:
+    71,5 Hz, 214,4 Hz, 357,3 Hz.</p>
+    <p>A 0 °C, \(v=343\sqrt{273/293}=331\) m/s, e todas as frequências caem para 96,5 % dos
+    valores anteriores, ou seja, meio semitom abaixo. É por isso que órgãos de igreja desafinam
+    com a temperatura, e por que se afina o instrumento depois de aquecido, e não antes.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 15.2</span>
+    <p><strong>Calcule a amplitude de deslocamento do ar no limiar da audição, 0 dB, a
+    1000 Hz.</strong></p>
+    <p>O limiar corresponde a \(I=10^{-12}\) W/m². A intensidade de uma onda sonora é
+    \(I=\frac12\rho v\omega^2s_0^2\), de onde</p>
+    <p>\[s_0=\frac{1}{\omega}\sqrt{\frac{2I}{\rho v}}
+    =\frac{1}{2\pi\cruz1000}\sqrt{\frac{2\cruz10^{-12}}{1{,}204\cruz343}}
+    =1{,}1\cruz10^{-11}\ \text{m}.\]</p>
+    <p>É um décimo do diâmetro de um átomo. O ouvido humano detecta deslocamentos menores que
+    o tamanho dos próprios átomos que o compõem, o que só é possível porque o que ele mede é
+    o efeito coletivo de muitíssimas moléculas, e não o movimento de cada uma.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 15.3</span>
+    <p><strong>Uma lâmina de alumínio de 30 cm, 2 cm de largura e 8 mm de espessura vibra
+    livre. Qual é a frequência fundamental?</strong></p>
+    <p>Para seção retangular, \(I=bh^3/12=0{,}02\cruz\left(0{,}008\right)^3/12
+    =8{,}53\cruz10^{-10}\) m⁴ e \(A=1{,}6\cruz10^{-4}\) m². Com
+    \(Y=70\) GPa e \(\rho=2700\) kg/m³,</p>
+    <p>\[f_1=\frac{\left(\beta_1L\right)^2}{2\pi L^2}\sqrt{\frac{YI}{\rho A}}
+    =\frac{4{,}730^2}{2\pi\cruz0{,}09}
+    \sqrt{\frac{70\cruz10^{9}\cruz8{,}53\cruz10^{-10}}{2700\cruz1{,}6\cruz10^{-4}}}
+    =465\ \text{Hz}.\]</p>
+    <p>O primeiro sobretom fica em \(2{,}757\cruz465=1282\) Hz, que não é oitava nem quinta
+    da fundamental. É esse sobretom que o escavamento da lâmina vai corrigir.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>15.1</b> Mostre que, para um gás ideal, \(v=\sqrt{\gamma k_BT/m}\) e compare com
+      a velocidade quadrática média das moléculas. Por que as duas são da mesma ordem?</li>
+
+      <li><b>15.2</b> Calcule a velocidade do som no hélio e explique, com números, por que a
+      voz fica aguda depois de inalá-lo. A frequência das cordas vocais muda?</li>
+
+      <li><b>15.3</b> Um tubo aberto e um fechado têm a mesma frequência fundamental. Qual é a
+      razão entre os seus comprimentos? E entre os seus terceiros harmônicos audíveis?</li>
+
+      <li><b>15.4</b> Deduza \(I=\frac12\rho v\omega^2s_0^2\) a partir da potência transmitida
+      por unidade de área e da relação entre pressão e deslocamento.</li>
+
+      <li><b>15.5</b> Mostre que a relação entre pressão sonora e deslocamento é
+      \(p_0=\rho v\omega s_0\), e calcule \(p_0\) no limiar da audição. Compare com a pressão
+      atmosférica.</li>
+
+      <li><b>15.6</b> Para a equação de Euler-Bernoulli, calcule a velocidade de grupo e
+      mostre que é o dobro da de fase. Que consequência isso tem para um pulso?</li>
+
+      <li><b>15.7</b> Escreva um programa em Python que resolva \(\cos\beta L\cosh\beta L=1\)
+      numericamente, obtenha as quatro primeiras raízes e desenhe as formas dos modos da barra
+      livre. Compare com o simulador da seção 3.</li>
+
+      <li><b>15.8</b> Uma barra engastada numa ponta e livre na outra tem
+      \(\cos\beta L\cosh\beta L=-1\). Ache as três primeiras raízes e mostre que as
+      frequências ficam na razão 1 : 6,27 : 17,55. Esse é o modelo de um diapasão.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula14.html"><small>Aula anterior</small>← 14. Fourier e membrana</a>
+    <span class="em-breve"><small>Em preparação</small>16. Sistemas integráveis</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091442"></script>
+</body>
+</html>

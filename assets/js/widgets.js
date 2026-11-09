@@ -3045,6 +3045,215 @@
     laco();
   };
 
+
+  /* =================================================================
+     29. Tubos sonoros
+     O que oscila num tubo é o deslocamento do ar, e onde ele tem nó a
+     pressão tem ventre. Desenhar as duas curvas lado a lado resolve a
+     confusão mais comum do assunto.
+     ================================================================= */
+  REGISTRO.tubos = function (raiz) {
+    var corpo = moldura(raiz, 'Modos de um tubo de órgão');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var fechado = false, n = 1, L = 0.6, t = 0, animando = true;
+
+    opcoes(corpo, [{ rot: 'Aberto nas duas pontas', v: 0 },
+                   { rot: 'Fechado numa ponta', v: 1 }], 0,
+      function (v) { fechado = (v === 1); });
+    deslizante(corpo, 'Harmônico:', 1, 6, 1, n,
+      function (v) { n = v; }, function (v) { return v.toFixed(0); });
+    deslizante(corpo, 'Comprimento do tubo (m):', 0.1, 2, 0.05, L,
+      function (v) { L = v; }, function (v) { return F.fmt(v, 2); });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(b); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Frequência', k: 'f' }, { rot: 'Comprimento de onda', k: 'lam' },
+      { rot: 'Série', k: 'ser' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    var VSOM = 343;
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(310, Math.max(240, cv.clientWidth * 0.48)));
+      var ct = p.ct;
+      var x0 = p.L * 0.1, larg = p.L * 0.8;
+      var ordem = fechado ? 2 * n - 1 : n;
+      var k = fechado ? ordem * Math.PI / (2) : ordem * Math.PI;   /* em x/L */
+      var f = fechado ? ordem * VSOM / (4 * L) : ordem * VSOM / (2 * L);
+
+      /* paredes do tubo */
+      ct.strokeStyle = '#6b7682'; ct.lineWidth = 2;
+      [p.A * 0.18, p.A * 0.52].forEach(function (y) {
+        ct.beginPath(); ct.moveTo(x0, y); ct.lineTo(x0 + larg, y); ct.stroke();
+      });
+      if (fechado) {
+        ct.beginPath(); ct.moveTo(x0 + larg, p.A * 0.18);
+        ct.lineTo(x0 + larg, p.A * 0.52); ct.stroke();
+      }
+
+      /* deslocamento: ventre nas pontas abertas, nó na fechada */
+      function desl(x) {
+        return fechado ? Math.cos(k * x) : Math.cos(k * x);
+      }
+      function pres(x) {
+        return fechado ? -Math.sin(k * x) : -Math.sin(k * x);
+      }
+
+      var cy1 = p.A * 0.35, cy2 = p.A * 0.78, amp = p.A * 0.13;
+      [[cy1, desl, G.COR.mestra, 'deslocamento do ar'],
+       [cy2, pres, G.COR.azul, 'pressão']].forEach(function (par) {
+        ct.strokeStyle = '#e4ebef'; ct.lineWidth = 1;
+        ct.beginPath(); ct.moveTo(x0, par[0]); ct.lineTo(x0 + larg, par[0]); ct.stroke();
+        [1, -1].forEach(function (sg) {
+          ct.beginPath();
+          for (var i = 0; i <= 300; i++) {
+            var x = i / 300;
+            var y = par[0] - sg * amp * par[1](x) * Math.cos(t);
+            var px = x0 + larg * x;
+            if (i === 0) ct.moveTo(px, y); else ct.lineTo(px, y);
+          }
+          ct.strokeStyle = par[2]; ct.lineWidth = sg > 0 ? 2.2 : 1;
+          ct.globalAlpha = sg > 0 ? 1 : 0.35;
+          ct.stroke(); ct.globalAlpha = 1;
+        });
+        rotulo(ct, par[3], x0 + 2, par[0] - amp - 12, par[2], 'left');
+      });
+
+      mostrar({
+        f: F.fmt(f, 1) + ' Hz',
+        lam: F.fmt(VSOM / f, 3) + ' m',
+        ser: fechado ? 'só ímpares' : 'todos os inteiros'
+      });
+
+      saida.innerHTML = fechado
+        ? 'Na ponta fechada o ar não pode se deslocar, e ali o deslocamento tem nó. A '
+          + 'pressão, que está defasada de um quarto de onda, tem justamente um ventre. O '
+          + 'tubo cabe um quarto de onda no modo mais baixo, e a série só tem harmônicos '
+          + 'ímpares: é por isso que um clarinete soa uma oitava abaixo de uma flauta de '
+          + 'mesmo comprimento, e com timbre diferente.'
+        : 'Nas duas pontas abertas o ar se desloca livremente e a pressão volta à '
+          + 'atmosférica: ventre de deslocamento, nó de pressão. Cabe meia onda no modo '
+          + 'mais baixo e a série tem todos os inteiros. Na prática, o ventre fica um pouco '
+          + 'para fora da boca do tubo, e a correção de extremidade vale cerca de 0,6 vez '
+          + 'o raio.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() { if (!animando) return; t += 0.08; desenhar(); requestAnimationFrame(laco); }
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
+  /* =================================================================
+     30. Ondas de flexão numa barra
+     A equação da barra tem quarta derivada no espaço, e por isso a
+     relação de dispersão é ω ∝ k², e não ω ∝ k. As consequências são
+     duas: a flexão é dispersiva, e as frequências de uma barra livre
+     não formam série harmônica.
+     ================================================================= */
+  REGISTRO.viga = function (raiz) {
+    var corpo = moldura(raiz, 'Por que o xilofone não soa como uma corda');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var modo = 1, t = 0, animando = true;
+
+    deslizante(corpo, 'Modo:', 1, 4, 1, modo,
+      function (v) { modo = v; }, function (v) { return v.toFixed(0); });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(b); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\beta_r L\\)', k: 'bl' },
+      { rot: '\\(f_r/f_1\\) na barra', k: 'rz' },
+      { rot: '\\(f_r/f_1\\) numa corda', k: 'co' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* barra livre nas duas pontas: raízes de cos(βL)cosh(βL) = 1 */
+    var BL = [4.730041, 7.853205, 10.995608, 14.137165];
+
+    function forma(x, r) {
+      var bl = BL[r - 1], b = bl;
+      var s = (Math.cos(bl) - Math.cosh(bl)) / (Math.sin(bl) - Math.sinh(bl));
+      return Math.cos(b * x) + Math.cosh(b * x)
+             - s * (Math.sin(b * x) + Math.sinh(b * x));
+    }
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(300, Math.max(230, cv.clientWidth * 0.46)));
+      var ct = p.ct;
+      var x0 = p.L * 0.1, larg = p.L * 0.8, cy = p.A * 0.42;
+
+      /* normaliza a forma para caber na tela */
+      var mx = 0;
+      for (var i = 0; i <= 200; i++) mx = Math.max(mx, Math.abs(forma(i / 200, modo)));
+
+      ct.strokeStyle = '#e4ebef'; ct.lineWidth = 1;
+      ct.beginPath(); ct.moveTo(x0, cy); ct.lineTo(x0 + larg, cy); ct.stroke();
+
+      ct.beginPath();
+      for (i = 0; i <= 300; i++) {
+        var x = i / 300;
+        var y = cy - p.A * 0.2 * forma(x, modo) / mx * Math.cos(t);
+        var px = x0 + larg * x;
+        if (i === 0) ct.moveTo(px, y); else ct.lineTo(px, y);
+      }
+      ct.strokeStyle = G.COR.mestra; ct.lineWidth = 3.5; ct.lineCap = 'round';
+      ct.stroke(); ct.lineCap = 'butt';
+
+      /* nós: onde a forma troca de sinal */
+      var ant = forma(0, modo);
+      for (i = 1; i <= 300; i++) {
+        var xx = i / 300, at = forma(xx, modo);
+        if (ant * at < 0) {
+          ct.beginPath(); ct.arc(x0 + larg * xx, cy, 4, 0, 2 * Math.PI);
+          ct.fillStyle = G.COR.vinho; ct.fill();
+        }
+        ant = at;
+      }
+
+      var rz = Math.pow(BL[modo - 1] / BL[0], 2);
+      mostrar({ bl: F.fmt(BL[modo - 1], 4), rz: F.fmt(rz, 3),
+                co: String(modo) });
+
+      saida.innerHTML = modo === 1
+        ? 'O modo mais baixo de uma barra livre tem dois nós, a 22,4 % de cada ponta. É '
+          + 'exatamente ali que as lâminas de um xilofone são furadas e penduradas: '
+          + 'suspender a barra pelos nós não atrapalha a vibração.'
+        : 'A frequência deste modo vale ' + F.fmt(rz, 2) + ' vezes a fundamental, enquanto '
+          + 'numa corda valeria ' + modo + '. A razão é a relação de dispersão '
+          + '\\(\\omega\\propto k^2\\), que vem da quarta derivada espacial. Os fabricantes '
+          + 'de marimba corrigem isso escavando a parte de baixo da lâmina, o que abaixa o '
+          + 'primeiro sobretom até uma relação harmônica com a fundamental.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() { if (!animando) return; t += 0.07; desenhar(); requestAnimationFrame(laco); }
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {
