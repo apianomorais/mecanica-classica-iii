@@ -3491,6 +3491,227 @@
     registrarRedesenho(desenhar);
   };
 
+  /* O mapa padrão, desenhado com uma grade de condições iniciais. Cada cor é
+     uma condição inicial diferente, de modo que se vê de relance quando uma
+     órbita fica presa a uma curva e quando passeia pelo retrato todo. */
+  REGISTRO.mapapadrao = function (raiz) {
+    var corpo = moldura(raiz, 'O mapa padrão: de regular a caótico');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var K = 0.5, iter = 400;
+
+    var desl = deslizante(corpo, 'Intensidade do pulso \\(K\\):', 0, 6, 0.0025, K,
+      function (v) { K = v; desenhar(); }, function (v) { return F.fmt(v, 4); });
+    opcoes(corpo, [{ rot: 'K = 0', v: 0 }, { rot: 'K = 0,5', v: 0.5 },
+                   { rot: 'K crítico', v: 0.971635 }, { rot: 'K = 2', v: 2 },
+                   { rot: 'K = 5', v: 5 }], 1,
+      function (v) { desl.value = v; desl.dispatchEvent(new Event('input')); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'K', k: 'k' }, { rot: 'Última barreira invariante', k: 'bar' },
+      { rot: 'Regime', k: 'reg' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* Uma iteração do mapa de Taylor-Chirikov, na forma simplética em que o
+       momento é atualizado primeiro. */
+    function passo(s) {
+      var p = s[1] + K * Math.sin(s[0]);
+      var t = s[0] + p;
+      t = t - 2 * Math.PI * Math.floor(t / (2 * Math.PI));
+      p = p + Math.PI;
+      p = p - 2 * Math.PI * Math.floor(p / (2 * Math.PI)) - Math.PI;
+      return [t, p];
+    }
+
+    function desenhar() {
+      var g = G.eixos(cv, {
+        xmin: 0, xmax: 2 * Math.PI, ymin: -Math.PI, ymax: Math.PI, divY: 4,
+        altura: Math.min(380, Math.max(280, cv.clientWidth * 0.62)),
+        rotX: 'θ', rotY: 'p',
+        marcasX: [{ v: 0, r: '0' }, { v: Math.PI / 2, r: 'π/2' },
+                  { v: Math.PI, r: 'π' },
+                  { v: 3 * Math.PI / 2, r: '3π/2' },
+                  { v: 2 * Math.PI, r: '2π' }],
+        formataY: function (v) {
+          var r = v / Math.PI;
+          return Math.abs(r) < 1e-9 ? '0' : F.fmt(r, 1) + 'π';
+        }
+      });
+      var ct = g.ct;
+      ct.save();
+      ct.beginPath();
+      ct.rect(g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0);
+      ct.clip();
+
+      var cores = [G.COR.mestra, G.COR.azul, G.COR.bronze, G.COR.vinho, G.COR.roxo,
+                   '#4f7a4f', '#2f6f7a', G.COR.ambar, '#8c5a7a', '#5b6773'];
+      var linhas = 7, colunas = 3, c = 0;
+      for (var i = 0; i < linhas; i++) {
+        for (var j = 0; j < colunas; j++) {
+          var s = [2 * Math.PI * (j + 0.5) / colunas,
+                   -Math.PI + 2 * Math.PI * (i + 0.5) / (linhas + 1)];
+          ct.fillStyle = cores[c % cores.length];
+          c++;
+          for (var n = 0; n < iter; n++) {
+            s = passo(s);
+            ct.beginPath();
+            ct.arc(g.X(s[0]), g.Y(s[1]), 1.1, 0, 2 * Math.PI);
+            ct.fill();
+          }
+        }
+      }
+      ct.restore();
+
+      var reg = K < 0.1 ? 'integrável' : K < 0.971635 ? 'regular com ilhas'
+              : K < 1.3 ? 'na transição' : K < 3 ? 'misto' : 'caótico';
+      mostrar({ k: F.fmt(K, 4),
+                bar: K < 0.971635 ? 'intacta' : 'rompida',
+                reg: reg });
+
+      saida.innerHTML = K < 0.05
+        ? 'Com \\(K=0\\) o momento nunca muda: cada órbita vive numa reta '
+          + '\\(p=\\text{const}\\), que é o toro invariante do rotor livre. O retrato é um '
+          + 'feixe de curvas horizontais, e o sistema é integrável.'
+        : K < 0.9716
+          ? 'As retas horizontais se ondularam, e em torno de \\(p=0\\) abriu-se uma ilha: '
+            + 'lá dentro o rotor fica preso perto do pulso, em vez de girar. Ainda existem, '
+            + 'porém, curvas que atravessam o retrato de um lado ao outro, e são elas que '
+            + 'impedem o momento de crescer sem limite. São os toros que o teorema KAM '
+            + 'garante que sobrevivem.'
+          : K < 1.3
+            ? 'Perto de \\(K_c=0{,}971635\\) desaparece a última curva que atravessava o '
+              + 'retrato inteiro. Acima desse valor nada mais separa a parte de baixo da '
+              + 'parte de cima, e o momento pode difundir sem limite: é o começo do '
+              + 'transporte caótico.'
+            : 'O mar caótico domina o retrato. Restam ilhas de regularidade em torno das '
+              + 'órbitas periódicas estáveis, cada vez menores conforme \\(K\\) cresce, e '
+              + 'dentro delas o movimento continua previsível. Fora delas, duas condições '
+              + 'iniciais vizinhas se separam exponencialmente.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+
+  /* O expoente de Lyapunov do mapa padrão, medido pelo método de Benettin: a
+     cada passo o vetor tangente é renormalizado e o logaritmo do fator de
+     esticamento acumulado dá a taxa média de separação. */
+  REGISTRO.lyapunov = function (raiz) {
+    var corpo = moldura(raiz, 'A taxa de separação medida');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var K = 2;
+
+    var desl = deslizante(corpo, 'Intensidade do pulso \\(K\\):', 0, 10, 0.01, K,
+      function (v) { K = v; desenhar(); }, function (v) { return F.fmt(v, 2); });
+    opcoes(corpo, [{ rot: 'K = 0,5', v: 0.5 }, { rot: 'K crítico', v: 0.971635 },
+                   { rot: 'K = 2', v: 2 }, { rot: 'K = 5', v: 5 },
+                   { rot: 'K = 10', v: 10 }], 2,
+      function (v) { desl.value = v; desl.dispatchEvent(new Event('input')); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\lambda\\) medido', k: 'lam' },
+      { rot: '\\(\\ln(K/2)\\)', k: 'est' },
+      { rot: 'Tempo de dobra', k: 'dobra' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function benettin(K, N, t0, p0) {
+      var t = t0, p = p0, dt = 1, dp = 0, soma = 0;
+      for (var i = 0; i < N; i++) {
+        var c = K * Math.cos(t);
+        var ndp = dp + c * dt;
+        var ndt = dt + ndp;
+        var r = Math.sqrt(ndt * ndt + ndp * ndp);
+        dt = ndt / r; dp = ndp / r;
+        soma += Math.log(r);
+        p = p + K * Math.sin(t);
+        t = t + p;
+        t = t - 2 * Math.PI * Math.floor(t / (2 * Math.PI));
+      }
+      return soma / N;
+    }
+
+    /* Média sobre várias condições iniciais: dentro de uma ilha regular o
+       expoente é nulo, e o que interessa é o valor típico do retrato. */
+    function medio(K) {
+      var ns = 8, s = 0;
+      for (var j = 0; j < ns; j++) {
+        s += benettin(K, 2200, 2 * Math.PI * (j + 0.5) / ns,
+                      -Math.PI + 2 * Math.PI * ((j * 3) % ns + 0.5) / ns);
+      }
+      return s / ns;
+    }
+
+    function desenhar() {
+      var g = G.eixos(cv, {
+        xmin: 0, xmax: 10, ymin: 0, ymax: 1.8, divY: 6,
+        altura: Math.min(320, Math.max(240, cv.clientWidth * 0.5)),
+        rotX: 'K', rotY: 'λ',
+        marcasX: G.marcasLineares(0, 10, 5, 0),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+      var ct = g.ct;
+
+      /* a estimativa analítica para pulso forte */
+      G.curva(g, function (x) { return x < 2 ? NaN : Math.log(x / 2); },
+              G.COR.suave, 1.6, [5, 4]);
+
+      /* a curva medida */
+      ct.save();
+      ct.beginPath();
+      var primeiro = true;
+      for (var i = 0; i <= 48; i++) {
+        var x = 10 * i / 48;
+        var y = Math.max(0, medio(x));
+        var px = g.X(x), py = g.Y(Math.min(g.ymax, y));
+        if (primeiro) { ct.moveTo(px, py); primeiro = false; } else ct.lineTo(px, py);
+      }
+      ct.strokeStyle = G.COR.mestra; ct.lineWidth = 2.2; ct.stroke();
+      ct.restore();
+
+      /* o valor escolhido */
+      var lam = Math.max(0, medio(K));
+      G.vertical(g, K, G.COR.vinho, null);
+      ct.beginPath();
+      ct.arc(g.X(K), g.Y(Math.min(g.ymax, lam)), 4, 0, 2 * Math.PI);
+      ct.fillStyle = G.COR.vinho; ct.fill();
+
+      G.legenda(g, [{ texto: 'medido (Benettin)', cor: G.COR.mestra },
+                     { texto: 'ln(K/2)', cor: G.COR.suave }]);
+
+      mostrar({
+        lam: F.fmt(lam, 3),
+        est: K >= 2 ? F.fmt(Math.log(K / 2), 3) : '—',
+        dobra: lam > 1e-3 ? F.fmt(Math.log(2) / lam, 1) + ' pulsos' : '∞'
+      });
+
+      saida.innerHTML = lam < 0.01
+        ? 'Abaixo do valor crítico as órbitas típicas ficam presas a curvas invariantes, e '
+          + 'duas condições iniciais vizinhas se afastam apenas linearmente no tempo. O '
+          + 'expoente medido é nulo dentro da precisão do cálculo.'
+        : 'Com \\(\\lambda=' + F.fmt(lam, 3) + '\\), uma incerteza inicial dobra a cada '
+          + F.fmt(Math.log(2) / lam, 1) + ' pulsos e cresce dez vezes a cada '
+          + F.fmt(Math.log(10) / lam, 1) + '. Depois de '
+          + F.fmt(Math.log(1e6) / lam, 0) + ' pulsos um erro de uma parte em um milhão '
+          + 'tomou conta do retrato todo, e a previsão perdeu o sentido. A equação do '
+          + 'movimento continua determinística: o que acabou foi a utilidade de conhecer a '
+          + 'condição inicial com precisão finita.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

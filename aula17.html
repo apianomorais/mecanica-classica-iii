@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 17: O rotor pulsado e o caos determinístico | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091516">
+<script src="assets/js/comum.js?v=202611091516"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+      <a href="aula10.html" class="num" title="Aula 10: Modos normais e coordenadas normais">10</a>
+      <a href="aula11.html" class="num" title="Aula 11: A cadeia de N osciladores e o limite contínuo">11</a>
+      <span class="grupo">Ondas</span>
+      <a href="aula12.html" class="num" title="Aula 12: Densidade, fluxo e a equação da continuidade">12</a>
+      <a href="aula13.html" class="num" title="Aula 13: A corda vibrante e a equação de onda">13</a>
+      <a href="aula14.html" class="num" title="Aula 14: Modos, séries de Fourier e a membrana">14</a>
+      <a href="aula15.html" class="num" title="Aula 15: Ondas sonoras e ondas em barras">15</a>
+      <span class="grupo">Caos</span>
+      <a href="aula16.html" class="num" title="Aula 16: Sistemas integráveis, toros e seções de Poincaré">16</a>
+      <a href="aula17.html" class="num ativo" title="Aula 17: O rotor pulsado e o caos determinístico">17</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. O rotor pulsado e o mapa padrão</a></li>
+    <li><a href="#s2">2. A condição simplética</a></li>
+    <li><a href="#s3">3. De regular a caótico</a></li>
+    <li><a href="#s4">4. O expoente de Lyapunov</a></li>
+    <li><a href="#s5">5. Exercícios resolvidos</a></li>
+    <li><a href="#s6">6. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 17 · Caos determinístico</p>
+  <h1>O rotor pulsado e o caos determinístico</h1>
+  <p class="subtitulo">Onde a mecânica deixa de ser previsível sem deixar de ser determinística</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Deduzir o mapa de Taylor-Chirikov a partir do hamiltoniano do rotor pulsado</li>
+      <li>Verificar a condição simplética e dizer o que se perde quando ela é violada</li>
+      <li>Reconhecer no retrato de fases ilhas, barreiras invariantes e mar caótico</li>
+      <li>Medir o expoente de Lyapunov pelo método de Benettin e traduzi-lo em tempo de previsão</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. O rotor pulsado e o mapa padrão</h2>
+
+  <p>A aula anterior terminou com uma pergunta de medida: quais toros resistem a uma perturbação
+  e quais se desmancham. Responder a ela integrando Hénon-Heiles custa caro, porque cada ponto
+  da seção exige milhares de passos de Runge-Kutta. Convém trocar o sistema contínuo por um que
+  já seja um mapa desde o começo, e o candidato natural é um rotor que recebe um empurrão
+  instantâneo a cada volta do relógio.</p>
+
+  <p>Considere um pêndulo sem gravidade, livre para girar, submetido a um torque que só age em
+  instantes isolados, separados por um intervalo \(T\):</p>
+
+  <p>\[H(\theta,p,t)=\frac{p^2}{2}+K\cos\theta\sum_{n=-\infty}^{\infty}\delta\!\left(t-nT\right).\]</p>
+
+  <p>Entre dois pulsos o momento é constante e o ângulo avança uniformemente,
+  \(\theta\to\theta+pT\). No instante do pulso o ângulo não tem tempo de mudar, e o momento salta
+  pela integral do torque, \(\Delta p=-\pder{}{\theta}\left(K\cos\theta\right)=K\sen\theta\).
+  Compondo as duas etapas e medindo o tempo em unidades de \(T\),</p>
+
+  <div class="destaque">
+    <span class="anuncio">Mapa de Taylor-Chirikov, ou mapa padrão</span>
+    \[p_{n+1}=p_n+K\sen\theta_n,\qquad
+    \theta_{n+1}=\theta_n+p_{n+1}\ \ (\mathrm{mod}\ 2\pi).\]
+  </div>
+
+  <p>Não há aproximação nenhuma nessas duas linhas: elas são a solução exata do hamiltoniano
+  acima, lida nos instantes imediatamente anteriores a cada pulso. O sistema contínuo tem um grau
+  de liberdade e depende do tempo, o que equivale a um grau e meio, e esse é o mínimo necessário
+  para que o comportamento irregular possa aparecer.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">Por que esse mapa aparece em todo lugar</span>
+    <p>Perto de uma ressonância isolada, qualquer sistema hamiltoniano quase integrável de dois
+    graus de liberdade se reduz, depois de uma mudança de variáveis, a esse mesmo mapa, com
+    \(K\) medindo a intensidade da perturbação. É por isso que ele se chama padrão. Ele descreve
+    o confinamento de partículas em máquinas de fusão, a difusão de órbitas de asteroides em
+    ressonância com Júpiter, o movimento de um elétron em campo de micro-ondas e a dinâmica de
+    feixes em aceleradores. Quem entende este mapa entende o mecanismo em todos esses casos.</p>
+  </div>
+
+  <p>Vale notar o que \(K\) faz dimensionalmente. Com \(K=0\) sobra o rotor livre: o momento
+  nunca muda, cada órbita vive numa reta \(p=\text{const}\), e essas retas são os toros
+  invariantes do problema integrável. Todo o conteúdo da aula está em perguntar o que acontece
+  com essas retas quando \(K\) cresce.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A condição simplética</h2>
+
+  <p>Antes de calcular qualquer coisa, convém verificar que o mapa é mesmo mecânica, e não uma
+  receita qualquer de iteração. O teste é a matriz jacobiana da aplicação:</p>
+
+  <p>\[\Ten{M}=\frac{\partial\left(\theta_{n+1},p_{n+1}\right)}
+  {\partial\left(\theta_n,p_n\right)}
+  =\begin{pmatrix}1+K\cos\theta_n & 1\\[2pt] K\cos\theta_n & 1\end{pmatrix},
+  \qquad\det\Ten{M}=\left(1+K\cos\theta_n\right)-K\cos\theta_n=1.\]</p>
+
+  <p>O determinante é um para todo \(\theta\) e todo \(K\). O mapa preserva a área no plano
+  \((\theta,p)\), que é exatamente o teorema de Liouville escrito para tempos discretos. Mais
+  do que isso, a matriz satisfaz \(\Ten{M}^{\mathsf T}\Ten{J}\Ten{M}=\Ten{J}\) com
+  \(\Ten{J}=\begin{pmatrix}0&1\\-1&0\end{pmatrix}\), que é a condição <strong>simplética</strong>
+  e a definição precisa de transformação canônica em tempo discreto.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">A ordem das duas linhas importa</span>
+    <p>Repare que \(\theta_{n+1}\) usa \(p_{n+1}\), e não \(p_n\). Se as duas atualizações forem
+    feitas com os valores antigos, o determinante passa a valer \(1+K\cos\theta_n\), que depende
+    da posição: o mapa deixa de preservar área, as órbitas regulares passam a espiralar para
+    dentro ou para fora, e o retrato de fases exibe atratores que o sistema mecânico não tem. É o
+    mesmo erro de integrar um hamiltoniano com Euler explícito, e é a razão pela qual se usam
+    integradores simpléticos em mecânica celeste e em dinâmica molecular.</p>
+  </div>
+
+  <p>Um corolário imediato: um sistema hamiltoniano não pode ter atrator. Se a área se conserva,
+  nenhum conjunto de condições iniciais pode encolher para um ponto ou para uma curva. O caos
+  hamiltoniano é, por isso, diferente do caos dissipativo de Lorenz ou da aplicação logística:
+  aqui não existe atrator estranho, e o que existe é uma região do espaço de fases visitada de
+  modo irregular, com a área preservada em cada passo.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. De regular a caótico</h2>
+
+  <p>Com o mapa estabelecido, resta ver o que ele faz. Cada cor do painel abaixo é uma condição
+  inicial diferente, iterada algumas centenas de vezes, e a figura toda é a seção de Poincaré do
+  rotor pulsado, tomada nos instantes dos pulsos.</p>
+
+  <div data-widget="mapapadrao"></div>
+
+  <p>Três coisas acontecem conforme \(K\) cresce, e vale segui-las uma a uma. Primeiro as retas
+  horizontais se ondulam, porque a frequência de rotação passa a depender de onde a órbita se
+  encontra. Depois abre-se uma ilha em torno de \(p=0\): ali o rotor já não gira, e fica preso
+  oscilando em torno do mínimo do torque, exatamente como um pêndulo. Por fim as curvas de
+  número de rotação racional se rompem em cadeias de ilhotas, cada cadeia com tantas ilhotas
+  quanto o denominador da fração.</p>
+
+  <p>O que separa a parte de baixo da parte de cima do retrato são as curvas invariantes que
+  atravessam a figura de um lado ao outro. Enquanto uma delas existir, o momento de uma órbita
+  fica preso entre duas dessas barreiras e não pode crescer indefinidamente, por caótico que seja
+  o movimento no meio. A última a desaparecer é a de número de rotação áureo, pela razão vista na
+  aula anterior, e o valor em que ela se desmancha foi calculado por John Greene e Robert MacKay
+  pelo critério dos resíduos:</p>
+
+  <div class="destaque">
+    <span class="anuncio">O limiar do transporte</span>
+    \[K_c=0{,}971635406\ldots\]
+  </div>
+
+  <p>Abaixo de \(K_c\) o momento de qualquer órbita é limitado para sempre. Acima, as barreiras
+  acabaram, e uma única trajetória pode subir no retrato sem limite. A mudança é de natureza, e
+  não de grau: o que muda em \(K_c\) não é quão rápido o momento cresce, e sim se ele pode
+  crescer.</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">A difusão em momento</span>
+    <p>Acima do limiar, e para \(K\) grande, os pulsos sucessivos encontram a órbita em fases
+    praticamente descorrelacionadas. Cada pulso soma \(K\sen\theta_n\) ao momento, com
+    \(\theta_n\) quase aleatório, de modo que \(\med{\Delta p}=0\) e
+    \(\med{\Delta p^2}=K^2\med{\sen^2\theta}=K^2/2\) por passo. Depois de \(n\) pulsos,</p>
+    <p>\[\med{p^2}\approx D\,n,\qquad D\approx\frac{K^2}{2}.\]</p>
+    <p>É a estimativa quase linear de Chirikov, e ela funciona razoavelmente: para \(K=5\) a
+    medida numérica dá \(D\approx12{,}2\) contra \(K^2/2=12{,}5\). Para outros valores de \(K\) o
+    desvio é maior e oscila, porque sobrevivem ilhas e, em certas janelas de \(K\), órbitas
+    aceleradoras em que o momento cresce linearmente em vez de difundir.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. O expoente de Lyapunov</h2>
+
+  <p>Dizer que o movimento é caótico, e não apenas complicado, exige medir alguma coisa. A medida
+  usual é a taxa com que duas condições iniciais vizinhas se separam. Tome duas órbitas que
+  partem de pontos a uma distância \(d_0\) e acompanhe a distância \(d_n\) entre elas: num
+  sistema regular ela cresce como uma potência de \(n\), e num sistema caótico, como
+  \(d_0e^{\lambda n}\).</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Expoente de Lyapunov</span>
+    <p>\[\lambda=\lim_{n\to\infty}\lim_{d_0\to0}\frac{1}{n}\ln\frac{d_n}{d_0}.\]</p>
+    <p>Um expoente positivo é a definição operacional de caos. O limite \(d_0\to0\) vem antes do
+    limite \(n\to\infty\), e por isso o que se acompanha é o vetor tangente, e não uma segunda
+    órbita de verdade.</p>
+  </div>
+
+  <p>Essa ordem dos limites é o que impede o cálculo direto. Duas órbitas vizinhas de verdade se
+  separam até o tamanho do retrato e param de se separar, e a média do logaritmo satura. A saída
+  é devida a Giancarlo Benettin e colaboradores, e é simples: propaga-se o vetor tangente pela
+  matriz jacobiana, e a cada passo ele é renormalizado para comprimento um, guardando-se o
+  logaritmo do fator que foi retirado.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Método de Benettin</span>
+    \[\vet{v}_{n+1}'=\Ten{M}(\theta_n)\,\vet{v}_n,\qquad
+    r_n=\left|\vet{v}_{n+1}'\right|,\qquad
+    \vet{v}_{n+1}=\frac{\vet{v}_{n+1}'}{r_n},\qquad
+    \lambda\approx\frac{1}{N}\sum_{n=1}^{N}\ln r_n.\]
+  </div>
+
+  <p>A renormalização não altera a direção em que o vetor aponta, e é a direção que carrega a
+  informação sobre o esticamento. O que se evita com ela é o estouro numérico: sem renormalizar,
+  um expoente de 1,6 por passo faz o comprimento do vetor passar de \(10^{300}\) em pouco mais de
+  quatrocentos passos.</p>
+
+  <div data-widget="lyapunov"></div>
+
+  <p>A curva medida tem duas regiões claramente diferentes. Abaixo de \(K_c\) o expoente típico é
+  nulo, porque a órbita fica presa a uma curva invariante. Acima, ele cresce e, para \(K\)
+  grande, encosta na estimativa \(\lambda\approx\ln\left(K/2\right)\), que sai do mesmo argumento
+  de fases descorrelacionadas usado na difusão: o fator de esticamento típico por passo é da
+  ordem de \(K\cos\theta\), cuja média geométrica é \(K/2\).</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">O que o expoente diz sobre previsão</span>
+    <p>Com o valor típico \(\lambda\approx0{,}40\) medido em \(K=2\), uma incerteza inicial
+    dobra a cada \(\ln2/\lambda\approx1{,}7\) pulsos e cresce dez vezes a cada 5,8. Para prever
+    o estado depois de cem pulsos com erro de 1 % seria preciso conhecer a condição inicial com
+    precisão de \(10^{-19}\), que é menos do que um número de dupla precisão consegue guardar. O
+    sistema continua determinístico: o que acaba é a utilidade de conhecer a condição inicial com
+    precisão finita.</p>
+  </div>
+
+  <p>Esse é o fecho do curso, e vale dizê-lo sem rodeios. Começamos com o corpo rígido, em que
+  seis números dizem tudo o que vai acontecer para sempre, e terminamos com um rotor de um grau
+  de liberdade em que nenhuma quantidade finita de números serve para prever o movimento por
+  muito tempo. Entre os dois não houve mudança de leis: a mecânica de Newton, Lagrange e
+  Hamilton é a mesma do começo ao fim. O que mudou foi a nossa pretensão a respeito do que ela
+  nos permite calcular.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 17.1</span>
+    <p><strong>Deduza o mapa padrão a partir do hamiltoniano pulsado, cuidando dos limites de
+    integração.</strong></p>
+    <p>Entre \(t=nT^{+}\) e \(t=(n{+}1)T^{-}\) o hamiltoniano é só \(p^2/2\), logo \(p\) é
+    constante e \(\theta\) avança \(pT\). Na vizinhança de \(t=nT\), integre a equação do momento
+    de \(nT^{-}\) a \(nT^{+}\):</p>
+    <p>\[\int_{nT^-}^{nT^+}\der{p}{t}\,dt
+    =-\int_{nT^-}^{nT^+}\pder{}{\theta}\left[K\cos\theta\,\delta(t-nT)\right]dt
+    =K\sen\theta\big|_{t=nT}.\]</p>
+    <p>O ângulo não muda no instante do pulso, porque \(\dot\theta=p\) é finito e o intervalo é
+    nulo. Medindo o tempo em unidades de \(T\) e lendo as variáveis imediatamente antes de cada
+    pulso, as duas etapas compostas dão as equações da seção 1. O momento é atualizado primeiro
+    porque o pulso vem antes da deriva livre na ordem escolhida.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 17.2</span>
+    <p><strong>Ache os pontos fixos do mapa e classifique a sua estabilidade.</strong></p>
+    <p>Um ponto fixo exige \(\sen\theta=0\) e \(p=0\) módulo \(2\pi\), ou seja
+    \((\theta,p)=(0,0)\) e \((\pi,0)\). A estabilidade sai do traço da jacobiana: um ponto fixo
+    de um mapa simplético bidimensional é estável quando \(\left|\Tr\Ten{M}\right|&lt;2\).</p>
+    <p>Em \(\theta=\pi\) temos \(\cos\theta=-1\) e \(\Tr\Ten{M}=2-K\), que fica entre \(-2\) e
+    \(2\) para \(0&lt;K&lt;4\): o ponto é <strong>elíptico</strong>, e em torno dele está a ilha
+    que o painel mostra. Em \(K=4\) o traço chega a \(-2\) e ele perde a estabilidade, duplicando
+    o período. Em \(\theta=0\) temos \(\Tr\Ten{M}=2+K&gt;2\) para todo \(K&gt;0\): o ponto é
+    <strong>hiperbólico</strong>, com uma direção que estica e outra que contrai, e é dele que
+    saem as separatrizes cujo emaranhamento dá origem ao mar caótico.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 17.3</span>
+    <p><strong>Estime o valor de \(K\) em que as ressonâncias vizinhas se sobrepõem, pelo
+    critério de Chirikov, e compare com \(K_c\).</strong></p>
+    <p>A ilha em torno de \(p=0\) é a ressonância \(p=0\), e as ilhas de \(p=2\pi m\) são as
+    seguintes, separadas por \(\Delta p=2\pi\). A meia largura de cada ilha se obtém do pêndulo
+    equivalente: perto da ressonância o mapa se aproxima de \(\ddot\theta=K\sen\theta\), cuja
+    separatriz tem meia largura \(\delta p=2\sqrt K\). O critério de Chirikov pede que a soma de
+    duas meias larguras alcance a separação:</p>
+    <p>\[2\cruz2\sqrt{K}=2\pi\ \Longrightarrow\ K\approx\frac{\pi^2}{4}\approx2{,}47.\]</p>
+    <p>O valor exato é \(K_c=0{,}9716\), isto é, a estimativa erra por um fator 2,5. A razão é
+    que o critério ignora as ressonâncias de ordem mais alta entre as duas principais, que também
+    têm largura e ajudam a destruir as barreiras bem antes. Como estimativa de ordem de grandeza
+    feita em três linhas, ainda assim serve, e foi com ela que Chirikov identificou o mecanismo
+    antes de haver computador para medir \(K_c\).</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>17.1</b> Verifique por cálculo direto que \(\det\Ten{M}=1\) e que
+      \(\Ten{M}^{\mathsf T}\Ten{J}\Ten{M}=\Ten{J}\). Em seguida, escreva a versão errada do mapa,
+      em que \(\theta_{n+1}\) usa \(p_n\), calcule o determinante e explique o que se vê no
+      retrato de fases dessa versão.</li>
+
+      <li><b>17.2</b> Implemente o mapa padrão e reproduza o painel da seção 3 para \(K=0{,}5\),
+      \(K=K_c\), \(K=2\) e \(K=5\). Use ao menos vinte condições iniciais e quinhentas iterações
+      cada, e marque com cores diferentes as órbitas de cada condição.</li>
+
+      <li><b>17.3</b> Meça numericamente, no seu programa, o maior valor de \(p\) alcançado por
+      uma órbita que parte de \(p=0\) depois de \(10^5\) iterações, para \(K\) de 0,8 a 1,2 em
+      passos de 0,01. Localize o limiar e compare com \(K_c=0{,}9716\).</li>
+
+      <li><b>17.4</b> Implemente o método de Benettin e obtenha \(\lambda(K)\) para \(K\) de 0 a
+      10. Faça a média sobre várias condições iniciais e explique por que uma só condição inicial
+      pode dar \(\lambda=0\) mesmo com \(K=5\).</li>
+
+      <li><b>17.5</b> Para \(K=5\), meça \(\med{p^2}\) em função do número de iterações, com
+      média sobre mil condições iniciais, e obtenha \(D\) pelo coeficiente angular. Compare com
+      \(K^2/2\). Repita para \(K=6{,}5\) e explique por que a estimativa falha nessa janela.</li>
+
+      <li><b>17.6</b> Mostre que, em \(K=4\), o ponto fixo elíptico em \(\theta=\pi\) se
+      desestabiliza e nasce uma órbita de período dois. Localize essa órbita numericamente e
+      acompanhe a sua estabilidade até \(K=5\).</li>
+
+      <li><b>17.7</b> Compare o caos do mapa padrão com o da aplicação logística
+      \(x_{n+1}=rx_n\left(1-x_n\right)\). Qual dos dois tem atrator? Por que o outro não pode
+      ter, e o que ocupa o lugar do atrator nele?</li>
+
+      <li><b>17.8</b> A versão quântica deste problema substitui o rotor clássico pelo rotor
+      pulsado quântico, em que a difusão em momento cessa depois de um tempo finito. Leia sobre a
+      localização dinâmica e escreva meia página sobre o que acontece ao expoente de Lyapunov
+      quando a mecânica quântica entra.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula16.html"><small>Aula anterior</small>← 16. Sistemas integráveis</a>
+    <a class="prox" href="index.html"><small>Voltar</small>Página inicial →</a>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091516"></script>
+</body>
+</html>

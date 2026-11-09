@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 16: Sistemas integráveis, toros e seções de Poincaré | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091516">
+<script src="assets/js/comum.js?v=202611091516"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+      <a href="aula10.html" class="num" title="Aula 10: Modos normais e coordenadas normais">10</a>
+      <a href="aula11.html" class="num" title="Aula 11: A cadeia de N osciladores e o limite contínuo">11</a>
+      <span class="grupo">Ondas</span>
+      <a href="aula12.html" class="num" title="Aula 12: Densidade, fluxo e a equação da continuidade">12</a>
+      <a href="aula13.html" class="num" title="Aula 13: A corda vibrante e a equação de onda">13</a>
+      <a href="aula14.html" class="num" title="Aula 14: Modos, séries de Fourier e a membrana">14</a>
+      <a href="aula15.html" class="num" title="Aula 15: Ondas sonoras e ondas em barras">15</a>
+      <span class="grupo">Caos</span>
+      <a href="aula16.html" class="num ativo" title="Aula 16: Sistemas integráveis, toros e seções de Poincaré">16</a>
+      <a href="aula17.html" class="num" title="Aula 17: O rotor pulsado e o caos determinístico">17</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Constantes em involução</a></li>
+    <li><a href="#s2">2. Ação, ângulo e os toros invariantes</a></li>
+    <li><a href="#s3">3. A seção de Poincaré</a></li>
+    <li><a href="#s4">4. Os toros que resistem</a></li>
+    <li><a href="#s5">5. Exercícios resolvidos</a></li>
+    <li><a href="#s6">6. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 16 · Caos determinístico</p>
+  <h1>Sistemas integráveis, toros e seções de Poincaré</h1>
+  <p class="subtitulo">O que torna um sistema solúvel, e por que tão poucos o são</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Reconhecer constantes de movimento em involução e contar quantas um sistema precisa</li>
+      <li>Construir variáveis de ação e ângulo em casos simples e interpretar os toros invariantes</li>
+      <li>Ler uma seção de Poincaré e distinguir movimento periódico, quase periódico e caótico</li>
+      <li>Enunciar o teorema KAM e dizer quais toros sobrevivem a uma perturbação pequena</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Constantes em involução</h2>
+
+  <p>Todo sistema que resolvemos até aqui tinha solução. Escrevemos a lagrangiana, achamos as
+  constantes de movimento, reduzimos o problema a uma integral, e a integral saiu: em função
+  elementar, em função elíptica, ou pelo menos numa quadratura que se calcula. Essa experiência
+  engana, porque sistemas assim são a exceção. O que esta aula faz é dizer exatamente quão
+  excepcionais eles são.</p>
+
+  <p>O critério está no parêntese de Poisson. Dadas duas funções \(f\) e \(g\) das coordenadas e
+  dos momentos,</p>
+
+  <p>\[\{f,g\}=\sum_{k=1}^{n}\left(\pder{f}{q_k}\pder{g}{p_k}
+  -\pder{f}{p_k}\pder{g}{q_k}\right),\]</p>
+
+  <p>e a evolução de qualquer observável se escreve \(\der{f}{t}=\{f,H\}+\pder{f}{t}\). Uma
+  constante de movimento é, então, uma função cujo parêntese com o hamiltoniano se anula. Duas
+  constantes \(F_1\) e \(F_2\) estão <strong>em involução</strong> quando além disso
+  \(\{F_1,F_2\}=0\): cada uma é constante não só ao longo do fluxo de \(H\), mas também ao longo
+  do fluxo gerado pela outra.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Integrabilidade de Liouville</span>
+    <p>Um sistema hamiltoniano de \(n\) graus de liberdade é <strong>integrável</strong> quando
+    possui \(n\) constantes de movimento \(F_1,\dots,F_n\) independentes e em involução duas a
+    duas, uma delas sendo o próprio hamiltoniano.</p>
+  </div>
+
+  <p>Vale prestar atenção à contagem. O espaço de fases tem \(2n\) dimensões, cada constante de
+  movimento confina a trajetória a uma superfície de dimensão \(2n-1\), e \(n\) constantes
+  independentes a confinam a uma superfície de dimensão \(n\): exatamente metade do espaço de
+  fases. Não se pode exigir mais do que isso, porque constantes em involução nunca passam de
+  \(n\). É daí que vem o número que aparece na definição, e não de uma escolha arbitrária.</p>
+
+  <p>O exemplo que já conhecemos é o problema de dois corpos. Com três graus de liberdade na
+  coordenada relativa, as constantes em involução são \(H\), \(L^2\) e \(L_z\). As três
+  componentes de \(\vet{L}\) são todas conservadas, e ainda assim não servem para a contagem:
+  \(\{L_x,L_y\}=L_z\neq0\), de modo que \(L_x\) e \(L_y\) não estão em involução e valem como
+  uma só para este fim. A escolha \(\{H,L^2,L_z\}\) funciona porque \(\{L^2,L_z\}=0\).</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Conservar muitas coisas não é ser integrável</span>
+    <p>O que conta não é o número de quantidades conservadas, e sim quantas delas comutam entre
+    si no sentido do parêntese de Poisson. Um sistema pode ter sete constantes de movimento e
+    não ser integrável, se elas não estiverem em involução; e um sistema integrável de dois
+    graus de liberdade precisa de apenas duas.</p>
+  </div>
+
+  <p>O caso de dois graus de liberdade merece atenção especial, porque é nele que o
+  comportamento irregular aparece pela primeira vez. Com \(n=1\) todo sistema conservativo é
+  integrável: o próprio \(H\) basta, as órbitas são as curvas de nível de \(H\) no plano
+  \((q,p)\), e uma curva de nível de uma função suave não tem como se comportar de modo
+  complicado. É por isso que o pêndulo, por grande que seja a amplitude, nunca é caótico. Com
+  \(n=2\) são necessárias duas constantes em involução, e a segunda quase nunca existe.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. Ação, ângulo e os toros invariantes</h2>
+
+  <p>O teorema de Liouville-Arnold diz o que a definição da seção anterior implica. Se as
+  superfícies de nível comuns \(F_k=c_k\) forem compactas e conexas, elas são difeomorfas a um
+  toro de dimensão \(n\), e existe um conjunto de coordenadas canônicas \((I_k,\theta_k)\) em
+  que o hamiltoniano depende somente das ações.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Variáveis de ação e ângulo</span>
+    \[H=H(I_1,\dots,I_n),\qquad
+    \der{I_k}{t}=-\pder{H}{\theta_k}=0,\qquad
+    \der{\theta_k}{t}=\pder{H}{I_k}\equiv\omega_k(I).\]
+  </div>
+
+  <p>Nessas coordenadas o movimento fica trivial. Cada ação é constante, cada ângulo cresce
+  uniformemente, \(\theta_k(t)=\theta_k(0)+\omega_kt\), e os ângulos são definidos módulo
+  \(2\pi\). O conjunto de valores possíveis é o produto de \(n\) círculos, que é precisamente um
+  toro de dimensão \(n\). As ações dizem em qual toro a trajetória vive, e os ângulos dizem onde
+  ela está dentro dele.</p>
+
+  <p>A ação de um grau de liberdade se calcula pela área que a órbita cerca no plano de fases
+  correspondente,</p>
+
+  <p>\[I_k=\frac{1}{2\pi}\oint_{C_k}p_k\,dq_k,\]</p>
+
+  <p>com \(C_k\) o circuito que percorre o \(k\)-ésimo ciclo do toro. Para o oscilador harmônico
+  de frequência \(\omega\), a órbita de energia \(E\) é a elipse de semieixos
+  \(\sqrt{2E/m\omega^2}\) e \(\sqrt{2mE}\), cuja área é \(2\pi E/\omega\). Logo \(I=E/\omega\) e
+  \(H=\omega I\), e a frequência sai derivando: \(\der{\theta}{t}=\pder{H}{I}=\omega\), como
+  tinha de ser.</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">Duas frequências e o enrolamento do toro</span>
+    <p>Tome dois osciladores independentes, \(H=\omega_1I_1+\omega_2I_2\). O toro é
+    bidimensional, e a trajetória o enrola com inclinação fixa \(\omega_2/\omega_1\). Se essa
+    razão for racional, \(p/q\), a órbita se fecha depois de \(q\) voltas no primeiro ângulo e
+    \(p\) no segundo, e o movimento é <strong>periódico</strong>. Se for irracional, a órbita
+    nunca volta ao ponto de partida e cobre o toro densamente: o movimento é <strong>quase
+    periódico</strong>.</p>
+    <p>Como os racionais formam um conjunto de medida nula, o caso genérico é o segundo. Uma
+    trajetória típica de um sistema integrável não se repete nunca, e continua completamente
+    previsível: basta avaliar \(\theta_k(0)+\omega_kt\).</p>
+  </div>
+
+  <div data-widget="toro"></div>
+
+  <p>A diferença entre fechar e não fechar parece um detalhe aritmético, e é dela que sai todo o
+  resto. Numa razão racional a órbita visita um número finito de pontos da seção, e uma
+  perturbação a encontra sempre nas mesmas configurações, somando efeitos sempre no mesmo
+  sentido: é a ressonância. Numa razão irracional a perturbação pega a órbita em fases
+  diferentes a cada passagem, e os efeitos tendem a se cancelar. Os toros ressonantes são os
+  frágeis, e os suficientemente irracionais são os que resistem.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. A seção de Poincaré</h2>
+
+  <p>Para \(n=2\) a superfície de energia tem três dimensões e os toros têm duas. Desenhar isso
+  no papel não funciona. O instrumento que resolve o problema é de Poincaré e consiste em olhar
+  a trajetória apenas quando ela cruza um plano escolhido, sempre no mesmo sentido.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Seção de Poincaré</span>
+    <p>Fixada a energia, escolhe-se uma superfície \(\Sigma\) de dimensão \(2n-2\) transversal
+    ao fluxo e registra-se a sequência de pontos em que a trajetória atravessa \(\Sigma\) num
+    sentido determinado. A aplicação que leva cada ponto ao seguinte é o <strong>mapa de
+    retorno</strong>, e é ele que se estuda, em vez do fluxo contínuo.</p>
+  </div>
+
+  <p>Com dois graus de liberdade e a energia fixada, a seção é bidimensional e pode ser
+  desenhada. A tradução entre o que acontece no espaço de fases e o que se vê na figura é
+  imediata, e é o que torna o instrumento útil:</p>
+
+  <table class="tabela">
+    <thead><tr><th>No espaço de fases</th><th>Na seção</th></tr></thead>
+    <tbody>
+      <tr><td>órbita periódica</td><td>um ponto, ou um número finito deles</td></tr>
+      <tr><td>toro invariante, movimento quase periódico</td><td>uma curva fechada</td></tr>
+      <tr><td>órbita caótica</td><td>uma nuvem de pontos que preenche uma área</td></tr>
+    </tbody>
+  </table>
+
+  <p>Nada disso depende de resolver as equações: basta integrá-las numericamente e marcar os
+  cruzamentos. A seção mede a natureza do movimento, e não a trajetória.</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">O hamiltoniano de Hénon-Heiles</span>
+    <p>Em 1964, Michel Hénon e Carl Heiles queriam saber se o movimento de uma estrela no
+    potencial médio de uma galáxia admite uma terceira constante de movimento além da energia e
+    do momento angular. Para investigar, escolheram o modelo mais simples possível,</p>
+    <p>\[H=\tfrac12\left(p_x^2+p_y^2\right)+\tfrac12\left(x^2+y^2\right)+x^2y-\tfrac13y^3,\]</p>
+    <p>que é o par de osciladores de mesma frequência mais o acoplamento cúbico mais simples que
+    preserva a simetria de rotação por \(2\pi/3\). A seção é tomada em \(x=0\) com
+    \(p_x&gt;0\), e o que se desenha é \(p_y\) contra \(y\).</p>
+    <p>Abaixo de \(E\approx0{,}1\) a seção mostra curvas fechadas, como se o sistema fosse
+    integrável. Acima disso as curvas vão se rompendo e surge uma região de pontos espalhados. A
+    energia de escape é \(E=1/6\), e perto dela quase toda a seção é mar. A terceira constante
+    procurada não existe: ela existe apenas aproximadamente, e só a baixa energia.</p>
+  </div>
+
+  <div data-widget="henon"></div>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">O que mudou não foi a precisão</span>
+    <p>O erro no hamiltoniano permanece na casa de \(10^{-10}\) em todas as energias do painel,
+    porque o integrador é o mesmo e o passo é o mesmo. De \(E=1/12\) para \(E=1/6\) o que muda é
+    a dinâmica, e não a qualidade do cálculo. Confundir as duas coisas é o erro mais comum de
+    quem vê uma seção de Poincaré pela primeira vez, e a maneira de se proteger dele é exibir,
+    junto com a figura, a constante que deveria ser conservada.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Os toros que resistem</h2>
+
+  <p>Falta explicar por que algumas curvas sobrevivem. A pergunta tem nome e data: foi formulada
+  por Poincaré ao estudar a estabilidade do sistema solar e respondida entre 1954 e 1963 por
+  Andrei Kolmogorov, Vladimir Arnold e Jürgen Moser. Escreva o sistema como um integrável mais
+  uma perturbação pequena,</p>
+
+  <p>\[H(I,\theta)=H_0(I)+\epsilon H_1(I,\theta),\]</p>
+
+  <p>e pergunte o que acontece com os toros de \(H_0\) quando \(\epsilon\) deixa de ser nulo. A
+  tentativa de construir novas ações por série de potências em \(\epsilon\) produz, no
+  denominador de cada termo, combinações
+  \(\vet{m}\cdot\vet{\omega}=m_1\omega_1+\dots+m_n\omega_n\) com inteiros \(m_k\). Nos toros
+  ressonantes essas combinações se anulam e a série explode. É o problema dos pequenos
+  denominadores, que travou a mecânica celeste por meio século.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Teorema de Kolmogorov, Arnold e Moser</span>
+    <p>Se \(H_0\) é não degenerado, isto é, se o determinante da matriz
+    \(\partial^2H_0/\partial I_j\partial I_k\) não se anula, então para \(\epsilon\)
+    suficientemente pequeno sobrevivem, deformados, os toros cujas frequências são
+    suficientemente irracionais, no sentido de satisfazerem</p>
+    <p>\[\left|\vet{m}\cdot\vet{\omega}\right|\ \geq\
+    \frac{\gamma}{\left|\vet{m}\right|^{\tau}}\qquad\text{para todo }\vet{m}\neq0,\]</p>
+    <p>com \(\gamma\) e \(\tau\) apropriados. A medida do conjunto dos toros sobreviventes tende
+    à medida total quando \(\epsilon\to0\).</p>
+  </div>
+
+  <p>A conclusão é de uma delicadeza incomum em física. A medida dos toros destruídos vai a zero
+  com a perturbação, e ainda assim o conjunto dos sobreviventes é cheio de buracos, um para cada
+  ressonância, com buracos dentro dos buracos. Não existe vizinhança, por pequena que seja, em
+  que o movimento seja todo regular. O espaço de fases de um sistema quase integrável é uma
+  mistura de ilhas regulares e canais caóticos em todas as escalas, e é por isso que a seção de
+  Poincaré de um caso misto se parece consigo mesma quando se amplia um pedaço dela.</p>
+
+  <p>A razão áurea tem aqui um papel concreto. O número que satisfaz a desigualdade do teorema
+  com a maior folga possível é \(\left(\sqrt5-1\right)/2\), cuja expansão em fração contínua é
+  \([0;1,1,1,\dots]\), a mais lenta de todas em aproximar-se de um racional. O toro de
+  frequência áurea é o último a se desmanchar quando a perturbação cresce, e na aula seguinte
+  veremos que é justamente a destruição dele que define o valor crítico do parâmetro.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">A estabilidade do sistema solar</span>
+    <p>A pergunta original continua sem resposta fechada. O teorema garante toros para
+    perturbações pequenas, e as massas planetárias não são pequenas o bastante para que a
+    estimativa se aplique. As integrações numéricas de longo prazo mostram que as órbitas dos
+    planetas interiores são caóticas em escalas de dezenas de milhões de anos, com Mercúrio
+    tendo probabilidade de alguns por cento de desestabilizar-se nos próximos bilhões de anos. O
+    sistema solar é previsível por cerca de cem milhões de anos, e não para sempre.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 16.1</span>
+    <p><strong>Mostre que \(\{L^2,L_z\}=0\) e que \(\{L_x,L_y\}=L_z\), e conclua quantas
+    constantes em involução o problema de dois corpos tem.</strong></p>
+    <p>Das definições \(L_x=yp_z-zp_y\) e \(L_y=zp_x-xp_z\), o parêntese dá
+    \(\{L_x,L_y\}=L_z\), e por permutação cíclica \(\{L_y,L_z\}=L_x\) e \(\{L_z,L_x\}=L_y\). Já
+    \(L^2=L_x^2+L_y^2+L_z^2\) satisfaz</p>
+    <p>\[\{L^2,L_z\}=2L_x\{L_x,L_z\}+2L_y\{L_y,L_z\}=-2L_xL_y+2L_yL_x=0.\]</p>
+    <p>Com três graus de liberdade são necessárias três constantes em involução, e
+    \(\{H,L^2,L_z\}\) serve: o problema de dois corpos é integrável. Observe que
+    \(\{H,L_x,L_y\}\) não serviria, apesar de as três serem conservadas.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 16.2</span>
+    <p><strong>Obtenha a ação do pêndulo simples no regime de pequenas oscilações e a correção
+    de ordem seguinte para a frequência.</strong></p>
+    <p>Com \(H=p^2/2m\ell^2+mg\ell\left(1-\cos\theta\right)\) e
+    \(\cos\theta\approx1-\theta^2/2+\theta^4/24\), o potencial é
+    \(U\approx\tfrac12mg\ell\theta^2\left(1-\theta^2/12\right)\). No termo harmônico puro
+    \(I=E/\omega_0\), com \(\omega_0=\sqrt{g/\ell}\), e a frequência não depende da amplitude.
+    Levando a correção quártica em conta pela teoria de perturbação canônica, o hamiltoniano
+    ganha um termo quadrático na ação, e a frequência passa a depender dela:</p>
+    <p>\[\omega(I)=\pder{H}{I}=\omega_0\left(1-\frac{\theta_0^2}{16}\right),\]</p>
+    <p>com \(\theta_0\) a amplitude. Compare com a série exata do período obtida na Aula 9,
+    \(T=T_0\left(1+\theta_0^2/16+\dots\right)\): as duas coincidem, como deviam, já que
+    \(\omega=2\pi/T\). A dependência da frequência com a ação é exatamente o que torna o sistema
+    não degenerado, condição que o teorema KAM exige.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 16.3</span>
+    <p><strong>Na seção de Hénon-Heiles a \(E=1/12\), uma órbita regular avança 0,382 de volta
+    na sua curva fechada por cruzamento. O que esse número diz, e o que se espera a energia um
+    pouco maior?</strong></p>
+    <p>O número de rotação 0,382 é \(1-0{,}618=\left(3-\sqrt5\right)/2\), o quadrado da razão
+    áurea, com a mesma expansão em fração contínua lenta. Pelo critério do teorema, esse é um
+    dos toros mais resistentes da região, e se espera que ele sobreviva quando as curvas
+    vizinhas, de número de rotação próximo de uma fração simples como \(2/5=0{,}400\), já
+    tiverem se rompido em cadeias de ilhas.</p>
+    <p>É o que a seção mostra: entre duas curvas que ainda se fecham aparece primeiro uma fileira
+    de cinco ilhotas, que é a assinatura da ressonância 2/5 destruída.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>16.1</b> Verifique as propriedades do parêntese de Poisson: antissimetria,
+      linearidade, a regra \(\{fg,h\}=f\{g,h\}+g\{f,h\}\) e a identidade de Jacobi. Mostre em
+      seguida que, se \(F\) e \(G\) são constantes de movimento, \(\{F,G\}\) também é. Por que
+      isso não fornece constantes novas indefinidamente?</li>
+
+      <li><b>16.2</b> Calcule a ação \(I=\frac{1}{2\pi}\oint p\,dq\) da partícula livre numa
+      caixa de largura \(L\) e obtenha \(H(I)\). Compare com os níveis do poço quântico infinito
+      substituindo \(I\to n\hbar\): esse é o conteúdo da regra de quantização de
+      Bohr-Sommerfeld.</li>
+
+      <li><b>16.3</b> Para o oscilador harmônico, construa a transformação canônica
+      \((q,p)\to(\theta,I)\) com \(q=\sqrt{2I/m\omega}\,\sen\theta\) e
+      \(p=\sqrt{2m\omega I}\cos\theta\), e verifique que \(\{\theta,I\}=1\).</li>
+
+      <li><b>16.4</b> Mostre que o problema de Kepler conserva, além de \(H\), \(L^2\) e
+      \(L_z\), o vetor de Laplace-Runge-Lenz, e que é essa constante extra que fecha as órbitas.
+      Sistemas com mais constantes do que \(n\) chamam-se superintegráveis: dê outro
+      exemplo.</li>
+
+      <li><b>16.5</b> Escreva um programa que integre Hénon-Heiles e desenhe a seção em \(x=0\),
+      \(p_x&gt;0\), para \(E=1/12\), \(1/9\), \(1/8\) e \(1/6\). Use Runge-Kutta de quarta ordem
+      com interpolação linear no cruzamento e exiba, em cada caso, o erro máximo no
+      hamiltoniano. Compare com o simulador da seção 3.</li>
+
+      <li><b>16.6</b> No mesmo programa, meça o número de rotação de uma órbita regular contando
+      quanto ela avança na curva fechada por cruzamento, e verifique a afirmação do Exercício
+      resolvido 16.3 sobre as cinco ilhotas da ressonância 2/5.</li>
+
+      <li><b>16.7</b> Dois osciladores de frequências \(\omega_1=1\) e \(\omega_2=\sqrt2\)
+      partem de uma mesma condição inicial. Depois de quanto tempo a trajetória volta a passar a
+      menos de \(10^{-3}\) do ponto de partida no toro? Estime pela teoria das frações contínuas
+      e confira numericamente.</li>
+
+      <li><b>16.8</b> Mostre que a condição de não degeneração falha para
+      \(H_0=\omega_1I_1+\omega_2I_2\), isto é, para osciladores harmônicos desacoplados. Por que
+      o painel do toro, mesmo sendo esse o caso degenerado, continua ilustrando o essencial?</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula15.html"><small>Aula anterior</small>← 15. Ondas sonoras</a>
+    <a class="prox" href="aula17.html"><small>Próximo módulo</small>17. Rotor pulsado →</a>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091516"></script>
+</body>
+</html>
