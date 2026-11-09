@@ -1404,6 +1404,377 @@
     laco();
   };
 
+
+  /* =================================================================
+     13. Campo e potencial de distribuições esféricas
+     A lei de Gauss dá o campo sem integrar, e o gráfico mostra o que
+     ela implica: dentro de uma casca o campo é nulo, dentro de uma
+     esfera maciça ele cresce com r, e fora das duas a distribuição é
+     indistinguível de um ponto.
+     ================================================================= */
+  REGISTRO.gausgrav = function (raiz) {
+    var corpo = moldura(raiz, 'Campo e potencial de três distribuições');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var tipo = 0;   /* 0 maciça uniforme, 1 casca fina, 2 densidade ∝ 1/r */
+    var mostraPot = false;
+
+    opcoes(corpo, [{ rot: 'Esfera maciça', v: 0 }, { rot: 'Casca fina', v: 1 },
+                   { rot: 'Densidade ∝ 1/r', v: 2 }], 0,
+      function (v) { tipo = v; desenhar(); });
+    opcoes(corpo, [{ rot: 'Campo g(r)', v: 0 }, { rot: 'Potencial Ψ(r)', v: 1 }], 0,
+      function (v) { mostraPot = (v === 1); desenhar(); });
+
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* tudo em unidades de G = M = R = 1 */
+    function massaDentro(x) {
+      if (x >= 1) return 1;
+      if (tipo === 0) return x * x * x;
+      if (tipo === 1) return 0;
+      return x * x;                 /* ρ ∝ 1/r dá M(r) ∝ r² */
+    }
+
+    function g(x) { return x < 1e-6 ? 0 : -massaDentro(x) / (x * x); }
+
+    function psi(x) {
+      if (x >= 1) return -1 / x;
+      if (tipo === 1) return -1;
+      if (tipo === 0) return -(3 - x * x) / 2;
+      return -(2 - x);              /* integra g de r até 1 e soma Ψ(1) */
+    }
+
+    function desenhar() {
+      var f = mostraPot ? psi : g;
+      var ymin = mostraPot ? -1.6 : -1.15, ymax = 0.05;
+      var gg = G.eixos(cv, {
+        xmin: 0, xmax: 3, ymin: ymin, ymax: ymax, divY: 5,
+        altura: Math.min(300, Math.max(220, cv.clientWidth * 0.42)),
+        rotX: 'r / R', rotY: mostraPot ? 'Ψ  (GM/R = 1)' : 'g  (GM/R² = 1)',
+        marcasX: G.marcasLineares(0, 3, 6, 0),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+      gg.ct.save();
+      gg.ct.beginPath();
+      gg.ct.rect(gg.x0, gg.y0, gg.x1 - gg.x0, gg.y1 - gg.y0);
+      gg.ct.clip();
+      G.curva(gg, f, G.COR.mestra, 2.2);
+      /* o ponto material, para comparação */
+      G.curva(gg, function (x) { return mostraPot ? -1 / x : -1 / (x * x); },
+              '#b9c3cc', 1.4, [5, 4]);
+      gg.ct.restore();
+      G.vertical(gg, 1, G.COR.vinho, 'superfície', [4, 4]);
+      G.legenda(gg, [{ texto: 'distribuição', cor: G.COR.mestra },
+                     { texto: 'ponto de mesma massa', cor: '#b9c3cc' }]);
+
+      saida.innerHTML = tipo === 1
+        ? 'Dentro da casca não há massa cercada, logo o campo é exatamente nulo e o '
+          + 'potencial é constante: uma partícula colocada ali dentro não sente força '
+          + 'nenhuma, venha de onde vier. Fora, a casca é indistinguível de um ponto, e as '
+          + 'duas curvas coincidem.'
+        : tipo === 0
+          ? 'Dentro da esfera maciça só conta a massa da esfera interior, que cresce com '
+            + '\\(r^3\\), e o campo fica proporcional a \\(r\\): um túnel pelo centro da '
+            + 'Terra daria um oscilador harmônico. O potencial no centro vale '
+            + '\\(-\\tfrac32GM/R\\), e não \\(-GM/R\\).'
+          : 'Com \\(\\rho\\propto1/r\\) a massa interior cresce com \\(r^2\\) e o campo é '
+            + 'constante dentro da distribuição. É o perfil que produz curvas de rotação '
+            + 'planas, e foi essa a primeira pista observacional da matéria escura.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+  /* =================================================================
+     14. A expansão em multipolos
+     Longe de um corpo, a sua forma não importa. Perto, importa cada
+     vez mais. O widget compara o potencial exato de um halteres com as
+     aproximações sucessivas e mostra o erro caindo como potências de
+     d/r.
+     ================================================================= */
+  REGISTRO.multipolos = function (raiz) {
+    var corpo = moldura(raiz, 'Quantos termos são precisos');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var grau = 0;        /* ângulo de observação */
+    var ordem = 1;       /* até que termo somar: 0 monopolo, 1 +quadrupolo, 2 +hexadecapolo */
+
+    deslizante(corpo, 'Ângulo \\(\\theta\\) do ponto de observação:', 0, 90, 1, grau,
+      function (v) { grau = v; desenhar(); }, function (v) { return v.toFixed(0) + '°'; });
+    opcoes(corpo, [{ rot: 'Só monopolo', v: 0 }, { rot: '+ quadrupolo', v: 1 },
+                   { rot: '+ 4.ª ordem', v: 2 }], 1,
+      function (v) { ordem = v; desenhar(); });
+
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* duas massas 1/2 em ±d ẑ, com d = 1; r medido em unidades de d */
+    function exato(r, c) {
+      var r1 = Math.sqrt(r * r - 2 * r * c + 1);
+      var r2 = Math.sqrt(r * r + 2 * r * c + 1);
+      return -0.5 * (1 / r1 + 1 / r2);
+    }
+
+    function aprox(r, c) {
+      var P2 = 0.5 * (3 * c * c - 1);
+      var P4 = (35 * Math.pow(c, 4) - 30 * c * c + 3) / 8;
+      var t = 1;
+      if (ordem >= 1) t += P2 / (r * r);
+      if (ordem >= 2) t += P4 / Math.pow(r, 4);
+      return -t / r;
+    }
+
+    function desenhar() {
+      var c = Math.cos(grau * Math.PI / 180);
+      var gg = G.eixos(cv, {
+        xmin: 1.2, xmax: 6, ymin: 1e-5, ymax: 1, divY: 5,
+        altura: Math.min(300, Math.max(220, cv.clientWidth * 0.42)),
+        rotX: 'r / d', rotY: 'erro relativo',
+        marcasX: G.marcasLineares(1.2, 6, 4, 1),
+        formataY: function () { return ''; }
+      });
+      /* eixo logarítmico feito à mão, porque o erro varia por décadas */
+      var ct = gg.ct;
+      function Ylog(v) {
+        var e = Math.max(-5, Math.log10(Math.max(v, 1e-12)));
+        return gg.y1 - (e + 5) / 5 * (gg.y1 - gg.y0);
+      }
+      ct.strokeStyle = '#eceff2'; ct.fillStyle = '#5b6773';
+      ct.font = '11px system-ui, sans-serif'; ct.textAlign = 'right';
+      ct.textBaseline = 'middle';
+      for (var e = -5; e <= 0; e++) {
+        var y = Ylog(Math.pow(10, e));
+        ct.beginPath(); ct.moveTo(gg.x0, y); ct.lineTo(gg.x1, y); ct.stroke();
+        ct.fillText('10' + ['⁻⁵', '⁻⁴', '⁻³', '⁻²', '⁻¹', '⁰'][e + 5], gg.x0 - 6, y);
+      }
+
+      [[0, '#b9c3cc', 'só monopolo'], [1, G.COR.mestra, 'até quadrupolo'],
+       [2, G.COR.azul, 'até 4.ª ordem']].forEach(function (par) {
+        var guarda = ordem; ordem = par[0];
+        ct.beginPath();
+        for (var i = 0; i <= 160; i++) {
+          var r = 1.2 + (6 - 1.2) * i / 160;
+          var err = Math.abs((aprox(r, c) - exato(r, c)) / exato(r, c));
+          var x = gg.X(r), y = Ylog(err);
+          if (i === 0) ct.moveTo(x, y); else ct.lineTo(x, y);
+        }
+        ct.strokeStyle = par[1]; ct.lineWidth = par[0] === guarda ? 2.4 : 1.4;
+        ct.stroke();
+        ordem = guarda;
+      });
+      G.legenda(gg, [{ texto: 'monopolo', cor: '#b9c3cc' },
+                     { texto: '+ quadrupolo', cor: G.COR.mestra },
+                     { texto: '+ 4.ª ordem', cor: G.COR.azul }]);
+
+      var err2 = Math.abs((function () {
+        var guarda = ordem; ordem = 1;
+        var v = (aprox(3, c) - exato(3, c)) / exato(3, c); ordem = guarda; return v;
+      })());
+
+      var P2 = 0.5 * (3 * c * c - 1);
+      saida.innerHTML = Math.abs(P2) < 0.02
+        ? 'Em \\(\\theta=54{,}7^\\circ\\) o polinômio \\(P_2(\\cos\\theta)\\) se anula, o termo de '
+          + 'quadrupolo desaparece e o monopolo sozinho já é excelente: as duas curvas de '
+          + 'baixo se encostam. É o mesmo ângulo mágico que aparece em ressonância '
+          + 'magnética, e pela mesma razão.'
+        : 'Cada termo novo da expansão cai duas potências mais depressa em \\(d/r\\). Em '
+          + '\\(r/d=3\\) o monopolo sozinho erra '
+          + F.pct(Math.abs((function () { var g = ordem; ordem = 0;
+              var v = (aprox(3, c) - exato(3, c)) / exato(3, c); ordem = g; return v; })()), 2)
+          + ' e incluir o quadrupolo baixa o erro para ' + F.pct(err2, 3) + '. É por isso '
+          + 'que planetas podem ser tratados como pontos, e também por que satélites em '
+          + 'órbita baixa precisam do termo de quadrupolo da Terra.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+
+  /* =================================================================
+     15. A equação de Lane-Emden
+     Integrada numericamente, ela dá o perfil de densidade de uma bola
+     de gás que se segura pela própria gravidade. Os três casos de
+     solução exata servem de aferição do integrador, e a concentração
+     central mostra a diferença entre uma bola homogênea e uma estrela.
+     ================================================================= */
+  REGISTRO.laneemden = function (raiz) {
+    var corpo = moldura(raiz, 'O perfil de uma bola autogravitante');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var n = 3;
+
+    deslizante(corpo, 'Índice politrópico \\(n\\):', 0, 4.9, 0.1, n,
+      function (v) { n = v; desenhar(); }, function (v) { return F.fmt(v, 1); });
+    opcoes(corpo, [{ rot: 'n = 0', v: 0 }, { rot: 'n = 1', v: 1 },
+                   { rot: 'n = 1,5', v: 1.5 }, { rot: 'n = 3', v: 3 }], 3,
+      function (v) { n = v; desenhar(); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\xi_1\\)', k: 'x1' },
+      { rot: '\\(-\\xi_1^2\\theta\'(\\xi_1)\\)', k: 'd1' },
+      { rot: '\\(\\rho_c/\\bar\\rho\\)', k: 'conc' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function integra(nn, xmax) {
+      var h = 0.002, x = 1e-6, th = 1, dth = 0, pts = [[0, 1]];
+      function f(x, y) {
+        return [y[1], -Math.pow(Math.max(y[0], 0), nn) - 2 / x * y[1]];
+      }
+      while (x < xmax && th > 0) {
+        var y = [th, dth];
+        var k1 = f(x, y);
+        var k2 = f(x + h / 2, [y[0] + h / 2 * k1[0], y[1] + h / 2 * k1[1]]);
+        var k3 = f(x + h / 2, [y[0] + h / 2 * k2[0], y[1] + h / 2 * k2[1]]);
+        var k4 = f(x + h, [y[0] + h * k3[0], y[1] + h * k3[1]]);
+        th = y[0] + h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]);
+        dth = y[1] + h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]);
+        x += h;
+        if (th > 0) pts.push([x, th]);
+      }
+      return { pts: pts, x1: x, dth: dth, chegou: th <= 0 };
+    }
+
+    function desenhar() {
+      var r = integra(n, 30);
+      var xm = Math.max(4, Math.min(30, r.x1 * 1.1));
+      var g = G.eixos(cv, {
+        xmin: 0, xmax: xm, ymin: 0, ymax: 1.05, divY: 5,
+        altura: Math.min(300, Math.max(220, cv.clientWidth * 0.42)),
+        rotX: 'ξ  (raio em unidades de α)', rotY: 'θ = (ρ/ρc)^(1/n)',
+        marcasX: G.marcasLineares(0, xm, 6, 1),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+
+      /* θ e o perfil de densidade θⁿ */
+      g.ct.beginPath();
+      r.pts.forEach(function (q, i) {
+        var x = g.X(q[0]), y = g.Y(q[1]);
+        if (i === 0) g.ct.moveTo(x, y); else g.ct.lineTo(x, y);
+      });
+      g.ct.strokeStyle = G.COR.mestra; g.ct.lineWidth = 2.2; g.ct.stroke();
+
+      g.ct.beginPath();
+      r.pts.forEach(function (q, i) {
+        var x = g.X(q[0]), y = g.Y(Math.pow(q[1], n));
+        if (i === 0) g.ct.moveTo(x, y); else g.ct.lineTo(x, y);
+      });
+      g.ct.strokeStyle = G.COR.azul; g.ct.lineWidth = 1.8;
+      g.ct.setLineDash([5, 4]); g.ct.stroke(); g.ct.setLineDash([]);
+
+      if (r.chegou) G.vertical(g, r.x1, G.COR.vinho, 'superfície', [4, 4]);
+      G.legenda(g, [{ texto: 'θ', cor: G.COR.mestra },
+                    { texto: 'ρ/ρc = θⁿ', cor: G.COR.azul }]);
+
+      var conc = r.chegou ? r.x1 / (3 * (-r.dth)) : NaN;
+      mostrar({
+        x1: r.chegou ? F.fmt(r.x1, 4) : 'infinito',
+        d1: r.chegou ? F.fmt(-r.x1 * r.x1 * r.dth, 4) : '—',
+        conc: isNaN(conc) ? '—' : F.fmt(conc, 2)
+      });
+
+      var exato = Math.abs(n) < 0.05 ? Math.sqrt(6)
+                : Math.abs(n - 1) < 0.05 ? Math.PI : null;
+      saida.innerHTML = exato
+        ? 'Para este \\(n\\) existe solução exata, \\(\\xi_1=' + F.fmt(exato, 4)
+          + '\\), e a integração numérica dá \\(' + F.fmt(r.x1, 4) + '\\): a diferença '
+          + 'afere o integrador. O caso \\(n=0\\) é a bola de densidade uniforme e o caso '
+          + '\\(n=1\\) tem \\(\\theta=\\sen\\xi/\\xi\\).'
+        : (n > 4.6
+          ? 'Perto de \\(n=5\\) a borda foge para o infinito: a solução exata '
+            + '\\(\\theta=(1+\\xi^2/3)^{-1/2}\\) nunca chega a zero, embora a massa total '
+            + 'continue finita. É o limite em que a estrela deixa de ter superfície.'
+          : 'Quanto maior \\(n\\), mais concentrada é a bola: a densidade central chega a '
+            + F.fmt(conc, 0) + ' vezes a média. Para \\(n=3\\), que é o modelo padrão de '
+            + 'uma estrela como o Sol, essa razão vale 54, e é por isso que quase toda a '
+            + 'massa do Sol está no seu terço interno.');
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+  /* =================================================================
+     16. A relação massa-raio dos politropos
+     O expoente (1-n)/(3-n) muda de sinal e explode conforme n, e os
+     três casos notáveis são justamente os corpos reais: densidade
+     constante, anã branca e o limite de Chandrasekhar.
+     ================================================================= */
+  REGISTRO.massaraio = function (raiz) {
+    var corpo = moldura(raiz, 'Como o raio responde à massa');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var n = 1.5;
+
+    deslizante(corpo, 'Índice politrópico \\(n\\):', 0, 2.9, 0.05, n,
+      function (v) { n = v; desenhar(); }, function (v) { return F.fmt(v, 2); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Expoente \\((1-n)/(3-n)\\)', k: 'exp' },
+      { rot: 'Dobrar a massa muda o raio em', k: 'dob' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var e = (1 - n) / (3 - n);
+      var g = G.eixos(cv, {
+        xmin: -1, xmax: 1, ymin: -0.8, ymax: 0.8, divY: 4,
+        altura: Math.min(280, Math.max(210, cv.clientWidth * 0.4)),
+        rotX: 'log (M / M₀)', rotY: 'log (R / R₀)',
+        marcasX: G.marcasLineares(-1, 1, 4, 1),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+      [[0, '#c9d2d9', 'n = 0'], [1, '#b7c6d2', 'n = 1'], [1.5, '#a8bccb', 'n = 1,5']]
+        .forEach(function (par) {
+          var ee = (1 - par[0]) / (3 - par[0]);
+          G.curva(g, function (x) { return ee * x; }, par[1], 1.3, [4, 4]);
+        });
+      g.ct.save();
+      g.ct.beginPath();
+      g.ct.rect(g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0);
+      g.ct.clip();
+      G.curva(g, function (x) { return e * x; }, G.COR.mestra, 2.4);
+      g.ct.restore();
+
+      mostrar({ exp: F.fmt(e, 3),
+                dob: F.pct(Math.pow(2, e) - 1, 1) });
+
+      saida.innerHTML = Math.abs(n - 1.5) < 0.06
+        ? 'Em \\(n=1{,}5\\), que é o gás de elétrons degenerado não relativístico, o '
+          + 'expoente vale \\(-1/3\\): uma anã branca mais pesada é <strong>menor</strong>. '
+          + 'A gravidade extra comprime mais do que a massa extra acrescenta, e o resultado '
+          + 'contraria toda a intuição vinda de objetos comuns.'
+        : Math.abs(n - 1) < 0.04
+          ? 'Em \\(n=1\\) o expoente é zero: todas as estrelas dessa família têm o mesmo '
+            + 'raio, qualquer que seja a massa. É a aproximação grosseira para estrelas de '
+            + 'nêutrons, cujo raio fica sempre perto de 10 km.'
+          : n > 2.8
+            ? 'Quando \\(n\\to3\\) o expoente explode: o raio deixa de depender da massa e '
+              + 'a massa deixa de depender do raio. Esse é o caso do gás degenerado '
+              + 'relativístico, e a massa que sobra fixada é o limite de Chandrasekhar, '
+              + '1,44 massas solares.'
+            : 'O expoente \\((1-n)/(3-n)\\) vale ' + F.fmt(e, 3) + ': dobrar a massa muda o '
+              + 'raio em ' + F.pct(Math.pow(2, e) - 1, 1) + '. Para \\(n=0\\), densidade '
+              + 'constante, ele é \\(1/3\\), que é o comportamento de uma pedra.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

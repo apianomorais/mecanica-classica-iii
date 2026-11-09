@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 7: Campo gravitacional, potencial e a lei de Gauss | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091420">
+<script src="assets/js/comum.js?v=202611091420"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num ativo" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Da força ao campo</a></li>
+    <li><a href="#s2">2. A lei de Gauss e a equação de Poisson</a></li>
+    <li><a href="#s3">3. Quando não há simetria: multipolos</a></li>
+    <li><a href="#s4">4. Exercícios resolvidos</a></li>
+    <li><a href="#s5">5. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 7 · Gravitação</p>
+  <h1>Campo gravitacional, potencial e a lei de Gauss</h1>
+  <p class="subtitulo">A força entre dois pontos dá lugar a um campo com fontes. Com isso, a lei de Gauss resolve em duas linhas o teorema das cascas que custou anos a Newton, e a expansão em multipolos liga a forma do corpo ao torque que ele sente, fechando o que a aula 6 usou sem demonstrar.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Escrever campo e potencial gravitacionais de uma distribuição qualquer;</li>
+      <li>Enunciar e aplicar a lei de Gauss da gravitação;</li>
+      <li>Obter a equação de Poisson e reconhecer onde mais ela aparece;</li>
+      <li>Resolver os casos de simetria esférica sem integrar;</li>
+      <li>Expandir o potencial em multipolos e identificar o termo de quadrupolo;</li>
+      <li>Relacionar o quadrupolo ao achatamento e ao torque da aula 6.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Da força ao campo</h2>
+
+  <p>A lei da gravitação de Newton é uma lei de força entre dois pontos:</p>
+
+  <p>\[\vet{F}=-\frac{GMm}{r^2}\vers{r}.\]</p>
+
+  <p>Essa formulação resolve o problema de dois corpos e começa a incomodar quando há muitos.
+  Para calcular a força sobre uma sonda perto da Terra seria preciso somar a contribuição de
+  cada pedaço do planeta, e repetir a soma para cada nova posição da sonda. Pior, a lei na
+  forma acima não diz nada sobre o que existe no espaço entre as duas massas: a força
+  simplesmente aparece à distância.</p>
+
+  <p>A saída, que no século XIX se tornou o jeito padrão de pensar em física, é separar o
+  problema em dois. A distribuição de massa cria um <strong>campo</strong> em todo o espaço,
+  e o campo age sobre a massa de prova que ali se encontre:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Campo e potencial</span>
+    \[\vet{g}(\vet{r})=-G\int\frac{\rho(\vet{r}\,')\left(\vet{r}-\vet{r}\,'\right)}
+    {\left|\vet{r}-\vet{r}\,'\right|^3}\,d^3r',\qquad
+    \vet{F}=m\vet{g},\qquad \vet{g}=-\nabla\Psi,\qquad
+    \Psi(\vet{r})=-G\int\frac{\rho(\vet{r}\,')}{\left|\vet{r}-\vet{r}\,'\right|}\,d^3r'.\]
+  </div>
+
+  <p>O campo \(\vet{g}\) tem unidade de aceleração, e perto da superfície da Terra vale
+  9,8 m/s². O potencial \(\Psi\) é energia por unidade de massa, e a sua utilidade é ser um
+  escalar: somar potenciais de várias fontes é somar números, enquanto somar campos exige
+  cuidado com as direções.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Sinais e nomes</span>
+    <p>Há duas convenções correndo soltas na literatura. Alguns livros chamam de potencial a
+    quantidade \(-\Psi\), positiva, e escrevem \(\vet{g}=+\nabla\Phi\). Aqui adotamos
+    \(\vet{g}=-\nabla\Psi\) com \(\Psi\) negativo, igual ao caso eletrostático, de modo que a
+    energia potencial de uma massa \(m\) é \(U=m\Psi\) e o sistema ligado tem energia
+    negativa.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A lei de Gauss e a equação de Poisson</h2>
+
+  <p>Calcular a integral do potencial ponto a ponto é possível e raramente é o caminho mais
+  curto. Quando há simetria, a lei de Gauss resolve em uma linha o que a integral resolveria
+  em uma página.</p>
+
+  <p>O argumento é o mesmo da eletrostática, com a troca de \(1/4\pi\epsilon_0\) por \(-G\).
+  O fluxo do campo por uma superfície fechada depende só da massa cercada:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Lei de Gauss da gravitação</span>
+    \[\oint_S\vet{g}\cdot d\vet{A}=-4\pi G\,M_{\text{int}}
+    =-4\pi G\int_\Omega\rho\,d^3r.\]
+  </div>
+
+  <p>O sinal negativo é o que diz que a gravidade atrai: as linhas de campo entram nas massas,
+  em vez de sair delas. Aplicando o teorema da divergência ao lado esquerdo e igualando os
+  integrandos, a forma local é \(\nabla\cdot\vet{g}=-4\pi G\rho\), e substituindo
+  \(\vet{g}=-\nabla\Psi\) chega-se à equação que o campo satisfaz:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Equação de Poisson</span>
+    \[\nabla^2\Psi=4\pi G\rho.\]
+  </div>
+
+  <p>Onde não há massa, \(\rho=0\), ela vira a equação de Laplace \(\nabla^2\Psi=0\). Essa é
+  provavelmente a equação mais reaproveitada da física: a mesma equação descreve o potencial
+  eletrostático, o escoamento irrotacional de um fluido, a temperatura em regime estacionário
+  e a membrana elástica esticada. Resolver uma delas é resolver todas.</p>
+
+  <div data-widget="gausgrav"></div>
+
+  <p>O caso da casca merece atenção porque Newton gastou anos nele e adiou a publicação dos
+  <em>Principia</em> até demonstrá-lo pela geometria. Hoje a lei de Gauss o resolve em duas
+  linhas: dentro da casca não há massa cercada, logo o fluxo é nulo, logo o campo é nulo por
+  simetria. E fora, a massa cercada é a massa inteira, de modo que a casca atrai como se toda
+  a sua massa estivesse no centro. Sem esses dois resultados não se pode nem dizer que a
+  distância da Terra à Lua vale o que se mede entre os centros.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Quando não há simetria: multipolos</h2>
+
+  <p>Quando a simetria não é exata, a saída é escrever o potencial longe da fonte como uma
+  série. Tomando a origem no centro de massa e expandindo \(1/|\vet{r}-\vet{r}\,'|\) em
+  polinômios de <a href="https://pt.wikipedia.org/wiki/Adrien-Marie_Legendre">Legendre</a>,</p>
+
+  <p>\[\frac{1}{\left|\vet{r}-\vet{r}\,'\right|}
+  =\frac{1}{r}\sum_{\ell=0}^{\infty}\left(\frac{r'}{r}\right)^{\ell}P_\ell(\cos\gamma),\]</p>
+
+  <p>com \(\gamma\) o ângulo entre \(\vet{r}\) e \(\vet{r}\,'\). O potencial fica</p>
+
+  <p>\[\Psi(\vet{r})=-\frac{G}{r}\left[M+\frac{1}{r}\int\rho\,r'P_1\,d^3r'
+  +\frac{1}{r^2}\int\rho\,r'^2P_2\,d^3r'+\cdots\right].\]</p>
+
+  <p>O primeiro termo é o <strong>monopolo</strong>, que é a massa total e não vê forma
+  nenhuma. O segundo é o <strong>dipolo</strong>, e ele se anula por construção quando a
+  origem está no centro de massa. O terceiro é o <strong>quadrupolo</strong>, e é o primeiro
+  que carrega informação sobre a forma do corpo.</p>
+
+  <div data-widget="multipolos"></div>
+
+  <p>Para um corpo com simetria de revolução, o termo de quadrupolo se escreve em função dos
+  momentos principais, e o resultado liga esta aula à anterior:</p>
+
+  <p>\[\Psi(r,\theta)=-\frac{GM}{r}+\frac{G\left(C-A\right)}{2r^3}
+  \left(3\cos^2\theta-1\right)+\cdots,\]</p>
+
+  <p>com \(C\) e \(A\) os momentos principais polar e equatorial. É exatamente esse termo que,
+  derivado em relação ao ângulo, produz o torque do Sol e da Lua sobre o abaulamento
+  equatorial da Terra, e portanto a precessão dos equinócios da aula 6. Medir o achatamento
+  pelo movimento de satélites é hoje o jeito mais preciso de conhecê-lo: o coeficiente
+  \(J_2=(C-A)/MR^2=1{,}0826\cruz10^{-3}\) da Terra foi determinado assim, a partir da
+  precessão do plano orbital do Sputnik.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 7.1</span>
+    <p><strong>Ache o campo dentro de uma esfera maciça homogênea e mostre que um túnel pelo
+    centro produz movimento harmônico simples.</strong></p>
+    <p>Pela lei de Gauss com uma superfície esférica de raio \(r&lt;R\), a massa cercada é
+    \(M_{\text{int}}=M r^3/R^3\), e por simetria \(g\) é radial e uniforme na superfície:</p>
+    <p>\[4\pi r^2 g=-4\pi G\frac{Mr^3}{R^3}\;\Longrightarrow\;
+    g=-\frac{GM}{R^3}r.\]</p>
+    <p>A força sobre uma partícula no túnel é \(F=-\left(GMm/R^3\right)r\), que é a lei de
+    Hooke com \(k=GMm/R^3\). O período é</p>
+    <p>\[T=2\pi\sqrt{\frac{R^3}{GM}}=2\pi\sqrt{\frac{R}{g_{\text{sup}}}}
+    =2\pi\sqrt{\frac{6{,}37\cruz10^6}{9{,}81}}=5060\ \text{s}=84{,}4\ \text{min},\]</p>
+    <p>que é também o período de um satélite em órbita rasante. A coincidência não é
+    coincidência: o movimento no túnel é a projeção do movimento orbital circular.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 7.2</span>
+    <p><strong>Calcule a energia potencial gravitacional própria de uma esfera homogênea.</strong></p>
+    <p>Monte a esfera em camadas. Quando já existe uma esfera de raio \(r\), com massa
+    \(m(r)=M r^3/R^3\), trazer a casca seguinte, de massa \(dm=3Mr^2dr/R^3\), custa</p>
+    <p>\[dU=-\frac{Gm(r)\,dm}{r}=-\frac{3GM^2}{R^6}r^4\,dr.\]</p>
+    <p>Integrando de 0 a \(R\),</p>
+    <p>\[U=-\frac{3}{5}\frac{GM^2}{R}.\]</p>
+    <p>Para o Sol, isso dá \(-2{,}3\cruz10^{41}\) J. Dividindo pela luminosidade solar,
+    \(3{,}8\cruz10^{26}\) W, obtém-se cerca de 19 milhões de anos: é a escala de tempo de
+    Kelvin-Helmholtz, o tempo que o Sol brilharia só com a sua contração gravitacional. Foi
+    esse número, no século XIX, que levou os físicos a discordarem dos geólogos sobre a idade
+    da Terra, até a descoberta da fusão nuclear resolver a questão a favor dos geólogos.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 7.3</span>
+    <p><strong>Mostre que \(\nabla^2(1/r)=-4\pi\delta^3(\vet{r})\) e portanto que o potencial
+    de um ponto satisfaz a equação de Poisson.</strong></p>
+    <p>Para \(r\neq0\), o laplaciano radial dá</p>
+    <p>\[\nabla^2\frac1r=\frac{1}{r^2}\der{}{r}\left(r^2\der{}{r}\frac1r\right)
+    =\frac{1}{r^2}\der{}{r}\left(-1\right)=0.\]</p>
+    <p>Na origem a expressão é indefinida, e o conteúdo está justamente ali. Integrando sobre
+    uma bola de raio \(\epsilon\) e usando o teorema da divergência,</p>
+    <p>\[\int\nabla^2\frac1r\,d^3r=\oint\nabla\frac1r\cdot d\vet{A}
+    =\oint\left(-\frac{1}{r^2}\right)r^2d\Omega=-4\pi,\]</p>
+    <p>qualquer que seja \(\epsilon\). Uma função nula em toda parte e com integral \(-4\pi\)
+    é \(-4\pi\delta^3\). Com \(\Psi=-GM/r\), segue \(\nabla^2\Psi=4\pi GM\delta^3\), que é a
+    equação de Poisson com \(\rho=M\delta^3\).</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>7.1</b> Calcule \(\Psi(r)\) e \(g(r)\) dentro e fora de uma casca esférica de
+      raios \(a\) e \(b\), e verifique que as duas funções são contínuas em \(r=a\) e
+      \(r=b\).</li>
+
+      <li><b>7.2</b> Um fio infinito e homogêneo tem densidade linear \(\lambda\). Use a lei
+      de Gauss com um cilindro para achar \(g\) e mostre que \(\Psi\) cresce
+      logaritmicamente. Por que não se pode pôr o zero do potencial no infinito?</li>
+
+      <li><b>7.3</b> Mostre, pela lei de Gauss, que o campo de uma placa plana infinita de
+      densidade superficial \(\sigma\) não depende da distância à placa.</li>
+
+      <li><b>7.4</b> Para uma distribuição com \(\rho\propto r^{-\alpha}\), ache \(M(r)\) e
+      \(g(r)\). Para que valor de \(\alpha\) a velocidade circular \(v=\sqrt{rg}\) fica
+      independente de \(r\)? Compare com as curvas de rotação medidas em galáxias
+      espirais.</li>
+
+      <li><b>7.5</b> Deduza o termo de quadrupolo \(\Psi_2=G(C-A)(3\cos^2\theta-1)/2r^3\) a
+      partir da expansão em Legendre, usando a definição dos momentos principais da aula 2.</li>
+
+      <li><b>7.6</b> Com \(J_2=1{,}0826\cruz10^{-3}\), calcule a diferença relativa entre a
+      gravidade no polo e no equador da Terra devida só ao achatamento, e compare com o
+      efeito da rotação, que vale \(\omega^2R/g\).</li>
+
+      <li><b>7.7</b> Escreva um programa em Python que resolva a equação de Poisson numa
+      grade bidimensional pelo método da relaxação, com uma massa pontual no centro, e compare
+      o potencial obtido com \(\ln r\). Esse método volta na aula 12.</li>
+
+      <li><b>7.8</b> Mostre que a energia potencial própria de uma distribuição esférica pode
+      ser escrita como \(U=\frac12\int\rho\Psi\,d^3r\) e explique de onde vem o fator
+      \(\frac12\). Aplique à esfera homogênea e recupere \(-3GM^2/5R\).</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula06.html"><small>Aula anterior</small>← 6. Giroscópios</a>
+    <a class="prox" href="aula08.html"><small>Próximo módulo</small>8. Autogravidade →</a>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091420"></script>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 8: Autogravidade: Lane-Emden e estruturas estelares | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091420">
+<script src="assets/js/comum.js?v=202611091420"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num ativo" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Equilíbrio hidrostático</a></li>
+    <li><a href="#s2">2. A equação de Lane-Emden</a></li>
+    <li><a href="#s3">3. Massa, raio e o que a solução diz sobre estrelas</a></li>
+    <li><a href="#s4">4. Exercícios resolvidos</a></li>
+    <li><a href="#s5">5. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 8 · Gravitação</p>
+  <h1>Autogravidade: Lane-Emden e estruturas estelares</h1>
+  <p class="subtitulo">Uma bola de gás que se segura pela própria gravidade obedece a uma única equação adimensional, escrita em 1870 para calcular a temperatura do Sol. Dela saem o perfil de densidade das estrelas, a relação massa-raio e o limite de Chandrasekhar.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Escrever a condição de equilíbrio hidrostático de um corpo autogravitante;</li>
+      <li>Explicar por que as superfícies de pressão, densidade e potencial coincidem;</li>
+      <li>Adimensionalizar o problema e obter a equação de Lane-Emden;</li>
+      <li>Reconhecer as três soluções exatas e integrar as demais numericamente;</li>
+      <li>Extrair massa, raio e concentração central da solução;</li>
+      <li>Interpretar a relação massa-raio e o limite de Chandrasekhar.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Equilíbrio hidrostático</h2>
+
+  <p>Uma bola de gás no espaço está sujeita a duas tendências opostas. A própria gravidade a
+  comprime, e a pressão interna a empurra para fora. Quando as duas se equilibram em cada
+  ponto, o corpo está em <strong>equilíbrio hidrostático</strong>, que é a condição de
+  equilíbrio de um fluido parado:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Equilíbrio hidrostático</span>
+    \[\nabla p=-\rho\,\nabla\Psi=\rho\,\vet{g}.\]
+  </div>
+
+  <p>Essa equação é a generalização da lei de Stevin. Para um campo uniforme,
+  \(\Psi=gz\), ela dá \(dp/dz=-\rho g\), que é a variação de pressão com a altura numa
+  atmosfera ou numa piscina. A diferença aqui é que o campo não é dado de fora: ele é criado
+  pela própria massa que está sendo comprimida.</p>
+
+  <p>Tomando o divergente da equação acima e usando a equação de Poisson da aula 7,</p>
+
+  <p>\[\nabla\cdot\left(\frac{\nabla p}{\rho}\right)=-4\pi G\rho,\]</p>
+
+  <p>que é uma única equação para duas incógnitas, \(p\) e \(\rho\). Falta uma relação entre
+  elas, e é a física do gás que a fornece.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Um resultado que vem de graça</span>
+    <p>Da equação do equilíbrio segue \(\nabla p\cruz\nabla\Psi=0\): os gradientes são
+    paralelos, logo as superfícies de pressão constante coincidem com as equipotenciais, e
+    com as de densidade constante. É por isso que um corpo autogravitante isolado é esférico,
+    e é também por que o nível do mar acompanha o geoide e não uma esfera.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A equação de Lane-Emden</h2>
+
+  <p>A relação que fecha o sistema é a equação de estado. Para muitos casos de interesse ela
+  tem a forma <strong>politrópica</strong>,</p>
+
+  <p>\[p=K\rho^{\,1+1/n},\]</p>
+
+  <p>com \(n\) chamado índice politrópico. O caso \(n\to\infty\) é o gás isotérmico,
+  \(p=\rho k_BT/m\); o caso \(n=0\) é a densidade constante; o caso \(n=3/2\) descreve um gás
+  monoatômico adiabático e também o gás de elétrons degenerado não relativístico; e o caso
+  \(n=3\) é o gás degenerado relativístico.</p>
+
+  <p>Escreva \(\rho=\rho_c\theta^n\), com \(\rho_c\) a densidade central e \(\theta\) uma
+  função adimensional que vale 1 no centro. Defina também o comprimento</p>
+
+  <p>\[\alpha^2=\frac{\left(n+1\right)K\rho_c^{\,1/n-1}}{4\pi G},\qquad \xi=\frac{r}{\alpha}.\]</p>
+
+  <p>Com essas substituições, toda a dependência dos parâmetros físicos desaparece e sobra uma
+  única equação diferencial:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Equação de Lane-Emden</span>
+    \[\frac{1}{\xi^2}\der{}{\xi}\left(\xi^2\der{\theta}{\xi}\right)=-\theta^{\,n},
+    \qquad \theta(0)=1,\quad \theta'(0)=0.\]
+  </div>
+
+  <p>As condições iniciais dizem que a densidade central é finita e que não há cúspide no
+  centro. A equação foi escrita por
+  <a href="https://en.wikipedia.org/wiki/Jonathan_Homer_Lane">Jonathan Lane</a> em 1870, num
+  trabalho que tentava calcular a temperatura do Sol, e desenvolvida por
+  <a href="https://pt.wikipedia.org/wiki/Robert_Emden">Robert Emden</a>. Ela é não linear, e
+  só três valores de \(n\) dão solução em forma fechada:</p>
+
+  <div class="tabela-rolavel">
+  <table>
+    <thead><tr><th>\(n\)</th><th>\(\theta(\xi)\)</th><th>\(\xi_1\)</th><th>O que descreve</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>\(1-\xi^2/6\)</td><td>\(\sqrt6=2{,}4495\)</td>
+        <td>densidade uniforme</td></tr>
+      <tr><td>1</td><td>\(\sen\xi/\xi\)</td><td>\(\pi=3{,}1416\)</td>
+        <td>raio independente da massa</td></tr>
+      <tr><td>5</td><td>\(\left(1+\xi^2/3\right)^{-1/2}\)</td><td>infinito</td>
+        <td>massa finita, raio infinito</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Para os demais valores a integração é numérica, e o zero \(\xi_1\) de \(\theta\) marca a
+  superfície da estrela, onde pressão e densidade se anulam.</p>
+
+  <div data-widget="laneemden"></div>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Massa, raio e o que a solução diz sobre estrelas</h2>
+
+  <p>Resolvida a equação, as grandezas físicas saem das duas constantes. O raio é
+  \(R=\alpha\xi_1\) e a massa é a integral da densidade, que a própria equação permite
+  escrever em termos da derivada na borda:</p>
+
+  <p>\[M=4\pi\int_0^R\rho r^2dr=4\pi\alpha^3\rho_c\int_0^{\xi_1}\theta^n\xi^2d\xi
+  =-4\pi\alpha^3\rho_c\,\xi_1^2\theta'(\xi_1),\]</p>
+
+  <p>onde o último passo usa a própria equação de Lane-Emden para trocar \(\theta^n\xi^2\)
+  pela derivada de \(\xi^2\theta'\). Desse par de expressões sai a razão entre a densidade
+  central e a média,</p>
+
+  <p>\[\frac{\rho_c}{\bar\rho}=\frac{\xi_1}{3\left|\theta'(\xi_1)\right|},\]</p>
+
+  <p>que vale 1 para \(n=0\), como deve ser, e 54,18 para \(n=3\). Esse número diz que uma
+  estrela como o Sol é um objeto muito mais concentrado do que uma bola homogênea, com quase
+  toda a massa reunida no seu terço central.</p>
+
+  <p>Eliminando \(\rho_c\) entre as expressões de \(M\) e \(R\), obtém-se a relação
+  massa-raio:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Relação massa-raio politrópica</span>
+    \[R\propto K^{\frac{n}{3-n}}\,M^{\frac{1-n}{3-n}}.\]
+  </div>
+
+  <div data-widget="massaraio"></div>
+
+  <p>O expoente faz três coisas notáveis conforme \(n\) cresce. Em \(n=0\), ele vale
+  \(1/3\), que é o comportamento de qualquer objeto de densidade fixa: dobrar a massa aumenta
+  o raio em 26 %. Em \(n=1\), ele é zero, e todas as estrelas da família têm o mesmo raio. Em
+  \(n=3/2\), ele vale \(-1/3\), e o objeto <em>encolhe</em> ao ganhar massa, o que é o
+  comportamento observado nas anãs brancas. E quando \(n\to3\), o expoente diverge: o raio sai
+  da relação e o que fica fixado é a massa.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">O limite de Chandrasekhar</span>
+    <p>Numa anã branca, o que sustenta a estrela é a pressão de degenerescência dos elétrons,
+    que vem do princípio de exclusão e não da temperatura. Enquanto os elétrons são lentos
+    comparados com a luz, \(p\propto\rho^{5/3}\), isto é \(n=3/2\), e vale a relação
+    \(R\propto M^{-1/3}\): a estrela encolhe ao ganhar massa.</p>
+    <p>Encolhendo, a densidade sobe e os elétrons ficam mais rápidos. No limite
+    relativístico, \(p\propto\rho^{4/3}\), isto é \(n=3\), e a relação massa-raio degenera:
+    existe uma única massa compatível com o equilíbrio, e ela vale 1,44 massas solares.
+    Acima dela não há equilíbrio possível, e a estrela colapsa. <a
+    href="https://pt.wikipedia.org/wiki/Subrahmanyan_Chandrasekhar">Chandrasekhar</a> obteve
+    esse resultado em 1930, aos 19 anos, a bordo do navio que o levava da Índia à Inglaterra,
+    usando exatamente a equação desta aula.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 8.1</span>
+    <p><strong>Resolva a equação de Lane-Emden para \(n=0\).</strong></p>
+    <p>Com \(\theta^0=1\), a equação vira \(\left(\xi^2\theta'\right)'=-\xi^2\), que integra
+    direto:</p>
+    <p>\[\xi^2\theta'=-\frac{\xi^3}{3}+c_1\;\Longrightarrow\;
+    \theta'=-\frac{\xi}{3}+\frac{c_1}{\xi^2}.\]</p>
+    <p>A condição \(\theta'(0)=0\) força \(c_1=0\), e integrando de novo com
+    \(\theta(0)=1\),</p>
+    <p>\[\theta=1-\frac{\xi^2}{6},\qquad \xi_1=\sqrt6.\]</p>
+    <p>A densidade é constante, como manda \(n=0\), e o perfil \(\theta\) descreve a pressão:
+    \(p\propto\theta\) cai como \(1-r^2/R^2\). A pressão central de uma bola homogênea sai daí
+    e vale \(p_c=3GM^2/8\pi R^4\).</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 8.2</span>
+    <p><strong>Estime a pressão e a temperatura no centro do Sol pelo modelo \(n=3\).</strong></p>
+    <p>Para \(n=3\) a integração dá \(\xi_1=6{,}897\) e \(\rho_c/\bar\rho=54{,}18\). Com
+    \(\bar\rho_\odot=1409\) kg/m³, a densidade central é \(7{,}6\cruz10^4\) kg/m³.</p>
+    <p>A pressão central de um politropo é \(p_c=W_n\,GM^2/R^4\), com \(W_n=0{,}77\) para
+    \(n=3\). Substituindo os valores solares,</p>
+    <p>\[p_c=0{,}77\frac{\left(6{,}67\cruz10^{-11}\right)\left(1{,}99\cruz10^{30}\right)^2}
+    {\left(6{,}96\cruz10^8\right)^4}\approx1{,}3\cruz10^{16}\ \text{Pa},\]</p>
+    <p>cerca de \(10^{11}\) atmosferas. Da equação de estado do gás ideal com peso molecular
+    médio \(\mu=0{,}62\), a temperatura central fica em torno de
+    \(1{,}3\cruz10^7\) K. Os modelos solares detalhados dão \(1{,}57\cruz10^7\) K, de modo
+    que uma equação de uma linha chega a 20 % do valor aceito.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 8.3</span>
+    <p><strong>Mostre que a solução \(n=5\) tem massa finita apesar do raio infinito.</strong></p>
+    <p>Com \(\theta=(1+\xi^2/3)^{-1/2}\), a densidade cai como
+    \(\rho=\rho_c\theta^5\propto\xi^{-5}\) para \(\xi\) grande. A massa dentro de \(\xi\)
+    é</p>
+    <p>\[M(\xi)\propto\int^\xi\theta^5\xi'^2d\xi'\propto\int^\xi\xi'^{-3}d\xi',\]</p>
+    <p>que converge quando \(\xi\to\infty\). O valor exato é
+    \(-\xi^2\theta'\to\sqrt3\), de modo que a massa total é finita. Esse é o limite em que a
+    estrela deixa de ter uma superfície bem definida, e o modelo correspondente, chamado
+    esfera de Plummer, ainda é usado para descrever aglomerados estelares.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>8.1</b> Verifique por substituição direta que \(\theta=\sen\xi/\xi\) resolve a
+      equação de Lane-Emden com \(n=1\), e obtenha \(\rho_c/\bar\rho\) nesse caso.</li>
+
+      <li><b>8.2</b> Mostre que, para \(n=1\), o raio não depende da massa, e explique por que
+      isso faz desse caso um modelo grosseiro de estrela de nêutrons.</li>
+
+      <li><b>8.3</b> Partindo da equação do equilíbrio hidrostático, deduza a desigualdade
+      \(p_c>\frac{3}{8\pi}\frac{GM^2}{R^4}\) válida para qualquer distribuição em que a
+      densidade não cresça para fora.</li>
+
+      <li><b>8.4</b> Mostre que o teorema do virial para uma esfera autogravitante dá
+      \(2\med{T}+U=0\) e use-o para estimar a temperatura média do Sol sem resolver a equação
+      de Lane-Emden. Compare com o exercício resolvido 8.2.</li>
+
+      <li><b>8.5</b> Escreva um programa em Python que integre a equação de Lane-Emden com
+      <code>solve_ivp</code> para \(n\) entre 0 e 4,9, e tabule \(\xi_1\),
+      \(-\xi_1^2\theta'(\xi_1)\) e \(\rho_c/\bar\rho\). Confira os três casos exatos e
+      compare a sua tabela com a do simulador.</li>
+
+      <li><b>8.6</b> A integração numérica não pode começar em \(\xi=0\), onde o termo
+      \(2\theta'/\xi\) é indefinido. Obtenha a expansão em série
+      \(\theta\approx1-\xi^2/6+n\xi^4/120\) e use-a para começar em \(\xi=10^{-4}\).</li>
+
+      <li><b>8.7</b> Para uma anã branca com \(n=3/2\), estime o raio de um objeto de uma
+      massa solar e compare com o raio da Terra. Depois mostre que dobrar a massa reduz o raio
+      em cerca de 21 %.</li>
+
+      <li><b>8.8</b> A atmosfera isotérmica corresponde a \(n\to\infty\). Mostre que, nesse
+      limite, a equação vira \(\left(\xi^2\psi'\right)'=\xi^2e^{-\psi}\) com
+      \(\rho=\rho_ce^{-\psi}\), e que ela não tem borda: a densidade só cai como
+      \(\xi^{-2}\).</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula07.html"><small>Aula anterior</small>← 7. Campo gravitacional</a>
+    <span class="em-breve"><small>Em preparação</small>9. Pequenas oscilações</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091420"></script>
+</body>
+</html>
