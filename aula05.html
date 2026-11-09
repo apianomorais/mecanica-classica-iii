@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 5: Ângulos de Euler e o pião simétrico | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091410">
+<script src="assets/js/comum.js?v=202611091410"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num ativo" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Três ângulos, três rotações</a></li>
+    <li><a href="#s2">2. A velocidade angular nos ângulos de Euler</a></li>
+    <li><a href="#s3">3. A lagrangiana do pião pesado</a></li>
+    <li><a href="#s4">4. O potencial efetivo e a precessão estacionária</a></li>
+    <li><a href="#s5">5. Nutação: o que a ponta do eixo desenha</a></li>
+    <li><a href="#s6">6. Exercícios resolvidos</a></li>
+    <li><a href="#s7">7. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 5 · Álgebra tensorial e corpo rígido</p>
+  <h1>Ângulos de Euler e o pião simétrico</h1>
+  <p class="subtitulo">Três ângulos bastam para dizer onde o corpo está, e com eles a lagrangiana do pião pesado sai em uma linha. Duas coordenadas cíclicas reduzem o problema a um poço de potencial em que o ângulo de inclinação oscila, e o rastro do eixo revela os três tipos de movimento.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Definir os três ângulos de Euler e a ordem das rotações;</li>
+      <li>Escrever \(\vet{\omega}\) em termos de \(\dot\varphi\), \(\dot\theta\) e \(\dot\psi\);</li>
+      <li>Montar a lagrangiana do pião pesado e identificar as coordenadas cíclicas;</li>
+      <li>Reduzir o problema a um movimento unidimensional com potencial efetivo;</li>
+      <li>Obter a precessão estacionária e as suas duas raízes;</li>
+      <li>Distinguir os rastros com bicos, com laços e ondulados.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Três ângulos, três rotações</h2>
+
+  <p>As equações de Euler dizem como \(\vet{\omega}\) evolui no referencial do corpo, e não
+  dizem onde o corpo está. Para saber a orientação é preciso de três números que a
+  especifiquem, e o teorema de Euler de
+  <a href="https://apianomorais.github.io/mecanica-classica-ii/aula05.html">MC II, módulo
+  5</a>, garante que três bastam, porque qualquer orientação se alcança a partir de outra por
+  uma única rotação.</p>
+
+  <p>A escolha clássica é a de três rotações sucessivas, cada uma em torno de um eixo que a
+  anterior já moveu. Partindo dos eixos do corpo alinhados com os do espaço:</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Os três ângulos</span>
+    <ol>
+      <li><strong>Precessão \(\varphi\)</strong>: gire em torno de \(\vers{z}\), o eixo
+      vertical do espaço. Isso leva \(\vers{e}_2\) para uma nova direção \(\vers{e}\,'_2\),
+      chamada <em>linha dos nós</em>;</li>
+      <li><strong>Nutação \(\theta\)</strong>: gire em torno de \(\vers{e}\,'_2\). Isso
+      inclina o eixo do corpo \(\vers{e}_3\), que passa a ter ângulos polares \(\theta\) e
+      \(\varphi\);</li>
+      <li><strong>Giro próprio \(\psi\)</strong>: gire em torno do próprio \(\vers{e}_3\).
+      Isso roda o corpo em torno do seu eixo, sem mexer na direção do eixo.</li>
+    </ol>
+  </div>
+
+  <p>Os dois primeiros ângulos colocam o eixo do corpo onde se quer, e o terceiro diz quanto o
+  corpo já girou em torno dele. Para um pião, \(\varphi\) é o passeio do eixo em torno da
+  vertical, \(\theta\) é a inclinação, e \(\psi\) é o giro que o faz zumbir.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Convenções</span>
+    <p>Esta é a convenção \(z\)-\(y'\)-\(z''\), usada por Taylor e adotada aqui. Goldstein usa
+    \(z\)-\(x'\)-\(z''\), com a segunda rotação em torno da linha dos nós tomada como eixo
+    \(x\). As fórmulas de \(\omega_1\) e \(\omega_2\) mudam de aparência entre as duas, e
+    \(\omega_3\) não muda. Ao comparar com um livro, confira primeiro qual convenção ele
+    usa.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A velocidade angular nos ângulos de Euler</h2>
+
+  <p>A velocidade angular total é a soma das três contribuições, cada uma ao longo do seu
+  eixo:</p>
+
+  <p>\[\vet{\omega}=\dot\varphi\,\vers{z}+\dot\theta\,\vers{e}\,'_2+\dot\psi\,\vers{e}_3.\]</p>
+
+  <p>Essa soma é legítima porque velocidades angulares se somam como vetores, ainda que
+  rotações finitas não comutem. O que falta é escrever os três versores na base do corpo.
+  Aplicando as rotações, \(\vers{z}=(\sen\theta\cos\psi,\,-\sen\theta\sen\psi,\,\cos\theta)\)
+  e \(\vers{e}\,'_2=(\sen\psi,\,\cos\psi,\,0)\), de onde</p>
+
+  <div class="destaque">
+    <span class="anuncio">Velocidade angular nos ângulos de Euler</span>
+    \[\begin{aligned}
+    \omega_1&=\dot\varphi\sen\theta\cos\psi+\dot\theta\sen\psi\\
+    \omega_2&=-\dot\varphi\sen\theta\sen\psi+\dot\theta\cos\psi\\
+    \omega_3&=\dot\varphi\cos\theta+\dot\psi
+    \end{aligned}\]
+  </div>
+
+  <p>A terceira linha é a mais fácil de ler: o giro em torno do eixo do corpo recebe o
+  \(\dot\psi\) inteiro e mais a projeção da precessão sobre esse eixo. Para um pião simétrico,
+  \(\lambda_1=\lambda_2\), e as duas primeiras aparecem sempre na combinação</p>
+
+  <p>\[\omega_1^2+\omega_2^2=\dot\varphi^2\sen^2\theta+\dot\theta^2,\]</p>
+
+  <p>que não depende de \(\psi\). Essa é a razão técnica pela qual o pião simétrico é
+  solúvel: o ângulo de giro próprio desaparece da energia cinética.</p>
+
+  <p>\[T=\frac{\lambda_1}{2}\left(\dot\theta^2+\dot\varphi^2\sen^2\theta\right)
+  +\frac{\lambda_3}{2}\left(\dot\psi+\dot\varphi\cos\theta\right)^2.\]</p>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. A lagrangiana do pião pesado</h2>
+
+  <p>Considere agora um pião pesado: um corpo com simetria axial, apoiado num ponto fixo
+  \(O\) da sua ponta, com o centro de massa a uma distância \(R\) de \(O\) ao longo do eixo de
+  simetria. A energia potencial é \(U=MgR\cos\theta\), e a lagrangiana é a diferença, com os
+  momentos principais tomados em relação ao ponto de apoio:</p>
+
+  <p>\[\Lag=\frac{\lambda_1}{2}\left(\dot\theta^2+\dot\varphi^2\sen^2\theta\right)
+  +\frac{\lambda_3}{2}\left(\dot\psi+\dot\varphi\cos\theta\right)^2-MgR\cos\theta.\]</p>
+
+  <p>Essa lagrangiana não depende de \(\varphi\) nem de \(\psi\), que são portanto
+  coordenadas cíclicas. Pelo que foi visto em
+  <a href="https://apianomorais.github.io/mecanica-classica-ii/aula09.html">MC II, módulo
+  9</a>, os momentos conjugados correspondentes se conservam:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Duas constantes</span>
+    \[L_3=\pder{\Lag}{\dot\psi}=\lambda_3\left(\dot\psi+\dot\varphi\cos\theta\right),\qquad
+    L_z=\pder{\Lag}{\dot\varphi}
+    =\lambda_1\dot\varphi\sen^2\theta+L_3\cos\theta.\]
+  </div>
+
+  <p>As duas têm significado imediato: \(L_3\) é a componente do momento angular ao longo do
+  eixo do pião, e \(L_z\) é a componente vertical. A primeira se conserva porque o torque da
+  gravidade é horizontal, a segunda porque esse torque é também perpendicular à vertical.
+  Nenhuma das duas é o momento angular inteiro, que não se conserva.</p>
+
+  <p>Resolvendo a segunda para \(\dot\varphi\),</p>
+
+  <p>\[\dot\varphi=\frac{L_z-L_3\cos\theta}{\lambda_1\sen^2\theta}.\]</p>
+
+  <p>Essa expressão vai decidir, na seção 5, o aspecto do movimento: tudo depende de o
+  numerador trocar de sinal, tocar o zero ou nunca chegar lá.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. O potencial efetivo e a precessão estacionária</h2>
+
+  <p>Substituindo \(\dot\varphi\) e \(\dot\psi\) na energia total e isolando os termos que
+  dependem de \(\theta\), obtém-se um problema unidimensional:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Problema efetivo em \(\theta\)</span>
+    \[E'=\frac{\lambda_1}{2}\dot\theta^2+U_{\text{ef}}(\theta),\qquad
+    U_{\text{ef}}(\theta)=\frac{\left(L_z-L_3\cos\theta\right)^2}{2\lambda_1\sen^2\theta}
+    +MgR\cos\theta,\]
+  </div>
+
+  <p>com \(E'=E-L_3^2/2\lambda_3\), que é constante porque \(L_3\) é. O pião inteiro, com os
+  seus três ângulos, ficou reduzido ao movimento de uma partícula de massa \(\lambda_1\) num
+  potencial.</p>
+
+  <p>O primeiro termo de \(U_{\text{ef}}\) é uma barreira centrífuga: ele diverge em
+  \(\theta\to0\) e em \(\theta\to\pi\), porque \(\sen^2\theta\) vai a zero no denominador. A
+  consequência física é importante: enquanto \(L_z\neq\pm L_3\), o eixo do pião nunca alcança
+  a vertical. Ele fica preso entre dois valores \(\theta_1\) e \(\theta_2\), os pontos em que
+  a reta da energia corta o potencial.</p>
+
+  <div data-widget="potefetivo"></div>
+
+  <p>Quando a energia encosta no fundo do poço, \(\theta\) fica parado e sobra só a precessão:
+  é a <strong>precessão estacionária</strong>, com \(\dot\varphi\) constante. A condição
+  \(dU_{\text{ef}}/d\theta=0\) dá uma equação do segundo grau em \(\dot\varphi\),</p>
+
+  <p>\[\lambda_1\dot\varphi^2\cos\theta-L_3\dot\varphi+MgR=0,\]</p>
+
+  <p>com duas raízes: uma precessão lenta e uma rápida. Para um pião girando depressa,
+  \(L_3^2\gg4\lambda_1MgR\cos\theta\), a raiz lenta é</p>
+
+  <p>\[\dot\varphi\approx\frac{MgR}{L_3},\]</p>
+
+  <p>que é a fórmula do giroscópio e será reencontrada por outro caminho na aula 6. A raiz
+  rápida, \(\dot\varphi\approx L_3/\lambda_1\cos\theta\), existe matematicamente e raramente
+  é excitada na prática, porque exige uma condição inicial muito particular.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Nutação: o que a ponta do eixo desenha</h2>
+
+  <p>O movimento completo é a combinação de duas coisas que acontecem ao mesmo tempo: a
+  precessão, que faz o eixo circular em torno da vertical, e a nutação, que o faz subir e
+  descer entre \(\theta_1\) e \(\theta_2\). O desenho que a ponta do eixo traça depende do
+  sinal de \(\dot\varphi\) dentro dessa faixa, e há três casos.</p>
+
+  <div data-widget="piaorastro"></div>
+
+  <p>O caso dos <strong>bicos</strong> é o do pião solto do repouso, que é como qualquer pessoa
+  põe um pião a girar e depois o inclina. No instante inicial \(\dot\theta=0\) e
+  \(\dot\varphi=0\), portanto \(L_z=L_3\cos\theta_0\), e o numerador de \(\dot\varphi\) se
+  anula exatamente em \(\theta_0\). O eixo cai, ganha precessão, sobe de volta e para de novo:
+  cada bico é um instante de repouso momentâneo.</p>
+
+  <p>Se o pião receber um empurrão contra o sentido da precessão no instante em que é solto,
+  \(L_z\) fica menor e o numerador troca de sinal dentro da faixa: a precessão anda para trás
+  perto do ponto alto e para a frente no resto, e o rastro faz <strong>laços</strong>. Com um
+  empurrão a favor, o numerador nunca chega a zero, e o rastro é apenas
+  <strong>ondulado</strong>.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">Por que não se vê nutação num pião de brinquedo</span>
+    <p>A nutação de um pião rápido tem frequência \(\approx L_3/\lambda_1\), que é alta, e
+    amplitude proporcional a \(1/L_3^2\), que é pequena. Some-se a isso o atrito na ponta, que
+    amortece a nutação muito mais depressa do que a precessão, e o resultado é que um pião
+    real some com os bicos em poucos segundos e passa a precessar suavemente. O que se vê é a
+    precessão estacionária, que é o fundo do poço da seção 4, alcançado por dissipação.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 5.1</span>
+    <p><strong>Mostre que \(\omega_1^2+\omega_2^2=\dot\varphi^2\sen^2\theta+\dot\theta^2\).</strong></p>
+    <p>Some os quadrados das duas primeiras linhas da seção 2:</p>
+    <p>\[\left(\dot\varphi\sen\theta\cos\psi+\dot\theta\sen\psi\right)^2
+    +\left(-\dot\varphi\sen\theta\sen\psi+\dot\theta\cos\psi\right)^2.\]</p>
+    <p>Os termos cruzados aparecem com sinais opostos e se cancelam. Dos quadrados sobram
+    \(\dot\varphi^2\sen^2\theta(\cos^2\psi+\sen^2\psi)\) e
+    \(\dot\theta^2(\sen^2\psi+\cos^2\psi)\), que dão o resultado. O desaparecimento de
+    \(\psi\) é uma consequência da simetria axial, e é o que torna \(\psi\) cíclica.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 5.2</span>
+    <p><strong>Um pião tem \(\lambda_1=4\cruz10^{-5}\) kg·m², \(\lambda_3=2\cruz10^{-5}\)
+    kg·m², \(M=0{,}05\) kg e \(R=0{,}02\) m, girando a 300 rad/s. Calcule a frequência de
+    precessão estacionária com \(\theta=30^\circ\) e verifique a aproximação.</strong></p>
+    <p>Primeiro \(L_3=\lambda_3\omega_3=2\cruz10^{-5}\cruz300=6\cruz10^{-3}\) J·s. O torque
+    gravitacional dá \(MgR=0{,}05\cruz9{,}81\cruz0{,}02=9{,}81\cruz10^{-3}\) N·m.</p>
+    <p>\[\dot\varphi\approx\frac{MgR}{L_3}=\frac{9{,}81\cruz10^{-3}}{6\cruz10^{-3}}
+    =1{,}64\ \text{rad/s},\]</p>
+    <p>ou seja, uma volta a cada 3,8 s, bem mais lenta que o giro próprio. A aproximação exige
+    \(L_3^2\gg4\lambda_1MgR\cos\theta\): o lado esquerdo vale
+    \(3{,}6\cruz10^{-5}\) e o direito \(4\cruz4\cruz10^{-5}\cruz9{,}81\cruz10^{-3}
+    \cruz0{,}866=1{,}36\cruz10^{-6}\). A razão é 26, de modo que a aproximação é boa, com erro
+    da ordem de 2 %.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 5.3</span>
+    <p><strong>Mostre que, no caso dos bicos, o ângulo \(\theta_0\) é o menor valor da faixa
+    de nutação.</strong></p>
+    <p>No instante inicial \(\dot\theta=0\), logo \(\theta_0\) é um ponto de retorno. Para
+    saber se é o mínimo ou o máximo, basta o sinal de \(\ddot\theta\). Derivando
+    \(U_{\text{ef}}\), o primeiro termo tem um fator \((L_z-L_3\cos\theta)\), que se anula em
+    \(\theta_0\) justamente na condição de bico. Sobra só a derivada do termo
+    gravitacional:</p>
+    <p>\[\lambda_1\ddot\theta=-\der{U_{\text{ef}}}{\theta}\bigg|_{\theta_0}
+    =MgR\sen\theta_0>0.\]</p>
+    <p>Logo \(\theta\) cresce: o pião cai, como a intuição manda, e \(\theta_0\) é o valor
+    mínimo. Vale notar que esse argumento usa o anulamento duplo do primeiro termo, e é por
+    isso que ele só vale no caso dos bicos.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s7">7. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>5.1</b> Escreva \(\vers{z}\) e \(\vers{e}\,'_2\) na base do corpo partindo das
+      três matrizes de rotação, e confirme as expressões de \(\omega_1\), \(\omega_2\) e
+      \(\omega_3\) da seção 2.</li>
+
+      <li><b>5.2</b> Obtenha as mesmas componentes na convenção \(z\)-\(x'\)-\(z''\) de
+      Goldstein e compare com as da seção 2. O que muda e o que fica igual?</li>
+
+      <li><b>5.3</b> Resolva a equação do segundo grau da precessão estacionária e mostre que
+      ela só tem raízes reais se \(L_3^2\geq4\lambda_1MgR\cos\theta\). Interprete fisicamente
+      o que acontece com um pião lento demais.</li>
+
+      <li><b>5.4</b> Mostre que, para um pião rápido solto do repouso, a amplitude da nutação
+      é \(\Delta\theta\approx 2\lambda_1MgR\sen\theta_0/L_3^2\), e estime o valor para o pião
+      do exercício resolvido 5.2.</li>
+
+      <li><b>5.5</b> Um pião está em precessão estacionária quando recebe um pequeno impulso
+      vertical. Mostre que a nutação resultante tem frequência \(L_3/\lambda_1\).</li>
+
+      <li><b>5.6</b> Para o pião dormindo, isto é, girando com o eixo exatamente na vertical,
+      mostre que \(L_z=L_3\) e que a condição de estabilidade é
+      \(L_3^2>4\lambda_1MgR\). Explique por que um pião que perde rotação por atrito
+      eventualmente começa a cambalear.</li>
+
+      <li><b>5.7</b> Escreva um programa em Python que integre as equações de Lagrange do
+      pião pesado com <code>solve_ivp</code> e desenhe o rastro do eixo nos três casos da
+      seção 5. Compare com o simulador desta página e confirme que \(L_z\), \(L_3\) e \(E\)
+      se conservam.</li>
+
+      <li><b>5.8</b> Mostre que a matriz de rotação completa, produto das três, tem traço
+      \(1+2\cos\Theta\) com \(\Theta\) o ângulo da rotação única equivalente, e obtenha
+      \(\Theta\) em termos de \(\varphi\), \(\theta\) e \(\psi\).</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula04.html"><small>Aula anterior</small>← 4. Equações de Euler</a>
+    <span class="em-breve"><small>Em preparação</small>6. Giroscópios</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091410"></script>
+</body>
+</html>

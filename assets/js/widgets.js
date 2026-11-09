@@ -974,6 +974,219 @@
     registrarRedesenho(desenhar);
   };
 
+
+  /* =================================================================
+     9. O potencial efetivo do pião pesado
+     Reduzir o pião a um problema unidimensional em θ é o truque que
+     torna o movimento inteligível. O gráfico mostra a barreira nos
+     dois extremos, o poço no meio e a faixa de nutação que o nível de
+     energia recorta.
+     ================================================================= */
+  REGISTRO.potefetivo = function (raiz) {
+    var corpo = moldura(raiz, 'O poço em que o ângulo de inclinação oscila');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    /* unidades: λ₁ = 1, MgR = 1 */
+    var L3 = 3, Lz = 2.2, E = 2.6;
+
+    deslizante(corpo, '\\(L_3\\) (giro próprio):', 1, 6, 0.1, L3,
+      function (v) { L3 = v; desenhar(); }, function (v) { return F.fmt(v, 1); });
+    deslizante(corpo, '\\(L_z\\) (momento vertical):', -3, 6, 0.1, Lz,
+      function (v) { Lz = v; desenhar(); }, function (v) { return F.fmt(v, 1); });
+    deslizante(corpo, 'Energia \\(E\\):', 0.5, 8, 0.05, E,
+      function (v) { E = v; desenhar(); }, function (v) { return F.fmt(v, 2); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\theta\\) mínimo', k: 't1' }, { rot: '\\(\\theta\\) máximo', k: 't2' },
+      { rot: '\\(\\theta\\) de equilíbrio', k: 't0' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function U(t) {
+      var sn = Math.sin(t);
+      if (Math.abs(sn) < 1e-4) return 1e6;
+      var d = Lz - L3 * Math.cos(t);
+      return d * d / (2 * sn * sn) + Math.cos(t);
+    }
+
+    function desenhar() {
+      var lo = 0.02, hi = Math.PI - 0.02;
+      var umin = 1e9, tmin = 0;
+      for (var t = lo; t <= hi; t += 0.001) {
+        var u = U(t);
+        if (u < umin) { umin = u; tmin = t; }
+      }
+      var g = G.eixos(cv, {
+        xmin: 0, xmax: 180, ymin: Math.min(umin - 0.5, -1.2),
+        ymax: Math.max(E + 1.5, umin + 3), divY: 5,
+        altura: Math.min(300, Math.max(220, cv.clientWidth * 0.42)),
+        rotX: 'θ (graus)', rotY: 'U_ef  (MgR = 1)',
+        marcasX: G.marcasLineares(0, 180, 6, 0),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+
+      /* faixa permitida */
+      var t1 = null, t2 = null;
+      for (t = lo; t <= hi; t += 0.0005) {
+        if (U(t) <= E) { if (t1 === null) t1 = t; t2 = t; }
+      }
+      if (t1 !== null) {
+        g.ct.fillStyle = 'rgba(122,58,107,.10)';
+        g.ct.fillRect(g.X(t1 * 180 / Math.PI), g.y0,
+                      g.X(t2 * 180 / Math.PI) - g.X(t1 * 180 / Math.PI), g.y1 - g.y0);
+      }
+
+      g.ct.save();
+      g.ct.beginPath();
+      g.ct.rect(g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0);
+      g.ct.clip();
+      G.curva(g, function (x) { return U(x * Math.PI / 180); }, G.COR.mestra, 2.2);
+      g.ct.restore();
+      g.ct.strokeStyle = G.COR.vinho; g.ct.lineWidth = 1.6;
+      g.ct.setLineDash([6, 4]);
+      g.ct.beginPath(); g.ct.moveTo(g.x0, g.Y(E)); g.ct.lineTo(g.x1, g.Y(E)); g.ct.stroke();
+      g.ct.setLineDash([]);
+      rotulo(g.ct, 'E', g.x1 - 14, g.Y(E) - 10, G.COR.vinho);
+
+      mostrar({
+        t1: t1 === null ? '—' : F.fmt(t1 * 180 / Math.PI, 1) + '°',
+        t2: t2 === null ? '—' : F.fmt(t2 * 180 / Math.PI, 1) + '°',
+        t0: F.fmt(tmin * 180 / Math.PI, 1) + '°'
+      });
+
+      saida.innerHTML = t1 === null
+        ? 'Com esta energia não há movimento possível: \\(E\\) está abaixo do fundo do '
+          + 'poço, e o pião não pode existir nessas condições.'
+        : (t2 - t1 < 0.02
+          ? 'A energia encostou no fundo do poço: o ângulo fica parado em \\('
+            + F.fmt(tmin * 180 / Math.PI, 1) + '^\\circ\\) e o eixo apenas precessa, sem '
+            + 'subir nem descer. É a <strong>precessão estacionária</strong>.'
+          : 'O ângulo do eixo oscila entre os dois valores dos cartões, que são os pontos '
+            + 'em que a reta da energia corta o potencial efetivo. Essa oscilação é a '
+            + '<strong>nutação</strong>, e acontece ao mesmo tempo que a precessão em '
+            + '\\(\\varphi\\). As paredes em \\(0^\\circ\\) e \\(180^\\circ\\) são '
+            + 'infinitas sempre que \\(L_z\\neq\\pm L_3\\): o eixo nunca chega à vertical.');
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+  /* =================================================================
+     10. O desenho que a ponta do eixo faz
+     Com o mesmo potencial efetivo, integra-se θ(t) e φ(t) e desenha-se
+     o rastro do eixo visto de cima. Os três casos clássicos aparecem
+     conforme Lz esteja abaixo, igual ou acima de L₃cos θ₀.
+     ================================================================= */
+  REGISTRO.piaorastro = function (raiz) {
+    var corpo = moldura(raiz, 'O rastro do eixo do pião, visto de cima');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var L3 = 4, caso = 1, t0 = 60;
+
+    opcoes(corpo, [{ rot: 'Com laços', v: 0 }, { rot: 'Com bicos', v: 1 },
+                   { rot: 'Ondulado', v: 2 }], 1, function (v) { caso = v; desenhar(); });
+    deslizante(corpo, 'Giro próprio \\(L_3\\):', 2, 8, 0.1, L3,
+      function (v) { L3 = v; desenhar(); }, function (v) { return F.fmt(v, 1); });
+    deslizante(corpo, 'Inclinação inicial \\(\\theta_0\\):', 20, 120, 1, t0,
+      function (v) { t0 = v; desenhar(); }, function (v) { return v.toFixed(0) + '°'; });
+
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var th0 = t0 * Math.PI / 180;
+
+      function dU(Lz, t) {
+        var h = 1e-6;
+        function U(x) {
+          var sn = Math.sin(x), d = Lz - L3 * Math.cos(x);
+          return d * d / (2 * sn * sn) + Math.cos(x);
+        }
+        return (U(t + h) - U(t - h)) / (2 * h);
+      }
+
+      /* Lz do caso com bicos: a precessão para no ponto de partida */
+      var Lbico = L3 * Math.cos(th0);
+
+      /* acima de um certo Lz o eixo sobe em vez de cair, e a figura deixa de
+         ter nutação visível; o valor limite sai por bisseção */
+      function limite() {
+        var a = Lbico, b = Lbico + 8;
+        for (var i = 0; i < 50; i++) {
+          var m = (a + b) / 2;
+          if (dU(m, th0) < 0) a = m; else b = m;
+        }
+        return a;
+      }
+
+      var Lz = caso === 1 ? Lbico
+             : caso === 0 ? Lbico - 0.45
+             : Lbico + 0.5 * (limite() - Lbico);
+
+      var y = [th0, 0], ph = 0, pts = [], h = 0.002;
+      function f(v) { return [v[1], -dU(Lz, v[0])]; }
+      for (var i = 0; i < 18000; i++) {
+        pts.push([y[0], ph]);
+        var k1 = f(y);
+        var k2 = f([y[0] + h / 2 * k1[0], y[1] + h / 2 * k1[1]]);
+        var k3 = f([y[0] + h / 2 * k2[0], y[1] + h / 2 * k2[1]]);
+        var k4 = f([y[0] + h * k3[0], y[1] + h * k3[1]]);
+        y = [y[0] + h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]),
+             y[1] + h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1])];
+        y[0] = Math.max(0.03, Math.min(Math.PI - 0.03, y[0]));
+        ph += h * (Lz - L3 * Math.cos(y[0])) / (Math.sin(y[0]) * Math.sin(y[0]));
+      }
+
+      var p = G.preparar(cv, Math.min(340, Math.max(260, cv.clientWidth * 0.56)));
+      var ct = p.ct, cx = p.L / 2, cy = p.A / 2;
+      var tmax = 0;
+      pts.forEach(function (q) { tmax = Math.max(tmax, q[0]); });
+      var esc = Math.min(p.L, p.A) * 0.42 / Math.max(tmax, 0.2);
+
+      /* círculos de referência a cada 30° de inclinação */
+      ct.strokeStyle = '#e4ebef'; ct.lineWidth = 1;
+      for (var a = 30; a <= 120; a += 30) {
+        var r = esc * a * Math.PI / 180;
+        if (r > Math.min(p.L, p.A) * 0.46) break;
+        ct.beginPath(); ct.arc(cx, cy, r, 0, 2 * Math.PI); ct.stroke();
+        rotulo(ct, a + '°', cx + r * 0.71, cy - r * 0.71, '#aab4bd');
+      }
+      ct.beginPath(); ct.arc(cx, cy, 3, 0, 2 * Math.PI);
+      ct.fillStyle = '#6b7682'; ct.fill();
+      rotulo(ct, 'vertical', cx, cy - 14, '#6b7682');
+
+      ct.beginPath();
+      pts.forEach(function (q, i) {
+        var r = esc * q[0];
+        var x = cx + r * Math.cos(q[1]), y = cy - r * Math.sin(q[1]);
+        if (i === 0) ct.moveTo(x, y); else ct.lineTo(x, y);
+      });
+      ct.strokeStyle = G.COR.mestra; ct.lineWidth = 1.6; ct.stroke();
+
+      saida.innerHTML = caso === 1
+        ? 'Soltando o pião do repouso, com \\(\\dot\\varphi=0\\) e \\(\\dot\\theta=0\\), o '
+          + 'rastro tem <strong>bicos</strong>: em cada ponto mais alto o eixo para por um '
+          + 'instante antes de voltar a cair. É o que se vê num pião de verdade solto com '
+          + 'cuidado, e o caso corresponde a \\(L_z=L_3\\cos\\theta_0\\).'
+        : caso === 0
+          ? 'Com \\(L_z\\) maior, a precessão chega a inverter de sentido perto do ponto '
+            + 'mais alto, e o rastro faz <strong>laços</strong>. O eixo recua um pouco '
+            + 'antes de seguir adiante.'
+          : 'Com \\(L_z\\) menor, a precessão nunca muda de sinal e o rastro é apenas '
+            + '<strong>ondulado</strong>. Os três casos diferem só pelo valor de '
+            + '\\(L_z\\) em relação a \\(L_3\\cos\\theta_0\\).';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {
