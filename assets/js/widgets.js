@@ -368,6 +368,242 @@
     registrarRedesenho(desenhar);
   };
 
+
+  /* ---------- projeção ortográfica simples, usada pelos widgets 3D ---------- */
+  function projetor(azim, elev, esc, cx, cy) {
+    var ca = Math.cos(azim), sa = Math.sin(azim);
+    var ce = Math.cos(elev), se = Math.sin(elev);
+    return function (p) {
+      var x = p[0] * ca + p[1] * sa;
+      var y = -p[0] * sa + p[1] * ca;
+      return { x: cx + esc * x, y: cy - esc * (y * se + p[2] * ce),
+               z: y * ce - p[2] * se };
+    };
+  }
+
+  /* =================================================================
+     3. Por que L deixa de ser paralelo a ω
+     O halteres inclinado é o exemplo mínimo em que a conta fecha à
+     mão: L sai perpendicular à barra, e portanto só fica paralelo a ω
+     quando a barra é perpendicular ao eixo. O widget mostra o cone que
+     L varre e o torque que o mancal precisa fazer para manter o eixo
+     no lugar.
+     ================================================================= */
+  REGISTRO.desvioL = function (raiz) {
+    var corpo = moldura(raiz, 'O halteres inclinado');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var grau = 60, fase = 0, animando = true;
+
+    deslizante(corpo, 'Inclinação da barra \\(\\theta\\):', 5, 90, 1, grau,
+      function (v) { grau = v; desenhar(); },
+      function (v) { return v.toFixed(0) + '°'; });
+
+    var bot = el('div', { class: 'botoes' });
+    var bAnim = el('button', { type: 'button', texto: 'Parar a rotação' });
+    bot.appendChild(bAnim);
+    corpo.appendChild(bot);
+    bAnim.addEventListener('click', function () {
+      animando = !animando;
+      bAnim.textContent = animando ? 'Parar a rotação' : 'Girar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(I_{zz}/mr^2\\)', k: 'izz' },
+      { rot: '\\(I_{xz}/mr^2\\)', k: 'ixz' },
+      { rot: '\\(\\angle(\\vet{L},\\vet{\\omega})\\)', k: 'ang' },
+      { rot: '\\(|\\vet{\\tau}|/mr^2\\omega^2\\)', k: 'tau' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(340, Math.max(250, cv.clientWidth * 0.56)));
+      var ct = p.ct, cx = p.L / 2, cy = p.A / 2 + 10;
+      var esc = Math.min(p.L, p.A) * 0.3;
+      var th = grau * Math.PI / 180;
+      var P = projetor(fase, 0.42, esc, cx, cy);
+
+      /* as duas massas em ±r, inclinadas de θ em relação a z */
+      var u = [Math.sin(th), 0, Math.cos(th)];
+      var A = P(u), B = P([-u[0], -u[1], -u[2]]);
+      var O = P([0, 0, 0]);
+
+      /* eixo de rotação */
+      ct.strokeStyle = '#c8d0d7'; ct.lineWidth = 1.5;
+      var zt = P([0, 0, 1.45]), zb = P([0, 0, -1.45]);
+      ct.beginPath(); ct.moveTo(zb.x, zb.y); ct.lineTo(zt.x, zt.y); ct.stroke();
+
+      /* cone varrido por L: L é perpendicular à barra, no plano da barra e de z */
+      var Lz = Math.sin(th) * Math.sin(th), Lx = -Math.sin(th) * Math.cos(th);
+      var Lm = Math.sqrt(Lx * Lx + Lz * Lz);
+      ct.beginPath();
+      for (var i = 0; i <= 72; i++) {
+        var a = i / 72 * 2 * Math.PI;
+        var q = P([1.15 * Lx / Lm * Math.cos(a), 1.15 * Lx / Lm * Math.sin(a),
+                   1.15 * Lz / Lm]);
+        if (i === 0) ct.moveTo(q.x, q.y); else ct.lineTo(q.x, q.y);
+      }
+      ct.strokeStyle = '#d9c3d4'; ct.setLineDash([4, 4]); ct.lineWidth = 1.3;
+      ct.stroke(); ct.setLineDash([]);
+
+      /* barra e massas */
+      ct.strokeStyle = '#6b7682'; ct.lineWidth = 3;
+      ct.beginPath(); ct.moveTo(A.x, A.y); ct.lineTo(B.x, B.y); ct.stroke();
+      [A, B].forEach(function (q) {
+        ct.beginPath(); ct.arc(q.x, q.y, 9, 0, 2 * Math.PI);
+        ct.fillStyle = '#4a5560'; ct.fill();
+      });
+
+      /* ω e L */
+      seta(ct, O.x, O.y, zt.x, zt.y, G.COR.azul, 2.6);
+      var Lr = P([1.3 * Lx / Lm, 0, 1.3 * Lz / Lm]);
+      seta(ct, O.x, O.y, Lr.x, Lr.y, G.COR.vinho, 2.6);
+      rotulo(ct, 'ω', zt.x + 14, zt.y, G.COR.azul);
+      rotulo(ct, 'L', Lr.x + 14, Lr.y - 6, G.COR.vinho);
+
+      var ang = 90 - grau;
+      mostrar({
+        izz: F.fmt(2 * Math.sin(th) * Math.sin(th), 3),
+        ixz: F.fmt(-2 * Math.sin(th) * Math.cos(th), 3),
+        ang: F.fmt(ang, 1) + '°',
+        tau: F.fmt(2 * Math.sin(th) * Math.cos(th), 3)
+      });
+
+      saida.innerHTML = grau > 88
+        ? 'Com a barra perpendicular ao eixo, \\(I_{xz}=0\\) e o momento angular aponta '
+          + 'ao longo de \\(\\vet{\\omega}\\). Esta é a situação de MC II, e é a única em '
+          + 'que um número basta.'
+        : 'O momento angular é perpendicular à barra, e por isso faz com \\(\\vet{\\omega}\\) '
+          + 'o ângulo \\(90^\\circ-\\theta=' + F.fmt(ang, 1) + '^\\circ\\). Como '
+          + '\\(\\vet{L}\\) gira junto com a barra, ele varre o cone pontilhado, muda de '
+          + 'direção o tempo todo, e o mancal precisa fazer o torque do último cartão só '
+          + 'para manter o eixo no lugar.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() {
+      if (!animando) return;
+      fase += 0.03;
+      desenhar();
+      requestAnimationFrame(laco);
+    }
+
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
+  /* =================================================================
+     4. O cubo girando em torno de um vértice
+     O tensor do cubo sai por integração no texto; aqui o aluno escolhe
+     a direção de ω e vê o ângulo entre L e ω, que é nulo em três
+     direções privilegiadas. São os eixos principais, que a aula 3
+     calcula.
+     ================================================================= */
+  REGISTRO.cubovertice = function (raiz) {
+    var corpo = moldura(raiz, 'O cubo pelo vértice: para onde aponta L');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    /* em unidades de Ma², com a origem no vértice */
+    var I = [[8 / 12, -3 / 12, -3 / 12], [-3 / 12, 8 / 12, -3 / 12],
+             [-3 / 12, -3 / 12, 8 / 12]];
+    var polar = 54.7356, azimute = 45, fase = 0.9;
+
+    var dP = deslizante(corpo, 'Polar \\(\\vartheta\\) de \\(\\vet{\\omega}\\):', 0, 90, 1,
+      polar, function (v) { polar = v; desenhar(); },
+      function (v) { return v.toFixed(0) + '°'; });
+    var dA = deslizante(corpo, 'Azimute \\(\\varphi\\) de \\(\\vet{\\omega}\\):', 0, 90, 1,
+      azimute, function (v) { azimute = v; desenhar(); },
+      function (v) { return v.toFixed(0) + '°'; });
+
+    function irPara(p, a) {
+      dP.value = String(p); dP.dispatchEvent(new Event('input'));
+      dA.value = String(a); dA.dispatchEvent(new Event('input'));
+    }
+    opcoes(corpo, [{ rot: 'Aresta', v: 0 }, { rot: 'Diagonal da face', v: 1 },
+                   { rot: 'Diagonal do cubo', v: 2 }], 2, function (v) {
+      if (v === 0) irPara(90, 0);
+      else if (v === 1) irPara(90, 45);
+      else irPara(55, 45);
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(\\angle(\\vet{L},\\vet{\\omega})\\)', k: 'ang' },
+      { rot: '\\(I_{\\text{eixo}}/Ma^2\\)', k: 'ief' },
+      { rot: '\\(2T/Ma^2\\omega^2\\)', k: 'ene' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function aplica(M, v) {
+      return [M[0][0] * v[0] + M[0][1] * v[1] + M[0][2] * v[2],
+              M[1][0] * v[0] + M[1][1] * v[1] + M[1][2] * v[2],
+              M[2][0] * v[0] + M[2][1] * v[1] + M[2][2] * v[2]];
+    }
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(350, Math.max(260, cv.clientWidth * 0.58)));
+      var ct = p.ct, cx = p.L / 2 - 20, cy = p.A / 2 + 40;
+      var esc = Math.min(p.L, p.A) * 0.4;
+      var P = projetor(fase, 0.46, esc, cx, cy);
+
+      /* arestas do cubo unitário com um vértice na origem */
+      var V = [];
+      for (var a = 0; a < 2; a++) for (var b = 0; b < 2; b++) for (var c = 0; c < 2; c++)
+        V.push([a, b, c]);
+      ct.strokeStyle = '#b9c3cc'; ct.lineWidth = 1.4;
+      for (var i = 0; i < V.length; i++)
+        for (var j = i + 1; j < V.length; j++) {
+          var d = Math.abs(V[i][0] - V[j][0]) + Math.abs(V[i][1] - V[j][1])
+                + Math.abs(V[i][2] - V[j][2]);
+          if (d !== 1) continue;
+          var q1 = P(V[i]), q2 = P(V[j]);
+          ct.beginPath(); ct.moveTo(q1.x, q1.y); ct.lineTo(q2.x, q2.y); ct.stroke();
+        }
+
+      var th = polar * Math.PI / 180, ph = azimute * Math.PI / 180;
+      var n = [Math.sin(th) * Math.cos(ph), Math.sin(th) * Math.sin(ph), Math.cos(th)];
+      var L = aplica(I, n);
+      var Lm = Math.sqrt(L[0] * L[0] + L[1] * L[1] + L[2] * L[2]);
+      var Lu = [L[0] / Lm, L[1] / Lm, L[2] / Lm];
+
+      var O = P([0, 0, 0]);
+      ct.beginPath(); ct.arc(O.x, O.y, 4, 0, 2 * Math.PI);
+      ct.fillStyle = '#4a5560'; ct.fill();
+      /* ω um pouco mais longa, para continuar visível quando L coincide com ela */
+      var qw = P([1.7 * n[0], 1.7 * n[1], 1.7 * n[2]]);
+      var qL = P([1.3 * Lu[0], 1.3 * Lu[1], 1.3 * Lu[2]]);
+      seta(ct, O.x, O.y, qw.x, qw.y, G.COR.azul, 2.6);
+      seta(ct, O.x, O.y, qL.x, qL.y, G.COR.vinho, 3.2);
+      rotulo(ct, 'ω', qw.x + 13, qw.y - 8, G.COR.azul);
+      rotulo(ct, 'L', qL.x - 6, qL.y + 15, G.COR.vinho);
+
+      var cosA = Math.max(-1, Math.min(1, (L[0] * n[0] + L[1] * n[1] + L[2] * n[2]) / Lm));
+      var ang = Math.acos(cosA) * 180 / Math.PI;
+      var ief = L[0] * n[0] + L[1] * n[1] + L[2] * n[2];
+      mostrar({ ang: (ang < 0.01 ? '0,00' : F.fmt(ang, 2)) + '°',
+                ief: F.fmt(ief, 4), ene: F.fmt(ief, 4) });
+
+      saida.innerHTML = ang < 0.6
+        ? 'Nesta direção \\(\\vet{L}\\) e \\(\\vet{\\omega}\\) são paralelos: ela é um '
+          + '<strong>eixo principal</strong> do cubo, e o momento de inércia em torno dela '
+          + 'é o autovalor \\(' + F.fmt(ief, 4) + '\\,Ma^2\\). A aula 3 mostra como achar '
+          + 'essas direções sem procurar.'
+        : 'O ângulo entre \\(\\vet{L}\\) e \\(\\vet{\\omega}\\) vale \\('
+          + F.fmt(ang, 2) + '^\\circ\\). Pela aresta ele chega a 27,94°, e pela diagonal da '
+          + 'face a 40,32°. O momento de inércia em torno do eixo, que aparece na energia '
+          + 'cinética, é sempre \\(\\vers{n}\\cdot\\Ten{I}\\cdot\\vers{n}\\).';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

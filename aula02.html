@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 2: O tensor de inércia | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091357">
+<script src="assets/js/comum.js?v=202611091357"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num ativo" title="Aula 2: O tensor de inércia">2</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Quando o eixo fixo esconde o problema</a></li>
+    <li><a href="#s2">2. A dedução e a definição do tensor</a></li>
+    <li><a href="#s3">3. Momentos e produtos de inércia</a></li>
+    <li><a href="#s4">4. O cubo em torno de um vértice</a></li>
+    <li><a href="#s5">5. A energia cinética como forma quadrática</a></li>
+    <li><a href="#s6">6. O teorema de Steiner tensorial</a></li>
+    <li><a href="#s7">7. Exercícios resolvidos</a></li>
+    <li><a href="#s8">8. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 2 · Álgebra tensorial e corpo rígido</p>
+  <h1>O tensor de inércia</h1>
+  <p class="subtitulo">O momento de inércia escalar de MC II é a projeção de um objeto maior. Esta aula deduz esse objeto a partir do produto triplo, escreve as suas componentes, calcula o exemplo do cubo girando em torno de um vértice e mostra como mudar a origem com o teorema de Steiner na forma tensorial.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Explicar por que \(\vet{L}\) não é paralelo a \(\vet{\omega}\) em geral;</li>
+      <li>Deduzir \(I_{ij}=\sum m(r^2\delta_{ij}-r_ir_j)\) a partir do produto triplo;</li>
+      <li>Identificar momentos e produtos de inércia e o que cada um mede;</li>
+      <li>Usar a simetria do corpo para anular produtos de inércia sem integrar;</li>
+      <li>Calcular o tensor de um corpo contínuo e escrever a energia cinética de rotação;</li>
+      <li>Aplicar o teorema de Steiner na forma tensorial.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Quando o eixo fixo esconde o problema</h2>
+
+  <p>Um corpo gira em torno de um eixo fixo, que tomamos como o eixo \(z\), com velocidade
+  angular \(\vet{\omega}=\omega\vers{z}\). Cada partícula tem velocidade
+  \(\vet{v}_\alpha=\vet{\omega}\cruz\vet{r}_\alpha=\omega(-y_\alpha,x_\alpha,0)\), e o momento
+  angular total é a soma dos \(m_\alpha\vet{r}_\alpha\cruz\vet{v}_\alpha\). A componente ao
+  longo do eixo é a conhecida:</p>
+
+  <p>\[L_z=\omega\sum_\alpha m_\alpha\left(x_\alpha^2+y_\alpha^2\right)
+  =\omega\sum_\alpha m_\alpha\rho_\alpha^2=I_z\,\omega,\]</p>
+
+  <p>com \(\rho_\alpha\) a distância da partícula ao eixo. Até aqui nada é novo em relação a
+  <a href="https://apianomorais.github.io/mecanica-classica-ii/aula02.html">MC II</a>. O que
+  costuma passar despercebido são as outras duas componentes, que ninguém calcula porque não
+  são o que se pediu:</p>
+
+  <p>\[L_x=-\omega\sum_\alpha m_\alpha x_\alpha z_\alpha,\qquad
+  L_y=-\omega\sum_\alpha m_\alpha y_\alpha z_\alpha.\]</p>
+
+  <p>Essas somas não têm motivo nenhum para serem nulas. Basta que a massa esteja distribuída
+  de modo que produtos \(xz\) não se cancelem, e o momento angular ganha componentes
+  perpendiculares ao eixo de rotação. A conclusão é desconfortável: \(\vet{\omega}\) aponta ao
+  longo de \(z\) e \(\vet{L}\) aponta para outro lado.</p>
+
+  <div class="bloco int">
+    <span class="rotulo">O exemplo mínimo</span>
+    <p>Duas massas iguais nas pontas de uma barra rígida que passa pelo centro, inclinada de
+    \(\theta\) em relação ao eixo de rotação. Cada massa tem
+    \(\vet{\ell}=m\vet{r}\cruz\vet{v}\), que é perpendicular à barra, e as duas contribuições
+    se somam. O momento angular total é perpendicular à barra e faz, com o eixo, o ângulo
+    \(90^\circ-\theta\). Só quando a barra está perpendicular ao eixo é que \(\vet{L}\) e
+    \(\vet{\omega}\) se alinham.</p>
+  </div>
+
+  <div data-widget="desvioL"></div>
+
+  <p>O desvio tem consequência prática imediata. Como \(\vet{L}\) gira junto com o corpo, ele
+  muda de direção continuamente, e algo precisa fornecer o torque
+  \(\vet{\tau}=d\vet{L}/dt\). Esse algo é o mancal, que empurra o eixo para um lado e para o
+  outro a cada volta. É exatamente isso que se corrige ao balancear a roda de um carro:
+  acrescentam-se pesos de chumbo até que os produtos \(\sum m x z\) e \(\sum m y z\) se
+  anulem, e aí o eixo para de sacudir.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A dedução e a definição do tensor</h2>
+
+  <p>Para um eixo qualquer, \(\vet{\omega}=(\omega_x,\omega_y,\omega_z)\), o cálculo é o mesmo
+  com mais paciência. Partindo de \(\vet{v}_\alpha=\vet{\omega}\cruz\vet{r}_\alpha\),</p>
+
+  <p>\[\vet{L}=\sum_\alpha m_\alpha\,\vet{r}_\alpha\cruz
+  \left(\vet{\omega}\cruz\vet{r}_\alpha\right).\]</p>
+
+  <p>O produto triplo se abre pela regra BAC-CAB da
+  <a href="aula01.html#s3">aula 1</a>, com \(\vet{A}=\vet{r}_\alpha\),
+  \(\vet{B}=\vet{\omega}\) e \(\vet{C}=\vet{r}_\alpha\):</p>
+
+  <p>\[\vet{L}=\sum_\alpha m_\alpha\left[\vet{\omega}\,r_\alpha^2
+  -\vet{r}_\alpha\left(\vet{r}_\alpha\cdot\vet{\omega}\right)\right].\]</p>
+
+  <p>Em componentes, usando \(\omega_i=\delta_{ij}\omega_j\) para pôr o \(\omega_j\) em
+  evidência nos dois termos:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Tensor de inércia</span>
+    \[L_i=I_{ij}\omega_j,\qquad
+    I_{ij}=\sum_\alpha m_\alpha\left(r_\alpha^2\delta_{ij}-r_{\alpha i}r_{\alpha j}\right).\]
+  </div>
+
+  <p>Esse é o objeto que a aula 1 preparou. Ele é linear, tem nove componentes, e transforma
+  \(\vet{\omega}\) em \(\vet{L}\) sem obrigá-los a serem paralelos. A sua simetria é imediata
+  da definição, porque \(\delta_{ij}\) e \(r_ir_j\) são ambos simétricos na troca de \(i\) com
+  \(j\):</p>
+
+  <p>\[I_{ij}=I_{ji}.\]</p>
+
+  <p>Pelo teorema espectral da aula 1, essa simetria já garante, sem nenhuma conta, que
+  existem três direções perpendiculares entre si em que \(\vet{L}\) sai paralelo a
+  \(\vet{\omega}\). São os eixos principais, e a aula 3 os calcula.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Cuidado com a origem</span>
+    <p>O tensor de inércia depende do ponto em relação ao qual os \(\vet{r}_\alpha\) são
+    medidos. Falar no "tensor de inércia do cubo" sem dizer se a origem está no centro ou num
+    vértice não quer dizer nada. A seção 7 mostra como passar de um ponto a outro.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Momentos e produtos de inércia</h2>
+
+  <p>Escrevendo os índices por extenso, os elementos da diagonal são os momentos de inércia
+  em torno de cada eixo,</p>
+
+  <p>\[I_{xx}=\sum_\alpha m_\alpha\left(y_\alpha^2+z_\alpha^2\right),\qquad
+  I_{yy}=\sum_\alpha m_\alpha\left(z_\alpha^2+x_\alpha^2\right),\qquad
+  I_{zz}=\sum_\alpha m_\alpha\left(x_\alpha^2+y_\alpha^2\right),\]</p>
+
+  <p>cada um pesando a massa pelo quadrado da distância ao eixo correspondente, e os elementos
+  fora da diagonal são os <strong>produtos de inércia</strong>,</p>
+
+  <p>\[I_{xy}=I_{yx}=-\sum_\alpha m_\alpha x_\alpha y_\alpha,\qquad
+  I_{xz}=-\sum_\alpha m_\alpha x_\alpha z_\alpha,\qquad
+  I_{yz}=-\sum_\alpha m_\alpha y_\alpha z_\alpha.\]</p>
+
+  <p>O sinal negativo faz parte da definição e vem do termo \(-r_ir_j\). Os produtos de
+  inércia medem o desbalanceamento da distribuição de massa em relação aos planos
+  coordenados, e são eles que inclinam \(\vet{L}\).</p>
+
+  <div class="bloco def">
+    <span class="rotulo">O que a simetria do corpo adianta</span>
+    <p>Se o plano \(xy\) é plano de simetria do corpo, então para cada partícula em
+    \((x,y,z)\) há outra igual em \((x,y,-z)\), e as somas \(\sum m x z\) e \(\sum m y z\)
+    se cancelam termo a termo. Logo \(I_{xz}=I_{yz}=0\), e o eixo \(z\) é principal. Em
+    resumo: todo eixo perpendicular a um plano de simetria é eixo principal, e todo eixo de
+    simetria de rotação é eixo principal. Isso poupa integrais.</p>
+  </div>
+
+  <p>Para um corpo contínuo de densidade \(\rho(\vet{r})\), as somas viram integrais sobre o
+  volume ocupado:</p>
+
+  <p>\[I_{ij}=\int_V \rho(\vet{r})\left(r^2\delta_{ij}-r_ir_j\right)\,d^3r.\]</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. O cubo em torno de um vértice</h2>
+
+  <p>O exemplo clássico é o cubo maciço e homogêneo de massa \(M\) e aresta \(a\), com a
+  origem num <strong>vértice</strong> e os eixos ao longo das três arestas que saem dele.
+  A densidade é \(\rho=M/a^3\), e as integrais vão de 0 a \(a\) em cada variável.</p>
+
+  <p>Começando pela diagonal, a integral se separa em três fatores independentes:</p>
+
+  <p>\[I_{xx}=\rho\int_0^a\!\!\int_0^a\!\!\int_0^a\left(y^2+z^2\right)dx\,dy\,dz
+  =\rho\left(a\cdot\frac{a^3}{3}\cdot a+a\cdot a\cdot\frac{a^3}{3}\right)
+  =\frac{2}{3}\rho a^5=\frac{2}{3}Ma^2.\]</p>
+
+  <p>Por simetria do cubo, \(I_{yy}\) e \(I_{zz}\) valem o mesmo. Fora da diagonal,</p>
+
+  <p>\[I_{xz}=-\rho\int_0^a x\,dx\int_0^a dy\int_0^a z\,dz
+  =-\rho\,\frac{a^2}{2}\cdot a\cdot\frac{a^2}{2}=-\frac{\rho a^5}{4}=-\frac{1}{4}Ma^2,\]</p>
+
+  <p>e os outros dois produtos de inércia valem o mesmo. Juntando tudo:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Cubo em torno de um vértice</span>
+    \[\Ten{I}=\frac{Ma^2}{12}\begin{pmatrix}
+    8&-3&-3\\-3&8&-3\\-3&-3&8\end{pmatrix}.\]
+  </div>
+
+  <p>Posto o cubo a girar em torno de uma aresta, \(\vet{\omega}=\omega\vers{x}\), o momento
+  angular é a primeira coluna vezes \(\omega\):</p>
+
+  <p>\[\vet{L}=\frac{Ma^2\omega}{12}\left(8,-3,-3\right)
+  =\frac{2}{3}Ma^2\omega\,\vers{x}-\frac{1}{4}Ma^2\omega\,\vers{y}
+  -\frac{1}{4}Ma^2\omega\,\vers{z}.\]</p>
+
+  <p>O ângulo entre \(\vet{L}\) e \(\vet{\omega}\) sai do produto escalar e vale 27,94°. Girando
+  em torno da diagonal de uma face o desvio é maior, 40,32°. Em torno da diagonal principal do
+  cubo, aquela que liga o vértice da origem ao vértice oposto, o desvio é exatamente zero, e o
+  momento de inércia vale \(Ma^2/6\).</p>
+
+  <div data-widget="cubovertice"></div>
+
+  <p>Esse zero não é coincidência nem sorte do exemplo: a diagonal principal é um eixo de
+  simetria de ordem três do cubo, e já vimos que todo eixo de simetria de rotação é principal.
+  A aula 3 obtém esse resultado por autovalores, sem apelar para a simetria, e encontra também
+  os outros dois eixos.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. A energia cinética como forma quadrática</h2>
+
+  <p>A energia cinética de rotação se escreve com o mesmo tensor. Somando
+  \(\frac12 m_\alpha v_\alpha^2\) com \(\vet{v}_\alpha=\vet{\omega}\cruz\vet{r}_\alpha\),</p>
+
+  <p>\[T=\frac12\sum_\alpha m_\alpha
+  \left(\vet{\omega}\cruz\vet{r}_\alpha\right)\cdot\left(\vet{\omega}\cruz\vet{r}_\alpha\right)
+  =\frac12\sum_\alpha m_\alpha\left[\omega^2r_\alpha^2
+  -\left(\vet{\omega}\cdot\vet{r}_\alpha\right)^2\right]
+  =\frac12\,I_{ij}\omega_i\omega_j,\]</p>
+
+  <p>onde a segunda igualdade usa a identidade
+  \((\vet{a}\cruz\vet{b})\cdot(\vet{a}\cruz\vet{b})=a^2b^2-(\vet{a}\cdot\vet{b})^2\), que o
+  exercício 2.1 pede para demonstrar em notação indicial.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Energia cinética de rotação</span>
+    \[T=\frac12\,\vet{\omega}\cdot\Ten{I}\cdot\vet{\omega}=\frac12\,I_{ij}\omega_i\omega_j
+    =\frac12\,\vet{\omega}\cdot\vet{L}.\]
+  </div>
+
+  <p>A forma \(T=\frac12\vet{\omega}\cdot\vet{L}\) mostra de uma vez que a energia cinética não
+  depende da parte de \(\vet{L}\) perpendicular a \(\vet{\omega}\). Só a projeção importa, e
+  é por isso que ainda se pode falar num momento de inércia escalar em torno de um eixo dado,
+  \(I_n=\vers{n}\cdot\Ten{I}\cdot\vers{n}\), com \(T=\frac12I_n\omega^2\). Esse número é o que
+  o cartão do simulador acima chama de momento de inércia em torno do eixo.</p>
+
+  <p>Como a energia cinética é positiva para qualquer rotação que não seja nula, a forma
+  quadrática \(I_{ij}\omega_i\omega_j\) é definida positiva, o que garante que os três
+  autovalores do tensor de inércia são positivos. Fisicamente isso é óbvio e vale registrar:
+  não existe momento de inércia negativo.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. O teorema de Steiner tensorial</h2>
+
+  <p>Em MC II, o teorema dos eixos paralelos dizia \(I=I_{cm}+Md^2\) para um eixo. A versão
+  tensorial diz o mesmo para as nove componentes de uma vez. Seja \(\vet{R}\) a posição do
+  centro de massa em relação à nova origem, de modo que
+  \(\vet{r}_\alpha=\vet{R}+\vet{r}\,'_\alpha\), com as linhas medindo a partir do centro de
+  massa.</p>
+
+  <p>Ao substituir na definição, aparecem termos cruzados proporcionais a
+  \(\sum_\alpha m_\alpha\vet{r}\,'_\alpha\), que são nulos justamente porque o centro de massa
+  é a origem das coordenadas linhas. Sobram duas parcelas:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Steiner tensorial</span>
+    \[I_{ij}=I^{cm}_{ij}+M\left(R^2\delta_{ij}-R_iR_j\right).\]
+  </div>
+
+  <p>A segunda parcela é o tensor de inércia de uma única partícula de massa \(M\) colocada no
+  centro de massa. O teorema escalar é o caso particular em que se projeta a igualdade na
+  direção do eixo: \(\vers{n}\cdot\Ten{I}\cdot\vers{n}=I^{cm}_n+M(R^2-(\vet{R}\cdot\vers{n})^2)
+  =I^{cm}_n+Md^2\), com \(d\) a distância entre os dois eixos paralelos.</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">Conferindo no cubo</span>
+    <p>Em torno do centro, o cubo tem \(I^{cm}_{ij}=\frac{1}{6}Ma^2\delta_{ij}\), diagonal e
+    isotrópico. O vértice está em \(\vet{R}=\frac{a}{2}(1,1,1)\), logo \(R^2=\frac34a^2\) e
+    \(R_iR_j=\frac{a^2}{4}\) para todo par. Aplicando o teorema:</p>
+    <p>\[I_{xx}=\frac16Ma^2+M\left(\frac34a^2-\frac14a^2\right)=\frac16Ma^2+\frac12Ma^2
+    =\frac23Ma^2,\qquad
+    I_{xy}=0-M\frac{a^2}{4}=-\frac14Ma^2,\]</p>
+    <p>que são exatamente os valores obtidos por integração na seção 4. Vale notar que o
+    tensor no centro é um múltiplo da identidade, e portanto <em>qualquer</em> eixo pelo
+    centro do cubo é principal, com o mesmo momento de inércia. Essa é a mesma propriedade da
+    esfera, e é a razão pela qual um cubo girando livremente em torno do centro não cambaleia.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s7">7. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 2.1</span>
+    <p><strong>Demonstre que
+    \((\vet{a}\cruz\vet{b})\cdot(\vet{a}\cruz\vet{b})=a^2b^2-(\vet{a}\cdot\vet{b})^2\).</strong></p>
+    <p>\[(\vet{a}\cruz\vet{b})_i(\vet{a}\cruz\vet{b})_i
+    =\varepsilon_{ijk}a_jb_k\,\varepsilon_{ilm}a_lb_m
+    =(\delta_{jl}\delta_{km}-\delta_{jm}\delta_{kl})a_jb_ka_lb_m.\]</p>
+    <p>O primeiro termo dá \(a_ja_j\,b_kb_k=a^2b^2\) e o segundo dá
+    \(a_jb_j\,a_kb_k=(\vet{a}\cdot\vet{b})^2\), com o sinal de menos. É a identidade de
+    Lagrange, que em termos do ângulo entre os vetores diz apenas que
+    \(\sen^2+\cos^2=1\).</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 2.2</span>
+    <p><strong>Calcule o tensor de inércia de um haltere formado por duas massas \(m\) nas
+    posições \(\pm r(\sen\theta,0,\cos\theta)\) e verifique o ângulo entre \(\vet{L}\) e
+    \(\vet{\omega}\) para \(\vet{\omega}=\omega\vers{z}\).</strong></p>
+    <p>Com \(\vet{r}_\pm=\pm r\vers{u}\) e \(\vers{u}=(\sen\theta,0,\cos\theta)\), as duas
+    massas contribuem igualmente:</p>
+    <p>\[I_{ij}=2mr^2\left(\delta_{ij}-u_iu_j\right).\]</p>
+    <p>Logo \(I_{zz}=2mr^2(1-\cos^2\theta)=2mr^2\sen^2\theta\) e
+    \(I_{xz}=-2mr^2\sen\theta\cos\theta\). Aplicando a \(\vet{\omega}=\omega\vers{z}\),</p>
+    <p>\[\vet{L}=2mr^2\omega\left(-\sen\theta\cos\theta,\,0,\,\sen^2\theta\right)
+    =2mr^2\omega\sen\theta\left(-\cos\theta,0,\sen\theta\right).\]</p>
+    <p>O vetor entre parênteses é unitário e o seu produto escalar com \(\vers{u}\) é
+    \(-\sen\theta\cos\theta+\cos\theta\sen\theta=0\): o momento angular é perpendicular à
+    barra, como o argumento geométrico já indicava. O ângulo com o eixo \(z\) é
+    \(90^\circ-\theta\), e o módulo é \(2mr^2\omega\sen\theta\).</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 2.3</span>
+    <p><strong>Quatro massas iguais \(m\) estão nos pontos \((a,0,0)\), \((-a,0,0)\),
+    \((0,a,0)\) e \((0,-a,0)\). Escreva o tensor de inércia.</strong></p>
+    <p>Todos os produtos de inércia se anulam, porque cada ponto tem pelo menos uma
+    coordenada nula em cada par. Para a diagonal, basta somar as distâncias quadradas aos
+    eixos: \(I_{xx}=2ma^2\) (só as massas em \(\pm a\vers{y}\) contribuem),
+    \(I_{yy}=2ma^2\) e \(I_{zz}=4ma^2\).</p>
+    <p>\[\Ten{I}=ma^2\begin{pmatrix}2&0&0\\0&2&0\\0&0&4\end{pmatrix}.\]</p>
+    <p>O tensor já saiu diagonal, o que era esperado: os três planos coordenados são planos
+    de simetria da figura. Note que \(I_{zz}=I_{xx}+I_{yy}\), que é o teorema dos eixos
+    perpendiculares, válido para distribuições planas.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s8">8. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>2.1</b> Mostre, a partir da definição, que \(\Tr\Ten{I}=2\sum_\alpha
+      m_\alpha r_\alpha^2\), e conclua que o traço do tensor de inércia é duas vezes o momento
+      de inércia polar. Verifique no cubo da seção 4.</li>
+
+      <li><b>2.2</b> Calcule o tensor de inércia de um cilindro homogêneo de massa \(M\),
+      raio \(R\) e altura \(h\), com a origem no centro e \(z\) ao longo do eixo. Mostre que
+      ele é diagonal e que \(I_{xx}=I_{yy}=\frac{M}{12}(3R^2+h^2)\).</li>
+
+      <li><b>2.3</b> Para que razão \(h/R\) o cilindro do exercício anterior tem tensor de
+      inércia isotrópico, isto é, proporcional a \(\delta_{ij}\)? Nesse caso, qualquer eixo
+      pelo centro é principal.</li>
+
+      <li><b>2.4</b> Uma placa retangular homogênea de lados \(a\) e \(b\) está no plano
+      \(xy\), com um vértice na origem. Calcule \(\Ten{I}\) e o ângulo entre \(\vet{L}\) e
+      \(\vet{\omega}\) quando ela gira em torno da diagonal que parte da origem.</li>
+
+      <li><b>2.5</b> Use o teorema de Steiner tensorial para obter o tensor de inércia de uma
+      esfera maciça de raio \(R\) em relação a um ponto da sua superfície, e identifique os
+      eixos principais por simetria.</li>
+
+      <li><b>2.6</b> Mostre que, se dois autovalores do tensor de inércia são iguais, então
+      todo eixo no plano dos dois autovetores correspondentes também é principal. Dê um
+      exemplo de corpo em que isso acontece.</li>
+
+      <li><b>2.7</b> Escreva um programa em Python que leia as massas e as posições de \(N\)
+      partículas de um arquivo CSV, monte o tensor de inércia, e devolva os momentos
+      principais e o ângulo entre \(\vet{L}\) e \(\vet{\omega}\) para uma direção de rotação
+      dada. Teste com os dados do exercício resolvido 2.3 e com o haltere do 2.2.</li>
+
+      <li><b>2.8</b> Um corpo gira em torno de um eixo fixo com \(I_{xz}\neq0\). Mostre que o
+      torque que os mancais precisam exercer tem módulo
+      \(\omega^2\sqrt{I_{xz}^2+I_{yz}^2}\) e gira junto com o corpo. Estime esse torque para
+      uma roda de carro de 10 kg com 1 cm de desbalanceamento a 100 km/h.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula01.html"><small>Aula anterior</small>← 1. Álgebra tensorial</a>
+    <span class="em-breve"><small>Em preparação</small>3. Eixos principais</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091357"></script>
+</body>
+</html>
