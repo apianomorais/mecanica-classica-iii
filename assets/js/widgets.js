@@ -3254,6 +3254,243 @@
     laco();
   };
 
+
+  /* =================================================================
+     31. O toro invariante
+     Com duas constantes de movimento em involução, a órbita vive num
+     toro bidimensional. Se a razão das frequências é racional, a curva
+     se fecha; se é irracional, ela cobre o toro inteiro sem nunca
+     repetir.
+     ================================================================= */
+  REGISTRO.toro = function (raiz) {
+    var corpo = moldura(raiz, 'A órbita enrolada no toro');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var razao = 1.618034, t = 0, animando = true;
+
+    deslizante(corpo, 'Razão \\(\\omega_2/\\omega_1\\):', 0.5, 3, 0.001, razao,
+      function (v) { razao = v; t = 0; }, function (v) { return F.fmt(v, 3); });
+    opcoes(corpo, [{ rot: '3/2', v: 1.5 }, { rot: '2/1', v: 2 },
+                   { rot: '√2', v: Math.SQRT2 }, { rot: 'Áurea', v: 1.618034 }], 3,
+      function (v) { razao = v; t = 0; });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(b); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Razão', k: 'tipo' }, { rot: 'Pontos na seção', k: 'pts' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* fração contínua: devolve p/q se a razão for quase racional */
+    function racional(x) {
+      var h1 = 1, h0 = 0, k1 = 0, k0 = 1, b = x;
+      for (var i = 0; i < 12; i++) {
+        var a = Math.floor(b);
+        var h = a * h1 + h0; h0 = h1; h1 = h;
+        var k = a * k1 + k0; k0 = k1; k1 = k;
+        if (Math.abs(x - h1 / k1) < 1e-6 && k1 <= 12) return [h1, k1];
+        var f = b - a;
+        if (f < 1e-9) break;
+        b = 1 / f;
+      }
+      return null;
+    }
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(330, Math.max(250, cv.clientWidth * 0.52)));
+      var ct = p.ct;
+      var cx = p.L * 0.33, cy = p.A * 0.45;
+      var esc = Math.min(p.L * 0.6, p.A) * 0.34;
+      var R = esc, r = esc * 0.42;
+      var P = projetor(0.0, 0.62, 1, 0, 0);
+
+      function ponto(u, v) {
+        var x = (R + r * Math.cos(v)) * Math.cos(u);
+        var y = (R + r * Math.cos(v)) * Math.sin(u);
+        var z = r * Math.sin(v);
+        var q = P([x, y, z]);
+        return { x: cx + q.x, y: cy + q.y, z: q.z };
+      }
+
+      /* malha do toro */
+      ct.strokeStyle = '#e8eef1'; ct.lineWidth = 1;
+      for (var i = 0; i < 24; i++) {
+        ct.beginPath();
+        for (var j = 0; j <= 40; j++) {
+          var q = ponto(i / 24 * 2 * Math.PI, j / 40 * 2 * Math.PI);
+          if (j === 0) ct.moveTo(q.x, q.y); else ct.lineTo(q.x, q.y);
+        }
+        ct.stroke();
+      }
+
+      /* a trajetória */
+      var frac = racional(razao);
+      var volta = frac ? 2 * Math.PI * frac[1] : 2 * Math.PI * 40;
+      var N = frac ? 700 : 6000;
+      var ate = Math.min(volta, t * 1.2);
+      ct.beginPath();
+      var primeiro = true;
+      for (i = 0; i <= N; i++) {
+        var s2 = ate * i / N;
+        var q2 = ponto(s2, razao * s2);
+        if (primeiro) { ct.moveTo(q2.x, q2.y); primeiro = false; }
+        else ct.lineTo(q2.x, q2.y);
+      }
+      ct.strokeStyle = frac ? G.COR.vinho : 'rgba(122,58,107,.5)';
+      ct.lineWidth = frac ? 2 : 0.9;
+      ct.stroke();
+
+      /* a seção: pontos em que u cruza zero */
+      var px0 = p.L * 0.78, py0 = p.A * 0.45, pr = Math.min(p.L * 0.18, p.A * 0.3);
+      ct.beginPath(); ct.arc(px0, py0, pr, 0, 2 * Math.PI);
+      ct.strokeStyle = '#c8d0d7'; ct.lineWidth = 1.2; ct.stroke();
+      rotulo(ct, 'seção', px0, py0 - pr - 12, '#6b7682');
+      var k = 0;
+      for (var n = 0; n * 2 * Math.PI <= ate; n++) {
+        var v2 = razao * n * 2 * Math.PI;
+        ct.beginPath();
+        ct.arc(px0 + pr * Math.cos(v2), py0 - pr * Math.sin(v2), 3, 0, 2 * Math.PI);
+        ct.fillStyle = G.COR.vinho; ct.fill();
+        k++;
+      }
+
+      mostrar({ tipo: frac ? frac[0] + '/' + frac[1] : 'irracional',
+                pts: frac ? String(frac[1]) : 'infinitos' });
+
+      saida.innerHTML = frac
+        ? 'A razão é \\(' + frac[0] + '/' + frac[1] + '\\), um número racional: a órbita se '
+          + 'fecha depois de ' + frac[1] + ' voltas e repete para sempre. Na seção aparecem '
+          + 'apenas ' + frac[1] + ' pontos, e o movimento é periódico.'
+        : 'A razão é irracional: a órbita nunca se fecha e, com tempo suficiente, passa '
+          + 'arbitrariamente perto de qualquer ponto do toro. A seção vai se enchendo de '
+          + 'pontos que desenham o círculo inteiro. O movimento é <strong>quase '
+          + 'periódico</strong>, e é esse o caso genérico de um sistema integrável.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() {
+      if (!animando) return;
+      t += 0.5;
+      desenhar();
+      requestAnimationFrame(laco);
+    }
+
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
+  /* =================================================================
+     32. A seção de Poincaré de Hénon-Heiles
+     O sistema que mostrou, em 1964, que um hamiltoniano inocente pode
+     deixar de ser integrável. Aumentando a energia, as curvas fechadas
+     da seção se desmancham e dão lugar a uma poeira de pontos.
+     ================================================================= */
+  REGISTRO.henon = function (raiz) {
+    var corpo = moldura(raiz, 'Quando os toros se desmancham');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var E = 1 / 12;
+
+    opcoes(corpo, [{ rot: 'E = 1/12', v: 1 / 12 }, { rot: 'E = 1/9', v: 1 / 9 },
+                   { rot: 'E = 1/8', v: 1 / 8 }, { rot: 'E = 1/6', v: 1 / 6 }], 0,
+      function (v) { E = v; desenhar(); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Energia', k: 'e' }, { rot: 'Erro em H', k: 'h' },
+      { rot: 'Regime', k: 'r' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function deriv(s) {
+      return [s[2], s[3], -s[0] - 2 * s[0] * s[1], -s[1] - s[0] * s[0] + s[1] * s[1]];
+    }
+    function rk4(s, h) {
+      var k1 = deriv(s);
+      var k2 = deriv(s.map(function (v, i) { return v + h / 2 * k1[i]; }));
+      var k3 = deriv(s.map(function (v, i) { return v + h / 2 * k2[i]; }));
+      var k4 = deriv(s.map(function (v, i) { return v + h * k3[i]; }));
+      return s.map(function (v, i) {
+        return v + h / 6 * (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]);
+      });
+    }
+    function Ham(s) {
+      return 0.5 * (s[2] * s[2] + s[3] * s[3]) + 0.5 * (s[0] * s[0] + s[1] * s[1])
+             + s[0] * s[0] * s[1] - s[1] * s[1] * s[1] / 3;
+    }
+
+    function orbita(y0, py0, cor, ct, X, Y) {
+      var v = 2 * (E - 0.5 * py0 * py0 - 0.5 * y0 * y0 + y0 * y0 * y0 / 3);
+      if (v <= 0) return 0;
+      var s = [0, y0, Math.sqrt(v), py0], h = 0.01, erro = 0, n = 0;
+      for (var i = 0; i < 90000 && n < 260; i++) {
+        var nv = rk4(s, h);
+        if (s[0] < 0 && nv[0] >= 0 && nv[2] > 0) {
+          var f = -s[0] / (nv[0] - s[0]);
+          var yy = s[1] + f * (nv[1] - s[1]), pp = s[3] + f * (nv[3] - s[3]);
+          ct.beginPath(); ct.arc(X(yy), Y(pp), 1.3, 0, 2 * Math.PI);
+          ct.fillStyle = cor; ct.fill();
+          n++;
+        }
+        s = nv;
+      }
+      return Math.abs(Ham(s) - E);
+    }
+
+    function desenhar() {
+      var g = G.eixos(cv, {
+        xmin: -0.6, xmax: 1.0, ymin: -0.65, ymax: 0.65, divY: 4,
+        altura: Math.min(340, Math.max(260, cv.clientWidth * 0.52)),
+        rotX: 'y', rotY: 'p_y',
+        marcasX: G.marcasLineares(-0.6, 1.0, 4, 1),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+      g.ct.save(); g.ct.beginPath();
+      g.ct.rect(g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0); g.ct.clip();
+
+      var cores = [G.COR.mestra, G.COR.azul, G.COR.bronze, G.COR.vinho, '#4f7a4f',
+                   '#7a4f6b', '#2f6f7a'];
+      var sementes = [[0.1, 0], [-0.1, 0], [0.3, 0], [-0.25, 0.1], [0, 0.25],
+                      [0.45, 0], [0.15, 0.2]];
+      var erro = 0;
+      sementes.forEach(function (sem, i) {
+        erro = Math.max(erro, orbita(sem[0], sem[1], cores[i % cores.length], g.ct,
+                                     g.X, g.Y));
+      });
+      g.ct.restore();
+
+      var regime = E < 0.1 ? 'regular' : E < 0.13 ? 'misto' : 'majoritariamente caótico';
+      mostrar({ e: F.fmt(E, 4), h: erro.toExponential(1).replace('.', ','), r: regime });
+
+      saida.innerHTML = E < 0.1
+        ? 'Com energia baixa, cada condição inicial fica presa a uma curva fechada. Essas '
+          + 'curvas são cortes dos toros invariantes: o sistema se comporta como se fosse '
+          + 'integrável, embora não tenha uma segunda constante de movimento conhecida.'
+        : E < 0.13
+          ? 'Nesta energia convivem ilhas de regularidade e um mar de pontos espalhados. '
+            + 'Alguns toros sobreviveram à perturbação, como o teorema KAM garante, e '
+            + 'outros se desmancharam. A seção mostra os dois regimes na mesma figura.'
+          : 'Quase todos os toros se desfizeram: uma única órbita passeia por quase toda a '
+            + 'região permitida, e dois pontos de partida vizinhos se separam '
+            + 'exponencialmente. A energia é a mesma e o erro no hamiltoniano continua na '
+            + 'casa de \\(10^{-10}\\): o que mudou não foi a precisão, foi a dinâmica.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {
