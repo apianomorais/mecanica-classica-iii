@@ -1775,6 +1775,190 @@
     registrarRedesenho(desenhar);
   };
 
+
+  /* =================================================================
+     17. Até onde vale a aproximação harmônica
+     O período de um pêndulo só é independente da amplitude enquanto a
+     amplitude é pequena. O widget integra o movimento exato e compara
+     com a parábola, mostrando onde a aproximação começa a falhar.
+     ================================================================= */
+  REGISTRO.anarmonico = function (raiz) {
+    var corpo = moldura(raiz, 'O erro da parábola');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var amp = 30, tipo = 0;   /* 0 pêndulo, 1 poço quártico, 2 Morse */
+
+    opcoes(corpo, [{ rot: 'Pêndulo', v: 0 }, { rot: 'Poço quártico', v: 1 },
+                   { rot: 'Morse (molécula)', v: 2 }], 0,
+      function (v) { tipo = v; desenhar(); });
+    deslizante(corpo, 'Amplitude:', 5, 170, 1, amp,
+      function (v) { amp = v; desenhar(); },
+      function (v) { return tipo === 0 ? v.toFixed(0) + '°' : F.fmt(v / 100, 2); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Período exato', k: 'ex' }, { rot: 'Período harmônico', k: 'ha' },
+      { rot: 'Diferença', k: 'di' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* potenciais em unidades em que U'' (0) = 1 */
+    function U(x) {
+      if (tipo === 0) return 1 - Math.cos(x);
+      if (tipo === 1) return x * x / 2 - 0.12 * Math.pow(x, 4);
+      var a = 1 - Math.exp(-x);
+      return a * a / 2;
+    }
+
+    function amplitude() {
+      return tipo === 0 ? amp * Math.PI / 180 : amp / 100;
+    }
+
+    /* Período por quadratura. A substituição x = c + s·sen ψ é o que torna a
+       conta possível: o integrando 1/√(2(E−U)) diverge nos pontos de retorno,
+       e o cos ψ do jacobiano cancela exatamente essa divergência. */
+    function periodo(A) {
+      var E = U(A), xb = A, xa = retorno(E, A, -1);
+      var c = (xa + xb) / 2, sm = (xb - xa) / 2, n = 2000, T = 0;
+      for (var i = 0; i < n; i++) {
+        var p1 = -Math.PI / 2 + Math.PI * i / n;
+        var p2 = -Math.PI / 2 + Math.PI * (i + 1) / n;
+        var pm = (p1 + p2) / 2;
+        var v = 2 * (E - U(c + sm * Math.sin(pm)));
+        if (v <= 0) continue;
+        T += (p2 - p1) * sm * Math.cos(pm) / Math.sqrt(v);
+      }
+      return 2 * T;
+    }
+
+    function retorno(E, A, lado) {
+      var a = 0, b = lado < 0 ? -6 : 6;
+      for (var i = 0; i < 80; i++) {
+        var m = (a + b) / 2;
+        if (U(m) < E) a = m; else b = m;
+      }
+      return a;
+    }
+
+    function desenhar() {
+      var A = amplitude();
+      var g = G.eixos(cv, {
+        xmin: -3.2, xmax: 3.2, ymin: 0, ymax: 2.6, divY: 4,
+        altura: Math.min(290, Math.max(210, cv.clientWidth * 0.4)),
+        rotX: 'deslocamento', rotY: 'U',
+        marcasX: G.marcasLineares(-3.2, 3.2, 4, 1),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+      g.ct.save(); g.ct.beginPath();
+      g.ct.rect(g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0); g.ct.clip();
+      G.curva(g, U, G.COR.mestra, 2.2);
+      G.curva(g, function (x) { return x * x / 2; }, '#b9c3cc', 1.6, [5, 4]);
+      g.ct.restore();
+      var E = U(A);
+      g.ct.strokeStyle = G.COR.vinho; g.ct.lineWidth = 1.4;
+      g.ct.setLineDash([6, 4]);
+      g.ct.beginPath(); g.ct.moveTo(g.x0, g.Y(E)); g.ct.lineTo(g.x1, g.Y(E));
+      g.ct.stroke(); g.ct.setLineDash([]);
+      G.legenda(g, [{ texto: 'potencial', cor: G.COR.mestra },
+                    { texto: 'parábola', cor: '#b9c3cc' }]);
+
+      var Tex = periodo(A), Tha = 2 * Math.PI;
+      mostrar({ ex: F.fmt(Tex, 3), ha: F.fmt(Tha, 3),
+                di: F.pct((Tex - Tha) / Tha, 2) });
+
+      saida.innerHTML = Math.abs((Tex - Tha) / Tha) < 0.01
+        ? 'Com esta amplitude a parábola e o potencial verdadeiro quase coincidem na faixa '
+          + 'visitada, e o período difere do harmônico em menos de 1 %. É nesse regime que '
+          + 'toda a teoria das pequenas oscilações vale.'
+        : 'A diferença já é de ' + F.pct(Math.abs((Tex - Tha) / Tha), 1) + ', e o período '
+          + (Tex > Tha ? 'cresce' : 'diminui') + ' com a amplitude. Um oscilador harmônico '
+          + 'não faz isso: o isocronismo é consequência da parábola, e some assim que o '
+          + 'potencial real se afasta dela.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+  /* =================================================================
+     18. A conta no aro que gira
+     Um equilíbrio pode deixar de ser estável quando um parâmetro
+     muda, e dois novos equilíbrios nascem no lugar. O exemplo mínimo
+     cabe num potencial de uma variável e antecipa o que a aula 17 fará
+     com muito mais consequência.
+     ================================================================= */
+  REGISTRO.arorotante = function (raiz) {
+    var corpo = moldura(raiz, 'Quando o equilíbrio se desdobra');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var razao = 0.6;   /* Ω²R/g */
+
+    deslizante(corpo, '\\(\\Omega^2R/g\\):', 0, 3, 0.02, razao,
+      function (v) { razao = v; desenhar(); }, function (v) { return F.fmt(v, 2); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Equilíbrio em \\(\\theta=0\\)', k: 'base' },
+      { rot: 'Novo equilíbrio', k: 'novo' },
+      { rot: 'Frequência própria', k: 'freq' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* U(θ)/mgR = 1 − cos θ − ½ (Ω²R/g) sen²θ */
+    function U(t) {
+      return 1 - Math.cos(t) - 0.5 * razao * Math.sin(t) * Math.sin(t);
+    }
+
+    function desenhar() {
+      var g = G.eixos(cv, {
+        xmin: -180, xmax: 180, ymin: -1.6, ymax: 2.2, divY: 4,
+        altura: Math.min(290, Math.max(210, cv.clientWidth * 0.4)),
+        rotX: 'θ (graus)', rotY: 'U / mgR',
+        marcasX: G.marcasLineares(-180, 180, 4, 0),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+      g.ct.save(); g.ct.beginPath();
+      g.ct.rect(g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0); g.ct.clip();
+      G.curva(g, function (x) { return U(x * Math.PI / 180); }, G.COR.mestra, 2.2);
+      g.ct.restore();
+
+      var estavel = razao <= 1;
+      var t0 = estavel ? 0 : Math.acos(1 / razao);
+      [0].concat(estavel ? [] : [t0, -t0]).forEach(function (t) {
+        var x = g.X(t * 180 / Math.PI), y = g.Y(U(t));
+        g.ct.beginPath(); g.ct.arc(x, y, 5, 0, 2 * Math.PI);
+        g.ct.fillStyle = (t === 0 && !estavel) ? G.COR.vinho : G.COR.azul;
+        g.ct.fill();
+      });
+
+      var w0 = estavel ? Math.sqrt(1 - razao) : razao * Math.sin(t0) * Math.sin(t0) / 1;
+      mostrar({
+        base: estavel ? 'estável' : 'instável',
+        novo: estavel ? 'não existe' : '±' + F.fmt(t0 * 180 / Math.PI, 1) + '°',
+        freq: estavel
+          ? F.fmt(Math.sqrt(Math.max(0, 1 - razao)), 3) + '\\(\\sqrt{g/R}\\)'
+          : F.fmt(Math.sqrt(razao - 1 / razao), 3) + '\\(\\sqrt{g/R}\\)'
+      });
+
+      saida.innerHTML = estavel
+        ? 'Girando devagar, o fundo do aro continua sendo o único equilíbrio, e a conta '
+          + 'oscila em torno dele com \\(\\omega^2=g/R-\\Omega^2\\): a rotação amolece a '
+          + 'restauração sem desfazê-la. Em \\(\\Omega^2R/g=1\\) a frequência chega a zero.'
+        : 'Passado o valor crítico, o fundo do aro virou um <strong>máximo</strong> do '
+          + 'potencial e dois mínimos novos nasceram em \\(\\pm'
+          + F.fmt(t0 * 180 / Math.PI, 1) + '^\\circ\\). A conta não fica mais no fundo: ela '
+          + 'sobe pela parede até a altura em que a componente da gravidade equilibra a '
+          + 'força centrífuga. É o mesmo desdobramento que aparece em transições de fase.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

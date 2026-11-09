@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 9: Equilíbrio e pequenas oscilações | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091423">
+<script src="assets/js/comum.js?v=202611091423"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num ativo" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Equilíbrio e a parábola que o aproxima</a></li>
+    <li><a href="#s2">2. Muitos graus de liberdade: as duas matrizes</a></li>
+    <li><a href="#s3">3. O problema de autovalor generalizado</a></li>
+    <li><a href="#s4">4. Por que as frequências são reais</a></li>
+    <li><a href="#s5">5. Exercícios resolvidos</a></li>
+    <li><a href="#s6">6. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 9 · Pequenas vibrações</p>
+  <h1>Equilíbrio e pequenas oscilações</h1>
+  <p class="subtitulo">Perto de um mínimo de potencial, todo sistema conservativo se parece com um conjunto de osciladores harmônicos. Esta aula constrói a aproximação, monta as matrizes de massa e de rigidez e mostra por que as frequências saem reais quando o equilíbrio é estável.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Classificar equilíbrios pela segunda derivada do potencial;</li>
+      <li>Reconhecer o alcance e o limite da aproximação harmônica;</li>
+      <li>Expandir o potencial e a energia cinética e montar \(\Ten{K}\) e \(\Ten{M}\);</li>
+      <li>Escrever o problema de autovalor generalizado;</li>
+      <li>Demonstrar que as frequências próprias são reais num mínimo;</li>
+      <li>Interpretar frequências nulas e imaginárias.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Equilíbrio e a parábola que o aproxima</h2>
+
+  <p>Um sistema está em equilíbrio quando as forças generalizadas se anulam, o que para um
+  sistema conservativo significa que o potencial tem um ponto crítico:</p>
+
+  <p>\[\pder{U}{q_i}\bigg|_{q_0}=0\qquad\text{para todo }i.\]</p>
+
+  <p>Ser ponto crítico não diz que tipo de equilíbrio é. Para isso é preciso olhar a segunda
+  derivada, e o critério é o que se aprende em cálculo: mínimo é estável, máximo é instável,
+  e um ponto em que a segunda derivada também se anula exige ir além.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Os três casos em uma dimensão</span>
+    <ul>
+      <li>\(U''&gt;0\): mínimo. Deslocado, o sistema sofre força de volta, e oscila com
+      \(\omega=\sqrt{U''/m}\). Equilíbrio <strong>estável</strong>;</li>
+      <li>\(U''&lt;0\): máximo. Deslocado, o sistema é empurrado para longe, com crescimento
+      exponencial de taxa \(\sqrt{|U''|/m}\). Equilíbrio <strong>instável</strong>;</li>
+      <li>\(U''=0\): o caso degenerado, em que o termo seguinte da expansão decide. Se
+      \(U\) for constante numa vizinhança, o equilíbrio é <strong>indiferente</strong>.</li>
+    </ul>
+  </div>
+
+  <p>A oscilação harmônica aparece, portanto, não como um modelo especial, mas como o
+  comportamento universal de qualquer sistema perto de um mínimo de potencial. A molécula
+  diatômica, o pêndulo, o circuito LC, a corda de violino e o cristal vibrando obedecem à
+  mesma equação porque todos estão perto do fundo de algum poço. O que muda de um para outro
+  são os nomes das grandezas.</p>
+
+  <div data-widget="anarmonico"></div>
+
+  <p>O preço dessa universalidade é a amplitude. A aproximação harmônica é a parábola que
+  melhor se encosta ao potencial no fundo, e a parábola tem uma propriedade que nenhum
+  potencial real tem: o período não depende da amplitude. Assim que a oscilação cresce, o
+  período começa a mudar, e o sentido da mudança informa sobre a forma do potencial.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. Muitos graus de liberdade: as duas matrizes</h2>
+
+  <p>Com muitos graus de liberdade, o procedimento é o mesmo com índices. Sejam
+  \(q_1,\dots,q_N\) as coordenadas generalizadas, medidas a partir do equilíbrio de modo que
+  \(q_i=0\) ali. Expandindo o potencial em série de Taylor,</p>
+
+  <p>\[U(q)=U(0)+\underbrace{\pder{U}{q_i}\bigg|_0 q_i}_{=0}
+  +\frac12\pder{^2U}{q_i\partial q_j}\bigg|_0\,q_iq_j+\cdots\]</p>
+
+  <p>O termo constante pode ser jogado fora, porque potencial se define a menos de constante.
+  O termo linear é nulo por ser um equilíbrio, e essa é a única propriedade do equilíbrio que
+  se usa. Sobra a forma quadrática, com a <strong>matriz de rigidez</strong></p>
+
+  <p>\[K_{ij}=\pder{^2U}{q_i\partial q_j}\bigg|_0,\]</p>
+
+  <p>que é simétrica, pela igualdade das derivadas cruzadas. Pelo teorema espectral da aula 1,
+  isso já garante autovalores reais e autovetores ortogonais, um fato que vai pagar dividendos
+  na aula 10.</p>
+
+  <p>A energia cinética recebe o mesmo tratamento. Em geral ela é uma forma quadrática nas
+  velocidades com coeficientes que dependem das coordenadas,
+  \(T=\frac12 a_{ij}(q)\dot q_i\dot q_j\). Como as velocidades já são pequenas, basta avaliar
+  os coeficientes no equilíbrio, e sobra a <strong>matriz de massa</strong></p>
+
+  <p>\[M_{ij}=a_{ij}(0),\]</p>
+
+  <p>também simétrica e, além disso, definida positiva, porque a energia cinética é positiva
+  para qualquer movimento.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Lagrangiana das pequenas oscilações</span>
+    \[\Lag=\frac12 M_{ij}\dot q_i\dot q_j-\frac12 K_{ij}q_iq_j.\]
+  </div>
+
+  <p>Esta é a lagrangiana mais importante do curso depois da do corpo rígido, e o motivo é
+  que ela não tem nada de específico: qualquer sistema perto de um equilíbrio estável se
+  parece com ela.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. O problema de autovalor generalizado</h2>
+
+  <p>As equações de Lagrange aplicadas à lagrangiana acima dão, em forma matricial,</p>
+
+  <p>\[\Ten{M}\ddot{\vet{q}}+\Ten{K}\vet{q}=0.\]</p>
+
+  <p>São \(N\) equações lineares acopladas de segunda ordem, com coeficientes constantes.
+  Procuramos soluções em que todas as coordenadas oscilem juntas, com a mesma frequência e
+  mantendo as proporções entre si:</p>
+
+  <p>\[\vet{q}(t)=\vet{a}\,\cos\left(\omega t+\delta\right),\]</p>
+
+  <p>com \(\vet{a}\) um vetor de amplitudes constante. Substituindo, o cosseno se cancela e
+  sobra um problema algébrico:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Problema de autovalor generalizado</span>
+    \[\left(\Ten{K}-\omega^2\Ten{M}\right)\vet{a}=0,\qquad
+    \det\left(\Ten{K}-\omega^2\Ten{M}\right)=0.\]
+  </div>
+
+  <p>Essa é a mesma estrutura da equação secular da aula 3, com a diferença de que no lugar da
+  identidade aparece a matriz de massa. O determinante é um polinômio de grau \(N\) em
+  \(\omega^2\), e as suas \(N\) raízes são os quadrados das <strong>frequências
+  próprias</strong> do sistema. Para cada raiz, o sistema homogêneo devolve o vetor de
+  amplitudes correspondente, que é o <strong>modo normal</strong>.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Por que não basta diagonalizar K</span>
+    <p>Seria cômodo diagonalizar \(\Ten{K}\) e pronto, mas isso só resolve o problema quando
+    \(\Ten{M}\) é múltipla da identidade, isto é, quando todas as massas são iguais e as
+    coordenadas são cartesianas. No caso geral, os autovetores de \(\Ten{K}\) não são modos
+    normais. A maneira correta de pensar é que \(\Ten{M}\) define o produto interno em que a
+    ortogonalidade dos modos vale, e isso será explorado na aula 10.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Por que as frequências são reais</h2>
+
+  <p>Resta garantir que as frequências sejam reais, sem o que as soluções cresceriam
+  exponencialmente e nada do que foi dito faria sentido. A demonstração é curta e usa as duas
+  propriedades que já temos.</p>
+
+  <p>Multiplique \(\Ten{K}\vet{a}=\omega^2\Ten{M}\vet{a}\) escalarmente por \(\vet{a}\):</p>
+
+  <p>\[\omega^2=\frac{\vet{a}\cdot\Ten{K}\vet{a}}{\vet{a}\cdot\Ten{M}\vet{a}}
+  =\frac{2U(\vet{a})}{2T(\vet{a})}.\]</p>
+
+  <p>O denominador é positivo porque a energia cinética é definida positiva. O numerador é
+  positivo sempre que o equilíbrio é um mínimo do potencial, porque é o valor da forma
+  quadrática. Logo \(\omega^2&gt;0\) e \(\omega\) é real.</p>
+
+  <p>O argumento também mostra o que acontece quando o equilíbrio não é mínimo. Se alguma
+  direção faz \(U\) diminuir, o numerador fica negativo para aquele autovetor, \(\omega^2&lt;0\),
+  e \(\omega\) é imaginário puro: a solução deixa de oscilar e passa a crescer como
+  \(e^{|\omega|t}\). Um \(\omega^2=0\) corresponde a uma direção em que o potencial é plano, e
+  nela a solução é \(q=a+bt\), um deslocamento uniforme em vez de uma oscilação. Esses modos
+  de frequência nula aparecem sempre que o sistema tem uma simetria contínua, como a
+  translação livre de uma molécula isolada.</p>
+
+  <div data-widget="arorotante"></div>
+
+  <p>O simulador mostra o terceiro caso em ação. Uma conta ensartada num aro que gira tem,
+  para rotação lenta, um único equilíbrio no fundo, estável, com
+  \(\omega^2=g/R-\Omega^2\). Conforme \(\Omega\) cresce, essa frequência diminui, chega a
+  zero em \(\Omega^2=g/R\) e o equilíbrio perde a estabilidade. No mesmo instante, dois
+  equilíbrios novos nascem nas laterais. Esse fenômeno, em que um equilíbrio se desdobra em
+  três quando um parâmetro cruza um valor crítico, chama-se bifurcação, e a frequência que vai
+  a zero no ponto crítico é o seu sinal de alerta.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 9.1</span>
+    <p><strong>Uma partícula de massa \(m\) move-se no potencial
+    \(U(x)=U_0\left[\left(a/x\right)^{12}-2\left(a/x\right)^{6}\right]\), que é o potencial de
+    Lennard-Jones. Ache o equilíbrio e a frequência de pequenas oscilações.</strong></p>
+    <p>Derivando e igualando a zero:</p>
+    <p>\[U'=\frac{12U_0}{a}\left[-\left(\frac{a}{x}\right)^{13}
+    +\left(\frac{a}{x}\right)^{7}\right]=0\;\Longrightarrow\;x_0=a.\]</p>
+    <p>Derivando outra vez e avaliando em \(x_0=a\),</p>
+    <p>\[U''(a)=\frac{12U_0}{a^2}\left[13-7\right]=\frac{72U_0}{a^2},\]</p>
+    <p>de onde \(\omega=\sqrt{72U_0/ma^2}\). Para o argônio, com \(U_0=1{,}65\cruz10^{-21}\)
+    J, \(a=3{,}8\cruz10^{-10}\) m e \(m=6{,}6\cruz10^{-26}\) kg, isso dá
+    \(\omega=3{,}9\cruz10^{12}\) rad/s, ou \(0{,}62\) THz, que é a ordem de grandeza certa
+    para vibrações em sólidos de gases nobres.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 9.2</span>
+    <p><strong>Monte \(\Ten{M}\) e \(\Ten{K}\) para duas massas iguais ligadas por três molas
+    entre paredes.</strong></p>
+    <p>Sejam \(x_1\) e \(x_2\) os deslocamentos a partir do repouso, as molas das pontas com
+    constante \(k\) e a do meio com \(k'\). A energia potencial é</p>
+    <p>\[U=\frac12kx_1^2+\frac12k'\left(x_2-x_1\right)^2+\frac12kx_2^2.\]</p>
+    <p>As derivadas segundas dão</p>
+    <p>\[\Ten{K}=\begin{pmatrix}k+k'&-k'\\-k'&k+k'\end{pmatrix},\qquad
+    \Ten{M}=\begin{pmatrix}m&0\\0&m\end{pmatrix}.\]</p>
+    <p>O elemento fora da diagonal é negativo, e é ele que acopla as duas massas: se fosse
+    zero, as duas oscilariam sem saber uma da outra. A aula 10 resolve este sistema por
+    extenso.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 9.3</span>
+    <p><strong>Para a conta no aro, obtenha as frequências em torno dos equilíbrios acima e
+    abaixo do valor crítico.</strong></p>
+    <p>Com \(U(\theta)/mgR=1-\cos\theta-\frac12\left(\Omega^2R/g\right)\sen^2\theta\) e
+    \(M=mR^2\):</p>
+    <p>\[\frac{U''}{mgR}=\cos\theta-\frac{\Omega^2R}{g}\cos2\theta.\]</p>
+    <p>Em \(\theta=0\), isso dá \(1-\Omega^2R/g\), de onde
+    \(\omega^2=g/R-\Omega^2\), positivo só enquanto \(\Omega^2&lt;g/R\). Para
+    \(\Omega^2&gt;g/R\), o equilíbrio lateral está em \(\cos\theta_0=g/R\Omega^2\), e
+    substituindo,</p>
+    <p>\[\omega^2=\Omega^2\sen^2\theta_0
+    =\Omega^2\left[1-\left(\frac{g}{R\Omega^2}\right)^2\right].\]</p>
+    <p>As duas expressões se encontram em zero no ponto crítico, como o simulador mostra ao
+    arrastar o controle por cima de 1.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>9.1</b> Ache os equilíbrios de \(U(x)=U_0(x^4/a^4-2x^2/a^2)\), classifique-os e
+      calcule a frequência nos estáveis. Esboce o potencial.</li>
+
+      <li><b>9.2</b> Um pêndulo simples tem período \(T_0\) para amplitudes pequenas. Use a
+      expansão \(T=T_0\left(1+\theta_0^2/16+\cdots\right)\) e diga para que amplitude o erro
+      de usar \(T_0\) chega a 1 %. Confira no simulador da seção 1.</li>
+
+      <li><b>9.3</b> Uma conta desliza sem atrito num fio em forma de parábola \(y=x^2/2a\),
+      que gira em torno do eixo \(y\) com velocidade angular \(\Omega\). Mostre que existe uma
+      rotação crítica para a qual todos os pontos do fio são de equilíbrio.</li>
+
+      <li><b>9.4</b> Para a molécula de HCl, a frequência de vibração medida é
+      \(8{,}66\cruz10^{13}\) rad/s. Tratando a ligação como uma mola e usando a massa
+      reduzida, estime a constante de força. Compare com a de uma mola de caneta.</li>
+
+      <li><b>9.5</b> Monte \(\Ten{M}\) e \(\Ten{K}\) para um pêndulo duplo com hastes de
+      comprimentos iguais e massas iguais, nas coordenadas dos dois ângulos. Note que
+      \(\Ten{M}\) não é diagonal e explique por quê.</li>
+
+      <li><b>9.6</b> Mostre que, se \(\Ten{K}\) tem um autovalor nulo, existe uma direção em
+      que o sistema pode se deslocar sem custo de energia, e dê dois exemplos físicos.</li>
+
+      <li><b>9.7</b> Escreva um programa em Python que receba \(U(q_1,q_2)\) simbolicamente
+      com <code>sympy</code>, ache os pontos críticos, monte a matriz hessiana e classifique
+      cada equilíbrio. Teste com o potencial da conta no aro.</li>
+
+      <li><b>9.8</b> No potencial de Lennard-Jones do exercício resolvido 9.1, calcule o termo
+      cúbico da expansão e estime a amplitude a partir da qual o período muda em 5 %.
+      Relacione o resultado com a dilatação térmica dos sólidos.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula08.html"><small>Aula anterior</small>← 8. Autogravidade</a>
+    <span class="em-breve"><small>Em preparação</small>10. Modos normais</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091423"></script>
+</body>
+</html>
