@@ -1187,6 +1187,223 @@
     registrarRedesenho(desenhar);
   };
 
+
+  /* =================================================================
+     11. O giroscópio
+     A precessão por torque é contraintuitiva até se ver que o torque é
+     perpendicular ao momento angular e portanto só o gira. O desenho
+     mostra os três vetores e o cone, e os cartões comparam a fórmula
+     aproximada com a raiz exata da equação do segundo grau.
+     ================================================================= */
+  REGISTRO.giroscopio = function (raiz) {
+    var corpo = moldura(raiz, 'Por que o giroscópio não cai');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    /* unidades SI de um giroscópio de bancada */
+    var l1 = 4e-5, l3 = 2e-5, M = 0.05, R = 0.02, w3 = 300, grau = 35, fase = 0;
+    var animando = true;
+
+    deslizante(corpo, 'Giro próprio \\(\\omega_3\\) (rad/s):', 20, 600, 5, w3,
+      function (v) { w3 = v; desenhar(); }, function (v) { return v.toFixed(0); });
+    deslizante(corpo, 'Inclinação \\(\\theta\\):', 5, 85, 1, grau,
+      function (v) { grau = v; desenhar(); }, function (v) { return v.toFixed(0) + '°'; });
+
+    var bot = el('div', { class: 'botoes' });
+    var bAnim = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(bAnim); corpo.appendChild(bot);
+    bAnim.addEventListener('click', function () {
+      animando = !animando; bAnim.textContent = animando ? 'Parar' : 'Girar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(L_3\\) (J·s)', k: 'l3' },
+      { rot: '\\(\\dot\\varphi\\) aproximada', k: 'ap' },
+      { rot: '\\(\\dot\\varphi\\) exata (lenta)', k: 'ex' },
+      { rot: 'Erro', k: 'er' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var th = grau * Math.PI / 180;
+      var L3 = l3 * w3, MgR = M * 9.81 * R;
+      var ap = MgR / L3;
+      /* λ₁φ̇²cos θ − L₃φ̇ + MgR = 0 */
+      var A = l1 * Math.cos(th), disc = L3 * L3 - 4 * A * MgR;
+      var ex = disc >= 0 ? (L3 - Math.sqrt(disc)) / (2 * A) : NaN;
+
+      var p = G.preparar(cv, Math.min(330, Math.max(250, cv.clientWidth * 0.54)));
+      var ct = p.ct, cx = p.L / 2, cy = p.A / 2 + 40, esc = Math.min(p.L, p.A) * 0.3;
+      var P = projetor(0, 0.42, esc, cx, cy);
+
+      /* eixo vertical e cone de precessão */
+      var topo = P([0, 0, 1.5]);
+      ct.strokeStyle = '#c8d0d7'; ct.lineWidth = 1.2;
+      ct.beginPath(); ct.moveTo(P([0, 0, 0]).x, P([0, 0, 0]).y);
+      ct.lineTo(topo.x, topo.y); ct.stroke();
+
+      var u = [Math.sin(th) * Math.cos(fase), Math.sin(th) * Math.sin(fase), Math.cos(th)];
+      ct.beginPath();
+      for (var i = 0; i <= 72; i++) {
+        var a = i / 72 * 2 * Math.PI;
+        var q = P([Math.sin(th) * Math.cos(a), Math.sin(th) * Math.sin(a), Math.cos(th)]);
+        if (i === 0) ct.moveTo(q.x, q.y); else ct.lineTo(q.x, q.y);
+      }
+      ct.strokeStyle = '#d9c3d4'; ct.setLineDash([4, 4]); ct.stroke(); ct.setLineDash([]);
+
+      /* haste do giroscópio e disco */
+      var O = P([0, 0, 0]), E = P(u);
+      ct.strokeStyle = '#6b7682'; ct.lineWidth = 4;
+      ct.beginPath(); ct.moveTo(O.x, O.y); ct.lineTo(E.x, E.y); ct.stroke();
+      ct.save();
+      ct.translate(E.x, E.y);
+      ct.beginPath(); ct.ellipse(0, 0, 26, 26 * Math.abs(Math.cos(th)) * 0.5 + 5,
+                                 -fase, 0, 2 * Math.PI);
+      ct.fillStyle = 'rgba(122,58,107,.25)'; ct.strokeStyle = G.COR.mestra;
+      ct.lineWidth = 2; ct.fill(); ct.stroke();
+      ct.restore();
+
+      /* L ao longo do eixo, torque perpendicular ao plano vertical */
+      seta(ct, O.x, O.y, E.x + (E.x - O.x) * 0.35, E.y + (E.y - O.y) * 0.35,
+           G.COR.vinho, 2.4);
+      rotulo(ct, 'L', E.x + (E.x - O.x) * 0.45, E.y + (E.y - O.y) * 0.45 - 8, G.COR.vinho);
+      var tq = [-Math.sin(fase), Math.cos(fase), 0];
+      var T0 = P([u[0] * 0.75, u[1] * 0.75, u[2] * 0.75]);
+      var T1 = P([u[0] * 0.75 + tq[0] * 0.7, u[1] * 0.75 + tq[1] * 0.7, u[2] * 0.75]);
+      seta(ct, T0.x, T0.y, T1.x, T1.y, G.COR.azul, 2.2);
+      rotulo(ct, 'Γ', T1.x + 12, T1.y - 6, G.COR.azul);
+
+      mostrar({
+        l3: F.fmt(L3, 5), ap: F.fmt(ap, 3) + ' rad/s',
+        ex: isNaN(ex) ? 'não há' : F.fmt(ex, 3) + ' rad/s',
+        er: isNaN(ex) ? '—' : F.pct(Math.abs(ap - ex) / ex, 2)
+      });
+
+      saida.innerHTML = isNaN(ex)
+        ? 'Com este giro próprio não existe precessão estacionária: '
+          + '\\(L_3^2<4\\lambda_1 MgR\\cos\\theta\\), o discriminante fica negativo e o '
+          + 'giroscópio simplesmente tomba. É o que acontece com um pião que já perdeu '
+          + 'rotação demais.'
+        : 'O torque da gravidade é horizontal e perpendicular ao eixo, de modo que empurra '
+          + '\\(\\vet{L}\\) de lado em vez de para baixo. O eixo então passeia pelo cone em '
+          + 'vez de cair, com a velocidade do cartão. A fórmula \\(\\dot\\varphi=MgR/L_3\\) '
+          + 'erra aqui ' + F.pct(Math.abs(ap - ex) / ex, 2) + ', e o erro cresce quando o '
+          + 'giro próprio diminui.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() {
+      if (!animando) return;
+      fase += 0.02;
+      desenhar();
+      requestAnimationFrame(laco);
+    }
+
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
+  /* =================================================================
+     12. A precessão dos equinócios
+     A mesma fórmula do giroscópio aplicada à Terra, com o torque do
+     Sol e da Lua sobre o abaulamento equatorial. O cálculo fecha com
+     os 25 800 anos medidos, e o widget permite desligar a Lua para ver
+     que ela responde por mais da metade do efeito.
+     ================================================================= */
+  REGISTRO.equinocios = function (raiz) {
+    var corpo = moldura(raiz, 'De onde vêm os 26 mil anos');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var H = 0.0032737, eps = 23.44, sol = true, lua = true, fase = 0;
+
+    deslizante(corpo, 'Achatamento dinâmico \\(H=(C-A)/C\\):', 0.001, 0.006, 0.0001, H,
+      function (v) { H = v; desenhar(); }, function (v) { return v.toFixed(4).replace('.', ','); });
+    deslizante(corpo, 'Obliquidade \\(\\varepsilon\\):', 0, 60, 0.5, eps,
+      function (v) { eps = v; desenhar(); }, function (v) { return F.fmt(v, 1) + '°'; });
+    opcoes(corpo, [{ rot: 'Sol e Lua', v: 3 }, { rot: 'Só o Sol', v: 1 },
+                   { rot: 'Só a Lua', v: 2 }], 0,
+      function (v) { sol = (v & 1) > 0; lua = (v & 2) > 0; desenhar(); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Período da precessão', k: 'per' },
+      { rot: 'Deslocamento por século', k: 'sec' },
+      { rot: 'Peso da Lua', k: 'lua' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    var ns = 2 * Math.PI / (365.25636 * 86400);
+    var nm = 2 * Math.PI / (27.321582 * 86400);
+    var w = 7.292115e-5, mu = 0.0121505;
+
+    function periodo(comSol, comLua) {
+      var termo = (comSol ? ns * ns : 0) + (comLua ? nm * nm * mu : 0);
+      if (termo === 0) return Infinity;
+      var O = 1.5 * termo * H * Math.cos(eps * Math.PI / 180) / w;
+      return 2 * Math.PI / O / (365.25 * 86400);
+    }
+
+    function desenhar() {
+      var T = periodo(sol, lua);
+      var p = G.preparar(cv, Math.min(300, Math.max(230, cv.clientWidth * 0.46)));
+      var ct = p.ct, cx = p.L / 2, cy = p.A / 2 + 30, esc = Math.min(p.L, p.A) * 0.3;
+      var e = eps * Math.PI / 180;
+
+      /* normal à órbita e cone descrito pelo eixo da Terra */
+      ct.strokeStyle = '#c8d0d7'; ct.lineWidth = 1.2;
+      ct.beginPath(); ct.moveTo(cx, cy); ct.lineTo(cx, cy - esc * 1.55); ct.stroke();
+      rotulo(ct, 'normal à órbita', cx, cy - esc * 1.55 - 12, '#6b7682');
+
+      ct.beginPath();
+      ct.ellipse(cx, cy - esc * 1.25 * Math.cos(e), esc * 1.25 * Math.sin(e),
+                 esc * 1.25 * Math.sin(e) * 0.35, 0, 0, 2 * Math.PI);
+      ct.strokeStyle = '#d9c3d4'; ct.setLineDash([4, 4]); ct.stroke(); ct.setLineDash([]);
+
+      var px = cx + esc * 1.25 * Math.sin(e) * Math.cos(fase);
+      var py = cy - esc * 1.25 * Math.cos(e)
+             + esc * 1.25 * Math.sin(e) * 0.35 * Math.sin(fase);
+      seta(ct, cx, cy, px, py, G.COR.vinho, 2.6);
+      rotulo(ct, 'eixo da Terra', px + 18, py - 10, G.COR.vinho);
+
+      /* a Terra, achatada */
+      ct.save();
+      ct.translate(cx, cy);
+      ct.rotate(Math.atan2(px - cx, -(py - cy)));
+      ct.beginPath(); ct.ellipse(0, 0, esc * 0.3, esc * 0.26, 0, 0, 2 * Math.PI);
+      ct.fillStyle = 'rgba(44,95,141,.25)'; ct.strokeStyle = G.COR.azul;
+      ct.lineWidth = 1.6; ct.fill(); ct.stroke();
+      ct.restore();
+
+      var Tsol = periodo(true, false), Tlua = periodo(false, true);
+      mostrar({
+        per: isFinite(T) ? F.fmt(T / 1000, 2) + ' mil anos' : 'não precessa',
+        sec: isFinite(T) ? F.fmt(360 * 3600 / T * 100, 0) + '″' : '—',
+        lua: F.pct((1 / Tlua) / (1 / Tlua + 1 / Tsol), 1)
+      });
+
+      saida.innerHTML = (sol && lua)
+        ? 'Com os valores reais da Terra o cálculo dá ' + F.fmt(T / 1000, 1)
+          + ' mil anos, contra os 25,77 mil anos medidos: o acordo é de alguns por cento, '
+          + 'e a diferença vem de termos que esta conta despreza, como a inclinação da '
+          + 'órbita lunar. A Lua responde por ' + F.pct((1 / Tlua) / (1 / Tlua + 1 / Tsol), 0)
+          + ' do efeito, porque o torque de maré cai com o cubo da distância.'
+        : 'Desligar um dos dois mostra o peso de cada um. Sozinho, o Sol levaria '
+          + F.fmt(Tsol / 1000, 0) + ' mil anos, e a Lua sozinha, '
+          + F.fmt(Tlua / 1000, 0) + ' mil anos. É a soma dos dois torques que dá o valor '
+          + 'observado.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() { fase += 0.012; desenhar(); requestAnimationFrame(laco); }
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

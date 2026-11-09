@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 6: Giroscópios, moedas e a precessão dos equinócios | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091414">
+<script src="assets/js/comum.js?v=202611091414"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num ativo" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Por que o giroscópio não cai</a></li>
+    <li><a href="#s2">2. A moeda que rola e tomba</a></li>
+    <li><a href="#s3">3. A precessão dos equinócios</a></li>
+    <li><a href="#s4">4. Exercícios resolvidos</a></li>
+    <li><a href="#s5">5. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 6 · Álgebra tensorial e corpo rígido</p>
+  <h1>Giroscópios, moedas e a precessão dos equinócios</h1>
+  <p class="subtitulo">A fórmula de uma linha da precessão giroscópica dá conta de três fenômenos de escalas muito diferentes: o giroscópio de bancada, a moeda que rola pela mesa e o passeio de 26 mil anos do eixo da Terra entre as constelações.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Explicar por que um giroscópio precessa em vez de cair;</li>
+      <li>Obter \(\dot\varphi=MgR/L_3\) e estimar o erro da aproximação;</li>
+      <li>Aplicar o argumento giroscópico à moeda rolante com rolamento sem deslizamento;</li>
+      <li>Calcular o raio do círculo descrito pela moeda;</li>
+      <li>Deduzir a precessão dos equinócios e separar a contribuição do Sol e da Lua;</li>
+      <li>Distinguir precessão forçada, precessão livre e nutação astronômica.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Por que o giroscópio não cai</h2>
+
+  <p>Um giroscópio é um pião simétrico montado de modo que o seu eixo possa apontar para
+  qualquer lado. Posto a girar depressa e apoiado numa das pontas, ele não cai: o eixo fica
+  na horizontal e passeia lentamente em torno do suporte. A primeira vez que se vê isso o
+  efeito parece contrariar a gravidade, e o que ele contraria é apenas a expectativa de que
+  força e deslocamento apontem para o mesmo lado.</p>
+
+  <p>O argumento cabe em três linhas. O momento angular aponta ao longo do eixo,
+  \(\vet{L}\approx L_3\vers{e}_3\), porque o giro próprio domina. O torque da gravidade é</p>
+
+  <p>\[\vet{\Gamma}=\vet{R}\cruz M\vet{g},\]</p>
+
+  <p>com módulo \(MgR\sen\theta\) e direção <strong>horizontal</strong>, perpendicular tanto à
+  vertical quanto ao eixo do pião. Como \(d\vet{L}/dt=\vet{\Gamma}\) e o torque é
+  perpendicular a \(\vet{L}\), o momento angular muda de direção sem mudar de módulo, que é a
+  definição de um movimento circular. O eixo gira em torno da vertical.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Precessão do giroscópio rápido</span>
+    \[\dot\varphi=\frac{MgR}{L_3}=\frac{MgR}{\lambda_3\omega_3}.\]
+  </div>
+
+  <p>A fórmula sai igualando \(|d\vet{L}/dt|=L_3\sen\theta\,\dot\varphi\) a
+  \(MgR\sen\theta\). O \(\sen\theta\) cancela dos dois lados, e é por isso que a velocidade de
+  precessão não depende da inclinação. Quanto mais depressa o pião gira, mais devagar ele
+  precessa, o que é a única parte do resultado que combina com a intuição.</p>
+
+  <div data-widget="giroscopio"></div>
+
+  <p>Essa é a mesma raiz lenta da equação do segundo grau da aula 5, e o simulador mostra o
+  tamanho do erro cometido ao usá-la. Para um giroscópio de bancada girando a algumas centenas
+  de radianos por segundo, o erro fica na casa de 1 %, e cresce depressa quando o giro
+  próprio cai.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A moeda que rola e tomba</h2>
+
+  <p>Uma moeda lançada a rolar pela mesa não segue em linha reta: ela se inclina, descreve
+  um círculo cada vez menor e termina rodopiando no lugar, com aquele ruído característico
+  que acelera até parar. A primeira parte desse movimento é giroscópica, e a conta é a mesma
+  de antes.</p>
+
+  <p>Seja uma moeda de raio \(R\) e espessura \(a\), rolando sem deslizar com velocidade
+  angular de giro \(\omega_1\) em torno do seu eixo de simetria, inclinada de \(\theta\) em
+  relação à vertical. O peso aplicado no centro produz, em relação ao ponto de contato, um
+  torque de módulo \(Mgr\sen\theta\), com \(r=\sqrt{R^2+a^2/4}\) a distância do ponto de
+  contato ao centro.</p>
+
+  <p>Pelo mesmo argumento do giroscópio, esse torque faz o eixo da moeda precessar com</p>
+
+  <p>\[\Omega_\rho=\frac{\Gamma}{L_1}=\frac{Mgr\sen\theta}{\lambda_1\omega_1}
+  =\frac{g\sen\theta}{\omega_1}\,\frac{\sqrt{4R^2+a^2}}{R^2},\]</p>
+
+  <p>onde se usou \(\lambda_1=\frac12MR^2\) para o disco e \(r=\frac12\sqrt{4R^2+a^2}\).</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">O raio do círculo</span>
+    <p>A condição de rolamento sem deslizamento liga as duas velocidades angulares à mesma
+    velocidade do centro: \(v=\omega_1R\) pelo giro e \(v=\Omega_\rho\rho\) pelo passeio em
+    torno do centro do círculo de raio \(\rho\). Igualando,</p>
+    <p>\[\rho=\frac{\omega_1R}{\Omega_\rho}
+    =\frac{R^3}{\sqrt{4R^2+a^2}}\,\frac{\omega_1^2}{g\sen\theta}.\]</p>
+    <p>Para uma moeda fina, \(a\to0\), isso vira \(\rho=R^2\omega_1^2/(2g\sen\theta)\): o raio
+    do círculo cresce com o quadrado da velocidade de giro, e encolhe conforme o atrito come
+    \(\omega_1\) e a moeda se inclina mais. É exatamente o que se observa.</p>
+  </div>
+
+  <div class="bloco fisica">
+    <span class="rotulo">Números de uma moeda de um real</span>
+    <p>Com \(R=13{,}5\) mm e \(a=1{,}95\) mm, uma moeda rolando a \(\omega_1=60\) rad/s e
+    inclinada de 20° tem \(\Omega_\rho=8{,}3\) rad/s e, portanto, \(\rho=9{,}8\) cm. A moeda
+    dá uma volta completa no círculo em 0,76 s, e isso enquanto gira em torno de si mesma
+    quase dez vezes por volta. A razão entre as duas frequências é o que faz o movimento
+    parecer suave.</p>
+    <p>O mesmo princípio explica por que um motociclista faz uma curva inclinando o corpo: a
+    inclinação desloca o centro de massa e cria o torque gravitacional que faz o eixo da roda
+    precessar, levando a moto para a curva sem que seja preciso girar o guidão.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. A precessão dos equinócios</h2>
+
+  <p>O exemplo mais antigo de precessão giroscópica conhecido pela humanidade é também o mais
+  lento. <a href="https://pt.wikipedia.org/wiki/Hiparco">Hiparco de Niceia</a>, por volta de
+  130 a.C., comparou as suas medidas de posições estelares com registros babilônicos de
+  séculos antes e percebeu que o ponto do equinócio tinha se deslocado em relação às estrelas.
+  O deslocamento é de cerca de 50 segundos de arco por ano, e completa uma volta em uns 26 mil
+  anos.</p>
+
+  <p>A causa é a mesma do giroscópio, com três ingredientes. A Terra gira, e tem momento
+  angular enorme ao longo do seu eixo. A Terra é achatada, com um excesso de massa no equador
+  da ordem de um terço de por cento do momento de inércia. E o eixo é inclinado de
+  \(\varepsilon=23{,}44^\circ\) em relação à normal da órbita, de modo que o Sol e a Lua, ao
+  puxarem o abaulamento equatorial, produzem um torque que tende a endireitar o eixo.</p>
+
+  <p>Esse torque, mediado sobre uma órbita, vale
+  \(\Gamma=\frac32\,\frac{GM}{d^3}\left(C-A\right)\sen\varepsilon\cos\varepsilon\), com \(C\) e
+  \(A\) os momentos principais polar e equatorial. Dividindo pelo momento angular
+  \(C\omega\sen\varepsilon\), como manda a fórmula do giroscópio,</p>
+
+  <div class="destaque">
+    <span class="anuncio">Precessão dos equinócios</span>
+    \[\Omega_p=\frac32\,\frac{C-A}{C}\,\frac{\cos\varepsilon}{\omega}
+    \left(n_{\odot}^2+\frac{M_{\text{L}}}{M_{\text{T}}+M_{\text{L}}}\,n_{\text{L}}^2\right),\]
+  </div>
+
+  <p>onde \(n_\odot\) e \(n_{\text{L}}\) são as frequências orbitais anual e mensal, e o fator
+  \(GM/d^3\) foi trocado por \(n^2\) pela terceira lei de Kepler. O sinal é negativo em
+  relação ao giro, isto é, a precessão é retrógrada: o equinócio caminha para trás entre as
+  constelações.</p>
+
+  <div data-widget="equinocios"></div>
+
+  <p>A conta fecha. Com \(H=(C-A)/C=0{,}0032737\), o resultado é 25,6 mil anos, contra os
+  25,77 mil anos medidos, e a diferença de menos de 1 % vem de efeitos que esta versão
+  despreza, como a inclinação de 5° da órbita lunar. O que mais surpreende no resultado é o
+  peso da Lua: apesar de ser minúscula perto do Sol, ela está tão mais perto que responde por
+  dois terços do torque, porque o efeito de maré cai com o cubo da distância.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Três movimentos diferentes</span>
+    <p>Não confunda os três movimentos lentos do eixo da Terra que aparecem neste curso. A
+    <strong>precessão dos equinócios</strong>, de 26 mil anos, é forçada por torque externo e
+    é o assunto desta seção. O <strong>bamboleio de Chandler</strong>, de 433 dias, da aula 4,
+    é precessão livre, sem torque nenhum. E a <strong>nutação</strong> astronômica, de 18,6
+    anos e 9 segundos de arco, é a modulação da precessão pelo movimento do plano orbital da
+    Lua, e não é a mesma coisa que a nutação do pião da aula 5, embora o nome seja o
+    mesmo.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 6.1</span>
+    <p><strong>Uma roda de bicicleta de 2 kg e 33 cm de raio gira a 15 rev/s, suspensa pela
+    ponta do eixo a 20 cm do centro. Qual é o período de precessão?</strong></p>
+    <p>Tratando a roda como um aro, \(\lambda_3=MR^2=2\cruz0{,}33^2=0{,}218\) kg·m², e
+    \(\omega_3=2\pi\cruz15=94{,}2\) rad/s, de onde \(L_3=20{,}5\) J·s.</p>
+    <p>\[\dot\varphi=\frac{MgR}{L_3}=\frac{2\cruz9{,}81\cruz0{,}20}{20{,}5}
+    =0{,}191\ \text{rad/s},\]</p>
+    <p>ou seja, uma volta em 33 s. É o experimento clássico de sala de aula, e o número bate
+    com o que se mede com um cronômetro.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 6.2</span>
+    <p><strong>Mostre que a precessão do giroscópio não depende de \(\theta\), mas a
+    correção de primeira ordem depende.</strong></p>
+    <p>Da equação exata \(\lambda_1\dot\varphi^2\cos\theta-L_3\dot\varphi+MgR=0\), a raiz
+    lenta é</p>
+    <p>\[\dot\varphi=\frac{L_3-\sqrt{L_3^2-4\lambda_1MgR\cos\theta}}{2\lambda_1\cos\theta}
+    \approx\frac{MgR}{L_3}\left(1+\frac{\lambda_1MgR\cos\theta}{L_3^2}\right),\]</p>
+    <p>onde se expandiu a raiz até primeira ordem no parâmetro pequeno
+    \(4\lambda_1MgR\cos\theta/L_3^2\). O termo dominante não vê \(\theta\); a correção vê, e
+    some quando o eixo se aproxima da horizontal. Para o giroscópio do simulador a correção é
+    de alguns por cento.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 6.3</span>
+    <p><strong>Estime o torque do Sol sobre o abaulamento da Terra.</strong></p>
+    <p>Use \(C=8{,}04\cruz10^{37}\) kg·m², \(H=(C-A)/C=0{,}00327\),
+    \(n_\odot=1{,}991\cruz10^{-7}\) rad/s e \(\varepsilon=23{,}44^\circ\):</p>
+    <p>\[\Gamma=\frac32 n_\odot^2\left(C-A\right)\sen\varepsilon\cos\varepsilon
+    =\frac32\left(3{,}96\cruz10^{-14}\right)\left(2{,}63\cruz10^{35}\right)
+    \left(0{,}3977\right)\left(0{,}9175\right)\approx5{,}7\cruz10^{21}\ \text{N·m}.\]</p>
+    <p>Parece enorme, e é desprezível perto do momento angular da Terra,
+    \(C\omega=5{,}9\cruz10^{33}\) J·s. A razão entre os dois é o que dá a lentidão da
+    precessão: o eixo leva milhares de anos para se mover de forma perceptível.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>6.1</b> Um giroscópio de brinquedo tem \(\lambda_3=3\cruz10^{-5}\) kg·m²,
+      massa 60 g e centro de massa a 2,5 cm do apoio. Que giro próprio é preciso para que a
+      precessão tenha período de 10 s?</li>
+
+      <li><b>6.2</b> Mostre que, para um giroscópio com o eixo horizontal, a condição de
+      existência de precessão estacionária é satisfeita para qualquer \(\omega_3\), e explique
+      por quê.</li>
+
+      <li><b>6.3</b> Uma moeda de 25 centavos rola a 8 rad/s inclinada de 15°. Calcule
+      \(\Omega_\rho\) e o raio do círculo descrito. Meça uma moeda real e compare com o
+      experimento.</li>
+
+      <li><b>6.4</b> Refaça a conta da moeda considerando-a um disco fino e mostre que
+      \(\rho=R^2\omega_1^2/(2g\sen\theta)\). Para que velocidade de giro o raio do círculo
+      iguala um metro, com \(\theta=10^\circ\)?</li>
+
+      <li><b>6.5</b> Deduza a fórmula do torque médio sobre o abaulamento,
+      \(\Gamma=\frac32\frac{GM}{d^3}(C-A)\sen\varepsilon\cos\varepsilon\), expandindo o
+      potencial gravitacional em multipolos. Esta é a ponte para a aula 7.</li>
+
+      <li><b>6.6</b> Se a Terra não tivesse Lua, qual seria o período da precessão dos
+      equinócios? E se a obliquidade fosse de 45°?</li>
+
+      <li><b>6.7</b> O eixo da Terra aponta hoje para a Polar. Daqui a quantos anos ele
+      apontará para Vega, que está a cerca de 47° da Polar? Explique por que essa troca de
+      estrela polar é consequência direta desta aula.</li>
+
+      <li><b>6.8</b> Escreva um programa em Python que integre numericamente as equações de
+      Euler com o torque gravitacional de um pião e compare a precessão obtida com a fórmula
+      \(MgR/L_3\), em função de \(\omega_3\). Trace a curva do erro relativo.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula05.html"><small>Aula anterior</small>← 5. Ângulos de Euler</a>
+    <span class="em-breve"><small>Em preparação</small>7. Campo gravitacional</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091414"></script>
+</body>
+</html>
