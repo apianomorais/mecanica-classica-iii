@@ -2367,6 +2367,214 @@
     registrarRedesenho(desenhar);
   };
 
+
+  /* =================================================================
+     23. A equação da continuidade num tubo
+     O que entra menos o que sai é o que fica. Num tubo que estreita,
+     com escoamento estacionário, isso obriga a velocidade a crescer, e
+     o widget mostra as duas leituras: a conservação da massa e a
+     aceleração de um elemento de fluido que não vê nenhuma mudança
+     temporal.
+     ================================================================= */
+  REGISTRO.continuidade = function (raiz) {
+    var corpo = moldura(raiz, 'Um tubo que estreita');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var estreita = 0.45, compress = false, t = 0, animando = true;
+
+    deslizante(corpo, 'Estrangulamento \\(A_2/A_1\\):', 0.2, 1, 0.01, estreita,
+      function (v) { estreita = v; }, function (v) { return F.fmt(v, 2); });
+    opcoes(corpo, [{ rot: 'Incompressível', v: 0 }, { rot: 'Densidade varia', v: 1 }], 0,
+      function (v) { compress = (v === 1); });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(b); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(v_2/v_1\\)', k: 'v' }, { rot: '\\(\\rho_2/\\rho_1\\)', k: 'r' },
+      { rot: 'Vazão mássica', k: 'q' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* área ao longo do tubo, normalizada em A₁ = 1 */
+    function area(x) {
+      var f = 0.5 * (1 - Math.tanh((x - 0.5) * 12));
+      return estreita + (1 - estreita) * f;
+    }
+    function dens(x) { return compress ? Math.pow(area(x), -0.35) : 1; }
+    function vel(x) { return 1 / (area(x) * dens(x)); }
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(300, Math.max(230, cv.clientWidth * 0.46)));
+      var ct = p.ct;
+      var x0 = p.L * 0.08, larg = p.L * 0.84, cy = p.A * 0.42, alt = p.A * 0.3;
+
+      /* parede do tubo */
+      [1, -1].forEach(function (sgn) {
+        ct.beginPath();
+        for (var i = 0; i <= 200; i++) {
+          var x = i / 200;
+          var px = x0 + larg * x, py = cy + sgn * alt * area(x);
+          if (i === 0) ct.moveTo(px, py); else ct.lineTo(px, py);
+        }
+        ct.strokeStyle = '#6b7682'; ct.lineWidth = 2.5; ct.stroke();
+      });
+
+      /* partículas de fluido arrastadas pelo campo */
+      if (!desenhar.gotas) {
+        desenhar.gotas = [];
+        for (var k = 0; k < 90; k++)
+          desenhar.gotas.push([Math.random(), Math.random() * 2 - 1]);
+      }
+      desenhar.gotas.forEach(function (g) {
+        if (animando) {
+          g[0] += 0.0032 * vel(g[0]);
+          if (g[0] > 1) { g[0] -= 1; g[1] = Math.random() * 2 - 1; }
+        }
+        var px = x0 + larg * g[0], py = cy + alt * area(g[0]) * g[1] * 0.88;
+        ct.beginPath(); ct.arc(px, py, 2.6, 0, 2 * Math.PI);
+        ct.fillStyle = compress
+          ? 'rgba(122,58,107,' + (0.25 + 0.6 * (dens(g[0]) - 0.9)) + ')'
+          : 'rgba(122,58,107,.55)';
+        ct.fill();
+      });
+
+      /* setas de velocidade em três estações */
+      [0.12, 0.5, 0.88].forEach(function (x) {
+        var px = x0 + larg * x;
+        seta(ct, px, cy, px + 26 * vel(x) / vel(0.9), cy, G.COR.azul, 2.2);
+      });
+
+      var v2 = vel(0.95) / vel(0.05), r2 = dens(0.95) / dens(0.05);
+      mostrar({ v: F.fmt(v2, 3), r: F.fmt(r2, 3),
+                q: F.fmt(area(0.95) * dens(0.95) * vel(0.95)
+                         / (area(0.05) * dens(0.05) * vel(0.05)), 4) });
+
+      saida.innerHTML = compress
+        ? 'Deixando a densidade variar, parte do estrangulamento é absorvida por uma '
+          + 'compressão do fluido e a velocidade cresce menos. O que continua rigorosamente '
+          + 'constante é o produto \\(\\rho vA\\), a vazão mássica, que é o conteúdo da '
+          + 'equação da continuidade em regime estacionário.'
+        : 'Com densidade constante, estreitar a seção obriga a velocidade a crescer na '
+          + 'mesma proporção: \\(v_2/v_1=A_1/A_2=' + F.fmt(v2, 2) + '\\). Note que o '
+          + 'escoamento é estacionário, isto é, em cada ponto fixo nada muda no tempo, e '
+          + 'ainda assim cada elemento de fluido acelera ao atravessar o estreitamento.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() { if (!animando) return; t += 1; desenhar(); requestAnimationFrame(laco); }
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
+  /* =================================================================
+     24. Derivada local e derivada convectiva
+     Dois termômetros, um pregado na parede e outro boiando no rio,
+     medem coisas diferentes no mesmo escoamento. A diferença entre as
+     duas leituras é exatamente o termo (v·∇).
+     ================================================================= */
+  REGISTRO.convectiva = function (raiz) {
+    var corpo = moldura(raiz, 'Dois termômetros no mesmo rio');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var vel = 0.6, varia = 0.3, t = 0, animando = true;
+
+    deslizante(corpo, 'Velocidade do escoamento:', 0, 1.5, 0.05, vel,
+      function (v) { vel = v; }, function (v) { return F.fmt(v, 2); });
+    deslizante(corpo, 'Variação temporal do campo:', 0, 1, 0.05, varia,
+      function (v) { varia = v; }, function (v) { return F.fmt(v, 2); });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(b); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Termômetro fixo \\(\\pder{T}{t}\\)', k: 'loc' },
+      { rot: 'Boia \\(DT/Dt\\)', k: 'mat' },
+      { rot: 'Termo \\(v\\,\\partial T/\\partial x\\)', k: 'adv' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* campo de temperatura: onda espacial que também muda no tempo */
+    function T(x, tt) {
+      return Math.sin(2 * Math.PI * x - 0.0) * 1 + varia * Math.sin(1.1 * tt);
+    }
+    function dTdt(x, tt) { return varia * 1.1 * Math.cos(1.1 * tt); }
+    function dTdx(x) { return 2 * Math.PI * Math.cos(2 * Math.PI * x); }
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(300, Math.max(230, cv.clientWidth * 0.46)));
+      var ct = p.ct;
+      var x0 = p.L * 0.08, larg = p.L * 0.84, cy = p.A * 0.42, alt = p.A * 0.22;
+
+      /* o campo, desenhado como curva */
+      ct.beginPath();
+      for (var i = 0; i <= 240; i++) {
+        var x = i / 240;
+        var px = x0 + larg * x, py = cy - alt * T(x, t);
+        if (i === 0) ct.moveTo(px, py); else ct.lineTo(px, py);
+      }
+      ct.strokeStyle = G.COR.mestra; ct.lineWidth = 2; ct.stroke();
+      ct.strokeStyle = '#dde3e8'; ct.lineWidth = 1;
+      ct.beginPath(); ct.moveTo(x0, cy); ct.lineTo(x0 + larg, cy); ct.stroke();
+
+      /* termômetro fixo */
+      var xf = 0.25;
+      var pf = x0 + larg * xf;
+      ct.strokeStyle = '#9aa6b1'; ct.lineWidth = 1.4;
+      ct.beginPath(); ct.moveTo(pf, cy - alt * 1.6); ct.lineTo(pf, cy + alt * 1.6);
+      ct.stroke();
+      ct.beginPath(); ct.arc(pf, cy - alt * T(xf, t), 7, 0, 2 * Math.PI);
+      ct.fillStyle = G.COR.azul; ct.fill();
+      rotulo(ct, 'fixo', pf, cy + alt * 1.6 + 12, G.COR.azul);
+
+      /* boia que anda com o fluido */
+      var xb = (0.05 + vel * t * 0.02) % 1;
+      var pb = x0 + larg * xb;
+      ct.beginPath(); ct.arc(pb, cy - alt * T(xb, t), 7, 0, 2 * Math.PI);
+      ct.fillStyle = G.COR.vinho; ct.fill();
+      rotulo(ct, 'boia', pb, cy + alt * 1.6 + 12, G.COR.vinho);
+
+      var loc = dTdt(xb, t);
+      var adv = vel * dTdx(xb);
+      mostrar({ loc: F.fmt(loc, 3), mat: F.fmt(loc + adv, 3), adv: F.fmt(adv, 3) });
+
+      saida.innerHTML = vel < 0.03
+        ? 'Com o fluido parado, a boia fica onde está e os dois termômetros medem a mesma '
+          + 'coisa: só a variação local. A derivada convectiva se reduz à derivada parcial '
+          + 'no tempo.'
+        : varia < 0.03
+          ? 'O campo não muda no tempo: o termômetro fixo marca sempre a mesma temperatura, '
+            + 'e \\(\\pder{T}{t}=0\\). A boia, no entanto, sobe e desce, porque ela se '
+            + 'desloca para regiões mais quentes e mais frias. Essa variação é toda do '
+            + 'termo \\(\\vet{v}\\cdot\\nabla T\\).'
+          : 'As duas leituras diferem pelo termo de advecção. O termômetro fixo vê apenas '
+            + 'o campo mudar no tempo; a boia soma a isso o que ela encontra ao se mover. '
+            + 'A soma é a <strong>derivada convectiva</strong>, e é ela que entra na '
+            + 'segunda lei de Newton para um elemento de fluido.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() { if (!animando) return; t += 0.05; desenhar(); requestAnimationFrame(laco); }
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 12: Densidade, fluxo e a equação da continuidade | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091433">
+<script src="assets/js/comum.js?v=202611091433"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+      <a href="aula10.html" class="num" title="Aula 10: Modos normais e coordenadas normais">10</a>
+      <a href="aula11.html" class="num" title="Aula 11: A cadeia de N osciladores e o limite contínuo">11</a>
+      <span class="grupo">Ondas</span>
+      <a href="aula12.html" class="num ativo" title="Aula 12: Densidade, fluxo e a equação da continuidade">12</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Quando as partículas viram um campo</a></li>
+    <li><a href="#s2">2. Fluxo e a equação da continuidade</a></li>
+    <li><a href="#s3">3. Duas maneiras de derivar no tempo</a></li>
+    <li><a href="#s4">4. Exercícios resolvidos</a></li>
+    <li><a href="#s5">5. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 12 · Meios contínuos e ondas</p>
+  <h1>Densidade, fluxo e a equação da continuidade</h1>
+  <p class="subtitulo">Abandonar as partículas individuais e trabalhar com campos é o preço e o ganho da descrição contínua. A equação da continuidade é a forma local de uma lei de conservação, e a derivada convectiva é a ponte entre olhar um ponto fixo e seguir o fluido.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Enunciar a hipótese do contínuo e saber quando ela falha;</li>
+      <li>Definir densidade e densidade de corrente;</li>
+      <li>Deduzir a equação da continuidade das formas integral e diferencial;</li>
+      <li>Distinguir escoamento estacionário de incompressível;</li>
+      <li>Calcular derivadas convectivas e interpretar o termo de advecção;</li>
+      <li>Reconhecer a mesma equação em outros ramos da física.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Quando as partículas viram um campo</h2>
+
+  <p>Um copo d'água tem da ordem de \(10^{25}\) moléculas. Escrever e resolver \(3\cruz10^{25}\)
+  equações de Newton é impossível, e seria inútil se fosse possível: ninguém quer saber onde
+  está cada molécula. O que se quer saber é como a água escoa, e isso é uma informação de
+  escala muito maior.</p>
+
+  <p>A saída é a mesma de uma multidão vista de longe. Perto do palco de um festival, você
+  percebe cada pessoa e as interações com os vizinhos. Afastando-se o bastante, a multidão
+  vira um mar, e o que importa passa a ser a densidade de pessoas por metro quadrado em cada
+  região. Nenhuma informação sobre indivíduos sobrevive, e nenhuma é necessária.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">A hipótese do contínuo</span>
+    <p>Tratamos o sistema como contínuo quando existe um volume \(d\Omega\) ao mesmo tempo
+    <em>grande</em> o bastante para conter um número enorme de moléculas, de modo que as
+    flutuações estatísticas sejam desprezíveis, e <em>pequeno</em> o bastante para ser um
+    ponto na escala do problema. Para o ar em condições normais, um cubo de um micrômetro de
+    lado contém \(2{,}7\cruz10^{7}\) moléculas: a flutuação relativa é
+    \(1/\sqrt{N}\approx2\cruz10^{-4}\), e um micrômetro é um ponto para quem estuda o vento.
+    A hipótese falha quando o livre caminho médio se aproxima do tamanho do problema, como no
+    ar rarefeito da alta atmosfera.</p>
+  </div>
+
+  <p>Dentro dessa hipótese, define-se a <strong>densidade local</strong></p>
+
+  <p>\[\rho(\vet{r},t)=\frac{dm}{d\Omega},\]</p>
+
+  <p>que é um campo escalar: um número em cada ponto e em cada instante. A massa total contida
+  numa região é a integral,</p>
+
+  <p>\[M=\int_\Omega\rho(\vet{r},t)\,d\Omega,\]</p>
+
+  <p>e a mesma construção vale para qualquer grandeza extensiva, trocando massa por carga,
+  energia ou número de partículas.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. Fluxo e a equação da continuidade</h2>
+
+  <p>Para falar em transporte é preciso de mais um campo: a velocidade \(\vet{v}(\vet{r},t)\)
+  do elemento de fluido que, naquele instante, ocupa aquele ponto. O produto dos dois define a
+  <strong>densidade de corrente de massa</strong>,</p>
+
+  <p>\[\vet{J}=\rho\,\vet{v},\]</p>
+
+  <p>cuja interpretação é direta: \(\vet{J}\cdot d\vet{A}\) é a massa que atravessa o elemento
+  de área \(d\vet{A}\) por unidade de tempo. A massa que sai de uma região por unidade de
+  tempo é, portanto, o fluxo de \(\vet{J}\) pela superfície que a limita.</p>
+
+  <p>Se não há criação nem destruição de massa dentro da região, essa saída tem que vir à
+  custa do que estava lá dentro:</p>
+
+  <p>\[-\der{}{t}\int_\Omega\rho\,d\Omega=\oint_S\rho\vet{v}\cdot d\vet{A}.\]</p>
+
+  <p>Aplicando o teorema da divergência ao lado direito e observando que a região é fixa, de
+  modo que a derivada temporal pode entrar na integral, chega-se a uma igualdade entre duas
+  integrais sobre o mesmo volume arbitrário. Como o volume é arbitrário, os integrandos têm
+  que ser iguais:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Equação da continuidade</span>
+    \[\pder{\rho}{t}+\nabla\cdot\left(\rho\vet{v}\right)=0.\]
+  </div>
+
+  <p>Essa equação é a mesma em toda a física, com outros nomes para \(\rho\) e \(\vet{J}\).
+  Com carga no lugar de massa, é a conservação da carga do eletromagnetismo. Com densidade de
+  probabilidade, é a equação que a função de onda satisfaz. Com densidade de pontos no espaço
+  de fase, é o teorema de Liouville de MC II, módulo 12, que vai reaparecer na aula 16. Toda
+  lei de conservação local tem essa forma, e essa é a sua utilidade principal.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Incompressível não é o mesmo que estacionário</span>
+    <p>Um escoamento é <strong>estacionário</strong> quando \(\partial\rho/\partial t=0\) e os
+    campos não mudam em cada ponto fixo. É <strong>incompressível</strong> quando a densidade
+    de cada elemento de fluido não muda enquanto ele viaja, o que dá
+    \(\nabla\cdot\vet{v}=0\). São condições diferentes, e cada uma pode valer sem a outra.</p>
+  </div>
+
+  <div data-widget="continuidade"></div>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Duas maneiras de derivar no tempo</h2>
+
+  <p>No tubo que estreita, o escoamento é estacionário e ainda assim cada elemento de fluido
+  acelera. Isso parece contraditório até se perceber que há duas maneiras diferentes de
+  derivar no tempo, e que elas respondem a perguntas diferentes.</p>
+
+  <p>A <strong>derivada local</strong> \(\partial/\partial t\) é a taxa medida por um
+  instrumento pregado num ponto fixo. A <strong>derivada material</strong>, ou convectiva, é a
+  taxa medida por um instrumento que viaja junto com o fluido. Para um campo qualquer
+  \(f(\vet{r},t)\), a regra da cadeia dá</p>
+
+  <div class="destaque">
+    <span class="anuncio">Derivada convectiva</span>
+    \[\frac{Df}{Dt}=\pder{f}{t}+\left(\vet{v}\cdot\nabla\right)f.\]
+  </div>
+
+  <p>O primeiro termo é a mudança do campo em si; o segundo é a mudança que o observador
+  encontra por ter se deslocado. No tubo estacionário, o primeiro é nulo e o segundo não,
+  e é ele que fornece a aceleração.</p>
+
+  <div data-widget="convectiva"></div>
+
+  <p>Aplicada à própria velocidade, a derivada convectiva dá a aceleração de um elemento de
+  fluido,</p>
+
+  <p>\[\vet{a}=\pder{\vet{v}}{t}+\left(\vet{v}\cdot\nabla\right)\vet{v},\]</p>
+
+  <p>e é esse o termo que torna a mecânica dos fluidos não linear, com todas as consequências
+  que isso tem: turbulência, ondas de choque e a dificuldade de resolver a equação de
+  Navier-Stokes. A não linearidade não veio de nenhuma força complicada, veio de insistir em
+  descrever o movimento por campos num ponto fixo em vez de seguir cada partícula.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">As duas descrições têm nome</span>
+    <p>Seguir cada elemento de fluido e perguntar onde ele está é a descrição
+    <strong>lagrangiana</strong>; olhar pontos fixos do espaço e perguntar o que passa por
+    eles é a descrição <strong>euleriana</strong>. A primeira é a continuação natural da
+    mecânica de partículas, e a segunda é quase sempre mais prática, porque ninguém consegue
+    etiquetar as moléculas de um rio. A derivada convectiva é a ponte entre as duas.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 12.1</span>
+    <p><strong>Mostre que, para um fluido incompressível, \(\nabla\cdot\vet{v}=0\).</strong></p>
+    <p>Abra a divergência do produto na equação da continuidade:</p>
+    <p>\[\pder{\rho}{t}+\vet{v}\cdot\nabla\rho+\rho\,\nabla\cdot\vet{v}=0
+    \;\Longrightarrow\;\frac{D\rho}{Dt}+\rho\,\nabla\cdot\vet{v}=0.\]</p>
+    <p>Incompressível significa que a densidade de cada elemento não muda enquanto ele viaja,
+    isto é, \(D\rho/Dt=0\). Como \(\rho\neq0\), segue \(\nabla\cdot\vet{v}=0\). Note que isso
+    <em>não</em> exige densidade uniforme: uma mistura de água doce e salgada pode ser
+    incompressível com \(\rho\) variando de ponto para ponto.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 12.2</span>
+    <p><strong>Água escoa por um cano de 5 cm de diâmetro a 2 m/s e passa a um trecho de
+    2 cm. Qual é a velocidade no trecho estreito e a vazão mássica?</strong></p>
+    <p>Para escoamento estacionário e incompressível, \(vA\) é constante:</p>
+    <p>\[v_2=v_1\frac{A_1}{A_2}=2\cruz\left(\frac{5}{2}\right)^2=12{,}5\ \text{m/s}.\]</p>
+    <p>A vazão mássica é \(\dot m=\rho v_1A_1
+    =1000\cruz2\cruz\pi\left(0{,}025\right)^2=3{,}93\) kg/s, e é a mesma nos dois trechos,
+    como manda a continuidade. A velocidade de 12,5 m/s é alta o bastante para que a perda de
+    carga seja relevante, e é por isso que encanadores evitam estrangulamentos.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 12.3</span>
+    <p><strong>Um campo de temperatura num rio vale \(T=T_0+\alpha x\), e não muda no tempo.
+    A água escoa com velocidade \(u\) na direção \(x\). Qual é a taxa de variação medida por
+    uma boia?</strong></p>
+    <p>O termômetro fixo mede \(\partial T/\partial t=0\). A boia mede</p>
+    <p>\[\frac{DT}{Dt}=0+u\pder{T}{x}=u\alpha.\]</p>
+    <p>Se o rio esquenta 1 °C por quilômetro e corre a 2 m/s, a boia registra
+    \(2\cruz10^{-3}\) °C/s, ou 7,2 °C por hora, num campo que não muda no tempo em lugar
+    nenhum. É o exemplo mais simples de advecção, e o mesmo mecanismo leva o ar frio polar
+    até o sul do Brasil sem que o ar, em si, esfrie.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>12.1</b> Escreva a equação da continuidade em coordenadas cilíndricas e esféricas,
+      e simplifique-a para um escoamento radial.</li>
+
+      <li><b>12.2</b> Uma gota esférica de raio \(R\) evapora de modo que o seu raio diminui a
+      taxa constante. Mostre que a massa decresce proporcionalmente a \(R^2\dot R\) e discuta
+      por que a equação da continuidade com fonte é necessária aqui.</li>
+
+      <li><b>12.3</b> Mostre que, para um escoamento estacionário num tubo de seção variável,
+      \(\rho vA\) é constante ao longo do tubo, partindo da forma integral da continuidade.</li>
+
+      <li><b>12.4</b> Um campo de velocidades vale \(\vet{v}=(ax,-ay,0)\). Verifique que ele é
+      incompressível, desenhe as linhas de corrente e calcule a aceleração de um elemento de
+      fluido.</li>
+
+      <li><b>12.5</b> Mostre que a equação da continuidade com fonte,
+      \(\partial\rho/\partial t+\nabla\cdot\vet{J}=\sigma\), descreve corretamente um gás que
+      reage quimicamente, e dê a interpretação de \(\sigma\).</li>
+
+      <li><b>12.6</b> Estime o número de moléculas num cubo de 100 nm de lado de ar a 1 atm e
+      20 °C, e diga se a hipótese do contínuo vale. Repita para a atmosfera a 100 km de
+      altitude.</li>
+
+      <li><b>12.7</b> Escreva um programa em Python que resolva numericamente a equação de
+      advecção \(\partial\rho/\partial t+u\,\partial\rho/\partial x=0\) com um pulso inicial
+      gaussiano, e compare a solução numérica com a exata \(\rho(x-ut)\). Observe a difusão
+      numérica que o esquema introduz.</li>
+
+      <li><b>12.8</b> Mostre que a derivada convectiva de um campo vetorial pode ser escrita
+      como \(\left(\vet{v}\cdot\nabla\right)\vet{v}
+      =\nabla\left(v^2/2\right)-\vet{v}\cruz\left(\nabla\cruz\vet{v}\right)\), e identifique o
+      termo de vorticidade. Essa é a forma usada para deduzir a equação de Bernoulli.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula11.html"><small>Aula anterior</small>← 11. Cadeia de osciladores</a>
+    <span class="em-breve"><small>Em preparação</small>13. Corda vibrante</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091433"></script>
+</body>
+</html>
