@@ -2575,6 +2575,231 @@
     laco();
   };
 
+
+  /* =================================================================
+     25. Pulso numa corda: reflexão e transmissão
+     A solução de d'Alembert permite acompanhar um pulso. Numa emenda
+     entre duas cordas de densidades diferentes, parte volta e parte
+     passa, com amplitudes que saem da continuidade do deslocamento e
+     da força transversal.
+     ================================================================= */
+  REGISTRO.pulsocorda = function (raiz) {
+    var corpo = moldura(raiz, 'O que acontece quando o pulso chega ao fim');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var fim = 0;      /* 0 extremidade fixa, 1 livre, 2 emenda */
+    var razao = 4;    /* ρ₂/ρ₁ na emenda */
+    var t = 0, animando = true;
+
+    opcoes(corpo, [{ rot: 'Extremidade fixa', v: 0 }, { rot: 'Extremidade livre', v: 1 },
+                   { rot: 'Emenda com outra corda', v: 2 }], 0,
+      function (v) { fim = v; t = 0; });
+    deslizante(corpo, 'Razão de densidades \\(\\rho_2/\\rho_1\\):', 0.1, 9, 0.1, razao,
+      function (v) { razao = v; t = 0; }, function (v) { return F.fmt(v, 1); });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    var br = el('button', { type: 'button', class: 'sec', texto: 'Reiniciar' });
+    bot.appendChild(b); bot.appendChild(br); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+    br.addEventListener('click', function () { t = 0; });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Coeficiente de reflexão', k: 'r' },
+      { rot: 'Coeficiente de transmissão', k: 'tt' },
+      { rot: '\\(v_2/v_1\\)', k: 'v' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function pulso(x) { return Math.exp(-x * x / 0.004); }
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(280, Math.max(210, cv.clientWidth * 0.4)));
+      var ct = p.ct;
+      var x0 = p.L * 0.07, larg = p.L * 0.86, cy = p.A * 0.45, amp = p.A * 0.25;
+
+      var v2 = 1 / Math.sqrt(razao);
+      var r = fim === 0 ? -1 : fim === 1 ? 1 : (v2 - 1) / (v2 + 1);
+      var tr = fim === 2 ? 2 * v2 / (v2 + 1) : 0;
+      var xe = fim === 2 ? 0.62 : 0.9;      /* posição da emenda ou da ponta */
+
+      /* a corda, com a segunda metade mais grossa quando há emenda */
+      ct.strokeStyle = '#dde3e8'; ct.lineWidth = 1;
+      ct.beginPath(); ct.moveTo(x0, cy); ct.lineTo(x0 + larg, cy); ct.stroke();
+
+      function altura(x) {
+        var xc = 0.12 + 0.55 * t;                 /* centro do pulso incidente */
+        var y = 0;
+        if (x <= xe) {
+          y += pulso(x - xc);
+          y += r * pulso((2 * xe - x) - xc);      /* o refletido, imagem espelhada */
+        } else if (fim === 2) {
+          /* o transmitido anda com a velocidade da segunda corda */
+          y += tr * pulso((xe + (x - xe) / v2) - xc);
+        }
+        return y;
+      }
+
+      ct.beginPath();
+      for (var i = 0; i <= 400; i++) {
+        var x = i / 400;
+        var px = x0 + larg * x, py = cy - amp * altura(x);
+        if (i === 0) ct.moveTo(px, py); else ct.lineTo(px, py);
+      }
+      ct.strokeStyle = G.COR.mestra; ct.lineWidth = 2.2; ct.stroke();
+
+      if (fim === 2) {
+        ct.strokeStyle = G.COR.bronze; ct.lineWidth = 1.4;
+        ct.beginPath();
+        ct.moveTo(x0 + larg * xe, cy - amp * 1.1);
+        ct.lineTo(x0 + larg * xe, cy + amp * 1.1);
+        ct.stroke();
+        rotulo(ct, 'emenda', x0 + larg * xe, cy + amp * 1.1 + 12, G.COR.bronze);
+      } else {
+        ct.strokeStyle = '#6b7682'; ct.lineWidth = 3;
+        ct.beginPath();
+        ct.moveTo(x0 + larg * xe, cy - amp * (fim === 0 ? 1 : 0.3));
+        ct.lineTo(x0 + larg * xe, cy + amp * (fim === 0 ? 1 : 0.3));
+        ct.stroke();
+        rotulo(ct, fim === 0 ? 'presa' : 'livre', x0 + larg * xe,
+               cy + amp * 1.25, '#6b7682');
+      }
+
+      mostrar({ r: F.fmt(r, 3), tt: fim === 2 ? F.fmt(tr, 3) : '0',
+                v: fim === 2 ? F.fmt(v2, 3) : '—' });
+
+      saida.innerHTML = fim === 0
+        ? 'Na extremidade presa o deslocamento tem de ser nulo o tempo todo, e a única '
+          + 'maneira de conseguir isso é o pulso refletido ser invertido: \\(r=-1\\). O '
+          + 'truque de cálculo é imaginar um pulso-imagem invertido chegando do outro lado, '
+          + 'e é isso que o desenho faz.'
+        : fim === 1
+          ? 'Na extremidade livre é a inclinação que tem de ser nula, porque não há força '
+            + 'transversal para sustentá-la. O pulso volta <strong>sem</strong> inverter, '
+            + '\\(r=+1\\), e a amplitude na ponta chega ao dobro.'
+          : (razao > 1
+            ? 'Passando para uma corda mais pesada, a onda fica mais lenta e parte dela '
+              + 'volta invertida (\\(r=' + F.fmt(r, 2) + '\\)). No limite de uma corda '
+              + 'muito mais pesada, a emenda se comporta como uma parede.'
+            : 'Passando para uma corda mais leve, a onda acelera e a parte refletida volta '
+              + 'sem inverter. O pulso transmitido tem amplitude maior que a do incidente, '
+              + 'o que não viola a conservação de energia porque ele é também mais '
+              + 'estreito.');
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() {
+      if (!animando) return;
+      t += 0.004;
+      if (t > 1.9) t = 0;
+      desenhar();
+      requestAnimationFrame(laco);
+    }
+
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
+  /* =================================================================
+     26. Duas ondas que se cruzam
+     A equação de onda é linear, e por isso duas soluções se somam sem
+     se atrapalhar. Duas ondas iguais em sentidos opostos produzem uma
+     onda estacionária, que é o passo para os modos da aula 14.
+     ================================================================= */
+  REGISTRO.superposicao = function (raiz) {
+    var corpo = moldura(raiz, 'Soma de duas ondas em sentidos opostos');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var fracao = 1, t = 0, animando = true;
+
+    deslizante(corpo, 'Amplitude da onda que volta:', 0, 1, 0.05, fracao,
+      function (v) { fracao = v; }, function (v) { return F.fmt(v, 2); });
+
+    var bot = el('div', { class: 'botoes' });
+    var b = el('button', { type: 'button', texto: 'Parar' });
+    bot.appendChild(b); corpo.appendChild(bot);
+    b.addEventListener('click', function () {
+      animando = !animando; b.textContent = animando ? 'Parar' : 'Animar';
+      if (animando) laco();
+    });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Razão de onda estacionária', k: 'roe' },
+      { rot: 'Nós fixos?', k: 'nos' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      var p = G.preparar(cv, Math.min(300, Math.max(230, cv.clientWidth * 0.45)));
+      var ct = p.ct;
+      var x0 = p.L * 0.07, larg = p.L * 0.86;
+      var k = 4 * Math.PI;
+
+      [[p.A * 0.22, 1], [p.A * 0.45, 2], [p.A * 0.74, 3]].forEach(function (par) {
+        var cy = par[0], qual = par[1], amp = p.A * 0.09;
+        ct.strokeStyle = '#eceff2'; ct.lineWidth = 1;
+        ct.beginPath(); ct.moveTo(x0, cy); ct.lineTo(x0 + larg, cy); ct.stroke();
+        ct.beginPath();
+        for (var i = 0; i <= 300; i++) {
+          var x = i / 300;
+          var ida = Math.sin(k * x - 2 * t);
+          var volta = fracao * Math.sin(k * x + 2 * t);
+          var y = qual === 1 ? ida : qual === 2 ? volta : ida + volta;
+          var px = x0 + larg * x, py = cy - amp * y * (qual === 3 ? 0.9 : 1);
+          if (i === 0) ct.moveTo(px, py); else ct.lineTo(px, py);
+        }
+        ct.strokeStyle = qual === 3 ? G.COR.mestra
+                       : qual === 1 ? G.COR.azul : G.COR.bronze;
+        ct.lineWidth = qual === 3 ? 2.4 : 1.6;
+        ct.stroke();
+        rotulo(ct, qual === 1 ? 'onda que vai' : qual === 2 ? 'onda que volta' : 'soma',
+               x0 + 4, cy - p.A * 0.14, '#6b7682', 'left');
+      });
+
+      /* envelope da soma */
+      ct.beginPath();
+      for (var i = 0; i <= 300; i++) {
+        var x = i / 300;
+        var A = Math.sqrt(Math.pow(1 - fracao, 2) * Math.pow(Math.cos(k * x), 2)
+                          + Math.pow(1 + fracao, 2) * Math.pow(Math.sin(k * x), 2));
+        var px = x0 + larg * x, py = p.A * 0.74 - p.A * 0.081 * A;
+        if (i === 0) ct.moveTo(px, py); else ct.lineTo(px, py);
+      }
+      ct.strokeStyle = 'rgba(122,58,107,.35)'; ct.lineWidth = 1.2;
+      ct.setLineDash([4, 3]); ct.stroke(); ct.setLineDash([]);
+
+      var roe = fracao >= 0.999 ? Infinity : (1 + fracao) / (1 - fracao);
+      mostrar({ roe: isFinite(roe) ? F.fmt(roe, 2) : 'infinita',
+                nos: fracao >= 0.999 ? 'sim, imóveis' : (fracao < 0.01 ? 'não há' : 'não') });
+
+      saida.innerHTML = fracao >= 0.999
+        ? 'Com as duas amplitudes iguais, a soma é \\(2A\\sen kx\\cos\\omega t\\): a forma '
+          + 'não anda, ela apenas pulsa. Os <strong>nós</strong> ficam parados, e é sobre '
+          + 'eles que a aula 14 vai construir os modos de uma corda presa.'
+        : fracao < 0.01
+          ? 'Sem onda refletida sobra só a onda progressiva: a forma anda e todo ponto da '
+            + 'corda oscila com a mesma amplitude.'
+          : 'Com reflexão parcial, a soma é uma onda que anda com amplitude modulada. A '
+            + 'razão entre o máximo e o mínimo do envelope vale ' + F.fmt(roe, 2)
+            + ', e medir essa razão é como se afere o casamento de impedâncias numa linha '
+            + 'de transmissão.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    function laco() { if (!animando) return; t += 0.03; desenhar(); requestAnimationFrame(laco); }
+    registrarRedesenho(desenhar);
+    laco();
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {

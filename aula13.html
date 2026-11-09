@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 13: A corda vibrante e a equação de onda | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091436">
+<script src="assets/js/comum.js?v=202611091436"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+      <a href="aula10.html" class="num" title="Aula 10: Modos normais e coordenadas normais">10</a>
+      <a href="aula11.html" class="num" title="Aula 11: A cadeia de N osciladores e o limite contínuo">11</a>
+      <span class="grupo">Ondas</span>
+      <a href="aula12.html" class="num" title="Aula 12: Densidade, fluxo e a equação da continuidade">12</a>
+      <a href="aula13.html" class="num ativo" title="Aula 13: A corda vibrante e a equação de onda">13</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. A força sobre um elemento de corda</a></li>
+    <li><a href="#s2">2. A solução de d'Alembert</a></li>
+    <li><a href="#s3">3. Extremidades: reflexão e transmissão</a></li>
+    <li><a href="#s4">4. Superposição e ondas estacionárias</a></li>
+    <li><a href="#s5">5. Exercícios resolvidos</a></li>
+    <li><a href="#s6">6. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 13 · Meios contínuos e ondas</p>
+  <h1>A corda vibrante e a equação de onda</h1>
+  <p class="subtitulo">A segunda lei de Newton aplicada a um pedacinho de corda dá a equação de onda, e a solução geral se escreve sem resolver nada: qualquer forma que caminhe sem se deformar. As extremidades decidem o que acontece quando o pulso chega ao fim.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Deduzir a equação de onda da corda a partir das forças num elemento;</li>
+      <li>Identificar \(v=\sqrt{\tau/\mu}\) e comparar com a cadeia discreta;</li>
+      <li>Escrever e interpretar a solução de d'Alembert;</li>
+      <li>Aplicar condições iniciais de corda dedilhada e percutida;</li>
+      <li>Obter os coeficientes de reflexão e transmissão;</li>
+      <li>Construir ondas estacionárias por superposição.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. A força sobre um elemento de corda</h2>
+
+  <p>Uma corda esticada é o meio contínuo mais simples que existe: um objeto unidimensional,
+  com uma densidade linear \(\mu\) e uma tensão \(\tau\). Tome um pedaço entre \(x\) e
+  \(x+dx\), e suponha que ele se desloque apenas na direção transversal, por uma quantidade
+  \(y(x,t)\) pequena.</p>
+
+  <p>As forças nas duas pontas do elemento são as tensões, tangentes à corda. Como os
+  deslocamentos são pequenos, o ângulo que a corda faz com a horizontal é pequeno, e vale
+  \(\tg\theta\approx\sen\theta\approx\partial y/\partial x\). As componentes horizontais se
+  cancelam, e as verticais dão</p>
+
+  <p>\[dF_y=\tau\left[\pder{y}{x}\bigg|_{x+dx}-\pder{y}{x}\bigg|_{x}\right]
+  =\tau\,\pder{^2y}{x^2}\,dx.\]</p>
+
+  <p>Igualando à massa vezes a aceleração, \(dm=\mu\,dx\),</p>
+
+  <div class="destaque">
+    <span class="anuncio">Equação de onda</span>
+    \[\pder{^2y}{t^2}=v^2\,\pder{^2y}{x^2},\qquad v=\sqrt{\frac{\tau}{\mu}}.\]
+  </div>
+
+  <p>Vale olhar de onde vem cada pedaço. A força restauradora não é a tensão em si, e sim a
+  <em>curvatura</em>: um trecho reto, por mais esticado que esteja, não sofre força
+  transversal nenhuma, porque as duas tensões se cancelam. Só onde a corda está encurvada é
+  que as duas pontas puxam em direções diferentes e sobra resultante.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">O que foi aproximado</span>
+    <p>Três coisas: o deslocamento é pequeno o bastante para \(\sen\theta\approx\tg\theta\); a
+    tensão não muda com o deslocamento, embora a corda estique um pouco ao se encurvar; e o
+    movimento é puramente transversal. Todas falham para uma corda muito deformada, e o
+    resultado é que uma corda de violão tocada com força soa ligeiramente mais aguda do que
+    a teoria linear prevê.</p>
+  </div>
+
+  <p>Comparando com a aula 11, \(v^2=\tau/\mu\) é o mesmo \(v^2=ka^2/m\) da cadeia, com
+  \(\tau=ka\) e \(\mu=m/a\). A corda é a cadeia no limite de muitas massas, e nada mais.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. A solução de d'Alembert</h2>
+
+  <p>A equação de onda tem uma solução geral que pode ser escrita de imediato. Troque de
+  variáveis para \(\xi=x-vt\) e \(\eta=x+vt\). Pela regra da cadeia,
+  \(\partial^2y/\partial t^2-v^2\partial^2y/\partial x^2=-4v^2\,\partial^2y/\partial\xi
+  \partial\eta\), de modo que a equação vira</p>
+
+  <p>\[\pder{^2y}{\xi\,\partial\eta}=0.\]</p>
+
+  <p>Essa equação diz que a derivada em \(\eta\) de \(\partial y/\partial\xi\) é nula, logo
+  \(\partial y/\partial\xi\) só depende de \(\xi\), e integrando,</p>
+
+  <div class="destaque">
+    <span class="anuncio">Solução de d'Alembert</span>
+    \[y(x,t)=f\left(x-vt\right)+g\left(x+vt\right).\]
+  </div>
+
+  <p>Qualquer função, por mais esquisita que seja, resolve a equação desde que dependa de
+  \(x\) e \(t\) nessa combinação. A interpretação é direta: \(f(x-vt)\) é uma forma que
+  caminha para a direita sem se deformar, e \(g(x+vt)\) caminha para a esquerda. Nenhum
+  pulso muda de forma ao viajar, o que é exatamente o que a cadeia discreta <em>não</em>
+  fazia.</p>
+
+  <p>Dadas a forma inicial \(y(x,0)=\phi(x)\) e a velocidade inicial
+  \(\dot y(x,0)=\psi(x)\), as duas funções ficam determinadas:</p>
+
+  <p>\[y(x,t)=\frac{\phi(x-vt)+\phi(x+vt)}{2}
+  +\frac{1}{2v}\int_{x-vt}^{x+vt}\psi(s)\,ds.\]</p>
+
+  <p>Uma corda dedilhada, que parte do repouso com uma forma, tem \(\psi=0\): o pulso inicial
+  se divide em dois de metade da amplitude, que correm em sentidos opostos. Uma corda
+  percutida, que parte reta com velocidade concentrada, tem \(\phi=0\), e o resultado é um
+  degrau que se alarga.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Extremidades: reflexão e transmissão</h2>
+
+  <p>A solução de d'Alembert vale para uma corda infinita. Numa corda real, o pulso chega a
+  uma extremidade, e o que acontece ali depende de como ela está presa.</p>
+
+  <p>Numa <strong>extremidade fixa</strong>, o deslocamento tem de ser nulo em todo instante.
+  A maneira de conseguir isso com a solução geral é imaginar que, do outro lado da parede,
+  vem um pulso-imagem invertido: na soma, os dois se cancelam exatamente no ponto da parede. O
+  pulso refletido volta de cabeça para baixo.</p>
+
+  <p>Numa <strong>extremidade livre</strong>, o que tem de ser nulo é a inclinação, porque não
+  há nada que forneça força transversal. O pulso-imagem é agora do mesmo lado, e o pulso volta
+  sem inverter, com a amplitude dobrando momentaneamente na ponta.</p>
+
+  <div data-widget="pulsocorda"></div>
+
+  <p>O caso intermediário é a emenda entre duas cordas de densidades diferentes. Ali, duas
+  condições precisam valer: o deslocamento é contínuo, porque a corda não arrebenta, e a
+  força transversal é contínua, porque um ponto de massa nula não pode sofrer força resultante.
+  Escrevendo incidente, refletida e transmitida, as duas condições dão</p>
+
+  <div class="destaque">
+    <span class="anuncio">Reflexão e transmissão</span>
+    \[r=\frac{v_2-v_1}{v_2+v_1},\qquad t=\frac{2v_2}{v_2+v_1}.\]
+  </div>
+
+  <p>Para uma corda mais pesada à frente, \(v_2&lt;v_1\), \(r\) é negativo e o pulso volta
+  invertido, como numa parede. Para uma mais leve, \(r\) é positivo. Os dois casos extremos
+  reproduzem a extremidade fixa (\(v_2\to0\), \(r=-1\)) e a livre (\(v_2\to\infty\),
+  \(r=+1\)), o que serve de aferição das fórmulas.</p>
+
+  <p>Repare que \(t\) pode passar de 1: o pulso transmitido chega a ser mais alto que o
+  incidente. Isso não viola conservação de energia nenhuma, porque a energia depende também
+  da densidade e da velocidade, e o pulso transmitido é mais estreito ou mais largo conforme
+  o caso. O exercício 13.4 pede a conta completa.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Superposição e ondas estacionárias</h2>
+
+  <p>Como a equação é linear, duas soluções quaisquer somadas também são solução. Isso é o que
+  torna possível tudo o que vem a seguir: construir qualquer movimento a partir de peças
+  simples.</p>
+
+  <p>A soma mais importante é a de duas ondas harmônicas iguais caminhando em sentidos
+  opostos:</p>
+
+  <p>\[y=A\sen\left(kx-\omega t\right)+A\sen\left(kx+\omega t\right)
+  =2A\sen kx\,\cos\omega t.\]</p>
+
+  <p>O resultado não é mais uma função de \(x\pm vt\): a dependência em \(x\) e a dependência
+  em \(t\) se separaram. A forma não anda, ela apenas pulsa, com pontos que nunca se movem,
+  chamados <strong>nós</strong>, e pontos de amplitude máxima, os ventres. É a
+  <strong>onda estacionária</strong>.</p>
+
+  <div data-widget="superposicao"></div>
+
+  <p>Numa corda presa nas duas pontas, a reflexão é total, as duas amplitudes são iguais e o
+  movimento é necessariamente estacionário. Impor que os dois extremos sejam nós é o que vai
+  selecionar os comprimentos de onda permitidos, e esse é o assunto da próxima aula.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 13.1</span>
+    <p><strong>Uma corda de violão de aço tem 65 cm, 0,33 mm de diâmetro e está afinada em mi
+    grave, 82,4 Hz. Qual é a tensão?</strong></p>
+    <p>A corda vibra no modo fundamental, com meio comprimento de onda no comprimento todo,
+    logo \(\lambda=1{,}30\) m e \(v=\lambda f=107{,}1\) m/s. A densidade linear, com
+    \(\rho_{\text{aço}}=7850\) kg/m³, é</p>
+    <p>\[\mu=\rho\,\pi r^2=7850\cruz\pi\left(1{,}65\cruz10^{-4}\right)^2
+    =6{,}71\cruz10^{-4}\ \text{kg/m}.\]</p>
+    <p>\[\tau=\mu v^2=6{,}71\cruz10^{-4}\cruz107{,}1^2=7{,}70\ \text{N}.\]</p>
+    <p>São cerca de 0,8 kgf por corda. Com seis cordas, o braço do violão suporta algo como
+    40 kgf, e é por isso que ele tem um tirante de aço por dentro.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 13.2</span>
+    <p><strong>Mostre que \(y=f(x-vt)\) resolve a equação de onda para qualquer \(f\) duas
+    vezes derivável.</strong></p>
+    <p>Com \(u=x-vt\), a regra da cadeia dá \(\partial y/\partial x=f'(u)\) e
+    \(\partial y/\partial t=-vf'(u)\). Derivando outra vez,</p>
+    <p>\[\pder{^2y}{x^2}=f''(u),\qquad \pder{^2y}{t^2}=v^2f''(u),\]</p>
+    <p>e a equação é satisfeita identicamente. Note que a forma de \(f\) nunca foi usada: um
+    degrau, uma gaussiana ou um rabisco viajam igualmente bem. É a ausência de dispersão, e
+    ela se perde assim que a equação ganha qualquer termo a mais.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 13.3</span>
+    <p><strong>Calcule a energia por unidade de comprimento de uma onda harmônica numa
+    corda.</strong></p>
+    <p>A energia cinética por comprimento é \(\frac12\mu\dot y^2\) e a potencial é a energia de
+    esticamento, \(\frac12\tau\left(\partial y/\partial x\right)^2\). Para
+    \(y=A\sen(kx-\omega t)\),</p>
+    <p>\[\frac{dE}{dx}=\frac12\mu A^2\omega^2\cos^2+\frac12\tau A^2k^2\cos^2
+    =\mu A^2\omega^2\cos^2\left(kx-\omega t\right),\]</p>
+    <p>onde se usou \(\tau k^2=\mu\omega^2\). As duas parcelas são iguais em cada ponto, o que
+    é típico de ondas progressivas e <em>não</em> acontece em ondas estacionárias. Mediando no
+    tempo, \(\med{dE/dx}=\frac12\mu A^2\omega^2\), e a potência transportada é essa densidade
+    vezes \(v\).</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>13.1</b> Deduza a equação de onda sem supor a tensão constante, mantendo o termo
+      de primeira ordem em \(\partial y/\partial x\). Que termo novo aparece e quando ele
+      importa?</li>
+
+      <li><b>13.2</b> Uma corda infinita tem forma inicial triangular e parte do repouso.
+      Desenhe \(y(x,t)\) em quatro instantes sucessivos usando a solução de d'Alembert.</li>
+
+      <li><b>13.3</b> Mostre que a extremidade livre corresponde a \(\partial y/\partial x=0\)
+      e obtenha o pulso refletido pelo método das imagens.</li>
+
+      <li><b>13.4</b> Verifique que \(1=r^2+\dfrac{v_1}{v_2}t^2\) na emenda entre duas cordas,
+      e interprete essa igualdade como conservação de energia.</li>
+
+      <li><b>13.5</b> Uma corda de densidade \(\mu\) é emendada a outra de densidade
+      \(4\mu\). Calcule \(r\) e \(t\) e diga que fração da energia incidente é refletida.</li>
+
+      <li><b>13.6</b> Mostre que, numa onda estacionária, a energia cinética e a potencial não
+      são iguais em cada ponto, mas as suas médias temporais são. Onde fica a energia nos
+      instantes em que a corda está reta?</li>
+
+      <li><b>13.7</b> Escreva um programa em Python que integre a equação de onda numa corda
+      pelo método das diferenças finitas, com extremidade fixa de um lado e livre do outro, e
+      reproduza as reflexões do simulador da seção 3.</li>
+
+      <li><b>13.8</b> Uma corda pendurada verticalmente tem tensão que varia com a altura,
+      \(\tau(x)=\mu g x\). Mostre que a velocidade local é \(\sqrt{gx}\) e calcule o tempo que
+      um pulso leva para subir uma corda de comprimento \(L\).</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula12.html"><small>Aula anterior</small>← 12. Meios contínuos</a>
+    <span class="em-breve"><small>Em preparação</small>14. Fourier e membrana</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091436"></script>
+</body>
+</html>
