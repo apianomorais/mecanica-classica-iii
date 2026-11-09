@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 4: Equações de Euler e a rotação livre | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091405">
+<script src="assets/js/comum.js?v=202611091405"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num ativo" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Por que mudar de referencial</a></li>
+    <li><a href="#s2">2. As equações de Euler</a></li>
+    <li><a href="#s3">3. Rotação livre: as duas constantes</a></li>
+    <li><a href="#s4">4. O pião simétrico livre e a precessão livre</a></li>
+    <li><a href="#s5">5. Estabilidade: o teorema do eixo intermediário</a></li>
+    <li><a href="#s6">6. Exercícios resolvidos</a></li>
+    <li><a href="#s7">7. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 4 · Álgebra tensorial e corpo rígido</p>
+  <h1>Equações de Euler e a rotação livre</h1>
+  <p class="subtitulo">Escritas no referencial que acompanha o corpo, as equações do movimento ficam não lineares e, em compensação, com coeficientes constantes. Delas sai a precessão livre, o bamboleio de Chandler e a instabilidade do eixo intermediário, que é a porca de Dzhanibekov da página inicial.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Passar a equação do momento angular para o referencial do corpo;</li>
+      <li>Escrever e reconhecer as três equações de Euler;</li>
+      <li>Identificar as duas constantes do movimento livre e a polhodia;</li>
+      <li>Resolver o pião simétrico livre e obter a frequência de precessão;</li>
+      <li>Fazer a análise de estabilidade em torno de cada eixo principal;</li>
+      <li>Explicar o bamboleio de Chandler e o efeito Dzhanibekov.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Por que mudar de referencial</h2>
+
+  <p>O tensor de inércia é constante no referencial do corpo e variável no referencial do
+  laboratório, porque no laboratório o corpo gira e a distribuição de massa passeia. Para
+  escrever uma equação de movimento que se possa integrar, convém passar para os eixos que
+  acompanham o corpo, onde \(\lambda_1\), \(\lambda_2\) e \(\lambda_3\) são números fixos.</p>
+
+  <p>A ponte entre os dois referenciais é o teorema do transporte, deduzido em
+  <a href="https://apianomorais.github.io/mecanica-classica-ii/aula06.html">MC II, módulo
+  6</a>: para qualquer vetor \(\vet{A}\),</p>
+
+  <p>\[\left(\der{\vet{A}}{t}\right)_{\text{espaço}}
+  =\left(\der{\vet{A}}{t}\right)_{\text{corpo}}+\vet{\omega}\cruz\vet{A}.\]</p>
+
+  <p>Aplicando ao momento angular e usando \((d\vet{L}/dt)_{\text{espaço}}=\vet{\Gamma}\),</p>
+
+  <div class="destaque">
+    <span class="anuncio">Equação de movimento no corpo</span>
+    \[\left(\der{\vet{L}}{t}\right)_{\text{corpo}}+\vet{\omega}\cruz\vet{L}=\vet{\Gamma}.\]
+  </div>
+
+  <p>Note o preço e o ganho. O preço é o termo \(\vet{\omega}\cruz\vet{L}\), que não tem
+  contrapartida no laboratório e que torna as equações não lineares. O ganho é que agora
+  \(\vet{L}=(\lambda_1\omega_1,\lambda_2\omega_2,\lambda_3\omega_3)\) com os \(\lambda\)
+  constantes, de modo que a derivada do lado esquerdo é simplesmente
+  \(\lambda_i\dot\omega_i\).</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. As equações de Euler</h2>
+
+  <p>Escolhendo os eixos do corpo como os eixos principais e abrindo o produto vetorial
+  componente a componente, chega-se às três equações que
+  <a href="https://pt.wikipedia.org/wiki/Leonhard_Euler">Euler</a> publicou em 1758:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Equações de Euler</span>
+    \[\begin{aligned}
+    \lambda_1\dot\omega_1-\left(\lambda_2-\lambda_3\right)\omega_2\omega_3&=\Gamma_1\\
+    \lambda_2\dot\omega_2-\left(\lambda_3-\lambda_1\right)\omega_3\omega_1&=\Gamma_2\\
+    \lambda_3\dot\omega_3-\left(\lambda_1-\lambda_2\right)\omega_1\omega_2&=\Gamma_3
+    \end{aligned}\]
+  </div>
+
+  <p>As três têm a mesma forma, e passam uma na outra pela permutação cíclica
+  \(1\to2\to3\to1\), o que é um bom teste de memória e de erro de sinal. Elas determinam a
+  evolução de \(\vet{\omega}\) <em>vista do corpo</em>, que não é a mesma coisa que a evolução
+  vista do laboratório: para recuperar a orientação do corpo no espaço ainda será preciso
+  integrar os ângulos de Euler da aula 5.</p>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">O que o termo não linear faz</span>
+    <p>Se os três momentos principais forem iguais, os parênteses se anulam e as equações
+    viram \(\lambda\dot{\vet{\omega}}=\vet{\Gamma}\), que é a lei de Newton da rotação como
+    se aprende no primeiro curso. Toda a riqueza do corpo rígido livre está, portanto, na
+    diferença entre os momentos principais. Um corpo esférico não tem história para contar.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Rotação livre: as duas constantes</h2>
+
+  <p>Sem torque, as equações de Euler ficam homogêneas, e duas quantidades se conservam. A
+  primeira é a energia cinética, que não muda porque não há trabalho externo; a segunda é o
+  módulo do momento angular, que não muda porque \(\vet{L}\) é constante no espaço e o módulo
+  não depende do referencial:</p>
+
+  <p>\[2T=\lambda_1\omega_1^2+\lambda_2\omega_2^2+\lambda_3\omega_3^2,\qquad
+  L^2=\lambda_1^2\omega_1^2+\lambda_2^2\omega_2^2+\lambda_3^2\omega_3^2.\]</p>
+
+  <p>No espaço das componentes \((\omega_1,\omega_2,\omega_3)\), cada uma dessas equações é um
+  elipsoide. O movimento acontece na interseção dos dois, que em geral é uma curva fechada
+  chamada <strong>polhodia</strong>. O corpo não pode fazer outra coisa: as duas constantes já
+  o prendem a uma linha.</p>
+
+  <div data-widget="polhodia"></div>
+
+  <p>Essa figura responde de uma vez à pergunta da estabilidade. Perto dos eixos de maior e de
+  menor momento, as curvas são pequenos laços fechados: o vetor \(\vet{\omega}\) fica
+  circulando ali por perto e nunca se afasta. Perto do eixo intermediário, as curvas passam
+  longe e dão a volta pelo corpo inteiro: basta um desvio mínimo para \(\vet{\omega}\) sair
+  passeando. A fronteira entre as duas famílias é a separatriz, que passa pelo próprio eixo
+  intermediário.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. O pião simétrico livre e a precessão livre</h2>
+
+  <p>Para um corpo com simetria de revolução, \(\lambda_1=\lambda_2\equiv\lambda_\perp\) e
+  \(\lambda_3\) diferente, as equações de Euler livres se resolvem à mão. A terceira dá</p>
+
+  <p>\[\lambda_3\dot\omega_3=\left(\lambda_1-\lambda_2\right)\omega_1\omega_2=0
+  \;\Longrightarrow\;\omega_3=\text{constante}.\]</p>
+
+  <p>Com \(\omega_3\) fixo, as duas primeiras formam um sistema linear:</p>
+
+  <p>\[\dot\omega_1=-\Omega\,\omega_2,\qquad \dot\omega_2=+\Omega\,\omega_1,
+  \qquad\text{com}\quad
+  \Omega=\frac{\lambda_3-\lambda_\perp}{\lambda_\perp}\,\omega_3.\]</p>
+
+  <p>Esse é o sistema do movimento circular uniforme. A solução é
+  \(\omega_1=A\cos\Omega t\), \(\omega_2=A\sen\Omega t\): a projeção de \(\vet{\omega}\) no
+  plano equatorial do corpo gira com velocidade angular \(\Omega\), mantendo módulo constante.
+  Visto do corpo, \(\vet{\omega}\) descreve um cone em torno do eixo de simetria.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Precessão livre</span>
+    \[\Omega=\frac{\lambda_3-\lambda_\perp}{\lambda_\perp}\,\omega_3.\]
+  </div>
+
+  <p>Vale fixar o sinal: para um corpo achatado, como um disco ou um planeta,
+  \(\lambda_3>\lambda_\perp\) e a precessão tem o mesmo sentido do giro. Para um corpo
+  alongado, como um bastão, \(\lambda_3<\lambda_\perp\) e o sentido se inverte. Nos dois
+  casos, nada disso precisa de torque: é movimento livre.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">O bamboleio de Chandler</span>
+    <p>A Terra é achatada, com \((\lambda_3-\lambda_\perp)/\lambda_\perp\approx1/305\). O eixo
+    de rotação não coincide exatamente com o eixo de simetria, e a diferença, da ordem de
+    alguns metros no polo, deveria então precessar com período
+    \(T=2\pi/\Omega=305\) dias.</p>
+    <p>Em 1891, <a href="https://en.wikipedia.org/wiki/Seth_Carlo_Chandler">Seth Chandler</a>
+    mediu o período e encontrou 433 dias, 40 % maior. A discrepância não é erro de medida nem
+    da teoria de Euler: ela aparece porque a Terra não é rígida. A deformação elástica do
+    manto e o deslocamento das massas de água alteram o próprio tensor de inércia enquanto o
+    bamboleio acontece, e alongam o período. Medir o bamboleio de Chandler é, por isso, uma
+    maneira de pesar a rigidez do planeta.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Estabilidade: o teorema do eixo intermediário</h2>
+
+  <p>Falta tratar o caso dos três momentos diferentes, que é onde mora a surpresa. Suponha
+  \(\lambda_1<\lambda_2<\lambda_3\) e o corpo girando quase em torno de um dos eixos, digamos
+  o terceiro, de modo que \(\omega_3\approx\omega\) é grande e \(\omega_1,\omega_2\) são
+  pequenos.</p>
+
+  <p>Desprezando o produto \(\omega_1\omega_2\), que é de segunda ordem, a terceira equação dá
+  \(\omega_3\) constante. As duas primeiras ficam lineares nos desvios:</p>
+
+  <p>\[\dot\omega_1=\frac{\lambda_2-\lambda_3}{\lambda_1}\,\omega\,\omega_2,\qquad
+  \dot\omega_2=\frac{\lambda_3-\lambda_1}{\lambda_2}\,\omega\,\omega_1.\]</p>
+
+  <p>Derivando a primeira e substituindo a segunda,</p>
+
+  <p>\[\ddot\omega_1=-\left[\frac{\left(\lambda_3-\lambda_2\right)
+  \left(\lambda_3-\lambda_1\right)}{\lambda_1\lambda_2}\,\omega^2\right]\omega_1
+  \equiv-\Omega_3^2\,\omega_1.\]</p>
+
+  <p>O sinal do colchete decide tudo. Se os dois fatores \((\lambda_3-\lambda_2)\) e
+  \((\lambda_3-\lambda_1)\) tiverem o mesmo sinal, o colchete é positivo, a equação é a do
+  oscilador harmônico e o desvio apenas oscila: rotação <strong>estável</strong>. Se tiverem
+  sinais opostos, a solução é exponencial e o desvio cresce: rotação
+  <strong>instável</strong>.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Teorema do eixo intermediário</span>
+    <p>A rotação livre é estável em torno do eixo de maior momento de inércia e em torno do de
+    menor, e instável em torno do intermediário.</p>
+  </div>
+
+  <p>Em torno do maior, os dois fatores são positivos. Em torno do menor, os dois são
+  negativos, e o produto volta a ser positivo. Em torno do intermediário, um é positivo e o
+  outro negativo, o colchete fica negativo, e \(\Omega^2<0\) significa crescimento
+  exponencial.</p>
+
+  <div data-widget="eulerlivre"></div>
+
+  <p>O simulador integra as equações completas, sem a linearização, e por isso mostra o que a
+  análise linear não pode mostrar: o desvio cresce, o corpo dá meia-volta, e então o
+  crescimento para e o movimento se repete. A rotação não se desfaz em caos, ela fica
+  oscilando entre duas orientações. É exatamente o que acontece na porca de Dzhanibekov, no
+  celular que se tenta girar em torno do eixo horizontal mais curto, e na raquete de tênis
+  que dá o nome popular ao teorema.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 4.1</span>
+    <p><strong>Mostre, a partir das equações de Euler sem torque, que \(T\) se
+    conserva.</strong></p>
+    <p>Multiplique a primeira equação por \(\omega_1\), a segunda por \(\omega_2\), a terceira
+    por \(\omega_3\) e some:</p>
+    <p>\[\lambda_1\omega_1\dot\omega_1+\lambda_2\omega_2\dot\omega_2
+    +\lambda_3\omega_3\dot\omega_3
+    =\left[\left(\lambda_2-\lambda_3\right)+\left(\lambda_3-\lambda_1\right)
+    +\left(\lambda_1-\lambda_2\right)\right]\omega_1\omega_2\omega_3=0.\]</p>
+    <p>O lado esquerdo é \(\frac{d}{dt}\left(\frac12\sum\lambda_i\omega_i^2\right)=\dot T\).
+    Multiplicando em vez disso cada equação por \(\lambda_i\omega_i\), o mesmo cancelamento dá
+    \(\frac{d}{dt}(L^2)=0\). São as duas constantes da seção 3.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 4.2</span>
+    <p><strong>Um satélite tem \(\lambda_1=200\), \(\lambda_2=300\) e
+    \(\lambda_3=400\) kg·m², e gira a 2 rad/s quase em torno do eixo 3. Qual é o período da
+    oscilação do desvio?</strong></p>
+    <p>\[\Omega_3=\omega\sqrt{\frac{\left(\lambda_3-\lambda_2\right)
+    \left(\lambda_3-\lambda_1\right)}{\lambda_1\lambda_2}}
+    =2\sqrt{\frac{100\cruz200}{200\cruz300}}=2\sqrt{\frac13}=1{,}155\ \text{rad/s},\]</p>
+    <p>de onde \(T=2\pi/\Omega_3=5{,}44\) s. Em torno do eixo 1 a conta é parecida e dá
+    \(\Omega_1=2\sqrt{(200-300)(200-400)/(300\cruz400)}=2\sqrt{1/6}=0{,}816\) rad/s, com
+    período 7,70 s. Em torno do eixo 2 o radicando fica negativo, e em vez de período há um
+    tempo de crescimento \(1/|\Omega_2|\).</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 4.3</span>
+    <p><strong>Mostre que, no movimento livre, \(\vet{\omega}\) e \(\vet{L}\) e o eixo de
+    simetria de um pião simétrico são sempre coplanares.</strong></p>
+    <p>No referencial do corpo, \(\vet{L}=(\lambda_\perp\omega_1,\lambda_\perp\omega_2,
+    \lambda_3\omega_3)\). Escreva \(\vet{\omega}=\vet{\omega}_\perp+\omega_3\vers{e}_3\).
+    Então</p>
+    <p>\[\vet{L}=\lambda_\perp\vet{\omega}_\perp+\lambda_3\omega_3\vers{e}_3
+    =\lambda_\perp\vet{\omega}+\left(\lambda_3-\lambda_\perp\right)\omega_3\vers{e}_3.\]</p>
+    <p>Logo \(\vet{L}\) é combinação linear de \(\vet{\omega}\) e de \(\vers{e}_3\), e os três
+    vetores estão no mesmo plano. Como \(\vet{L}\) é fixo no espaço, esse plano gira em torno
+    de \(\vet{L}\), e com ele o eixo do corpo e o eixo instantâneo de rotação. É a descrição
+    do movimento livre vista do laboratório, complementar à da seção 4.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s7">7. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>4.1</b> Escreva as equações de Euler para um pião simétrico com torque
+      \(\vet{\Gamma}=\Gamma\vers{e}_1\) constante no corpo, e resolva para \(\omega_3(t)\).</li>
+
+      <li><b>4.2</b> Um disco fino homogêneo gira livremente com o eixo de rotação desviado de
+      5° do eixo de simetria. Calcule a razão entre a frequência de precessão livre e a
+      frequência de giro, e diga em que sentido a precessão ocorre.</li>
+
+      <li><b>4.3</b> Mostre que, para um corpo achatado, a precessão livre vista do
+      laboratório tem frequência \(L/\lambda_\perp\), e compare com a frequência vista do
+      corpo. Por que as duas são diferentes?</li>
+
+      <li><b>4.4</b> Refaça a análise de estabilidade da seção 5 em torno do eixo 1 e do eixo
+      2, e confirme os sinais dos colchetes nos três casos.</li>
+
+      <li><b>4.5</b> Para a Terra, com \((\lambda_3-\lambda_\perp)/\lambda_\perp=1/305\),
+      calcule o período da precessão livre e explique, em três frases, por que o valor medido
+      por Chandler é de 433 dias.</li>
+
+      <li><b>4.6</b> Um livro de capa dura tem momentos principais aproximadamente
+      proporcionais a 1, 3 e 4. Estime o tempo em que o desvio cresce por um fator \(e\)
+      quando ele é lançado girando a 6 rad/s em torno do eixo intermediário.</li>
+
+      <li><b>4.7</b> Escreva um programa em Python que integre as equações de Euler com
+      <code>scipy.integrate.solve_ivp</code> para \(\lambda=(1,2,3)\), e verifique
+      numericamente que \(2T\) e \(L^2\) se conservam com erro relativo abaixo de
+      \(10^{-8}\). Reproduza os três regimes do simulador da seção 5.</li>
+
+      <li><b>4.8</b> Mostre que a polhodia é a interseção de dois elipsoides e que ela degenera
+      em duas retas quando \(L^2=2T\lambda_2\). Interprete essa condição à luz da
+      separatriz.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="aula03.html"><small>Aula anterior</small>← 3. Eixos principais</a>
+    <span class="em-breve"><small>Em preparação</small>5. Ângulos de Euler</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091405"></script>
+</body>
+</html>

@@ -759,6 +759,221 @@
     registrarRedesenho(desenhar);
   };
 
+
+  /* ---------- integrador de Euler livre, usado nos widgets 7 e 8 ---------- */
+  function passoEuler(w, L, h) {
+    function f(w) {
+      return [(L[1] - L[2]) * w[1] * w[2] / L[0],
+              (L[2] - L[0]) * w[2] * w[0] / L[1],
+              (L[0] - L[1]) * w[0] * w[1] / L[2]];
+    }
+    function soma(a, b, k) {
+      return [a[0] + k * b[0], a[1] + k * b[1], a[2] + k * b[2]];
+    }
+    var k1 = f(w), k2 = f(soma(w, k1, h / 2)), k3 = f(soma(w, k2, h / 2));
+    var k4 = f(soma(w, k3, h));
+    return [w[0] + h / 6 * (k1[0] + 2 * k2[0] + 2 * k3[0] + k4[0]),
+            w[1] + h / 6 * (k1[1] + 2 * k2[1] + 2 * k3[1] + k4[1]),
+            w[2] + h / 6 * (k1[2] + 2 * k2[2] + 2 * k3[2] + k4[2])];
+  }
+
+  /* =================================================================
+     7. Rotação livre: estabilidade dos três eixos
+     As equações de Euler são integradas numericamente com um corpo
+     posto a girar quase em torno de um dos eixos principais. Em torno
+     do maior e do menor momento o desvio oscila; em torno do
+     intermediário ele cresce e o corpo vira. É a porca de Dzhanibekov,
+     e não há nada de aproximado na conta.
+     ================================================================= */
+  REGISTRO.eulerlivre = function (raiz) {
+    var corpo = moldura(raiz, 'O corpo posto a girar quase em torno de um eixo');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var L = [1, 2, 3];     /* momentos principais, em unidades arbitrárias */
+    var eixo = 1, desvio = 0.05, TMAX = 60;
+
+    opcoes(corpo, [{ rot: 'Menor (λ₁)', v: 0 }, { rot: 'Intermediário (λ₂)', v: 1 },
+                   { rot: 'Maior (λ₃)', v: 2 }], 1, function (v) { eixo = v; desenhar(); });
+
+    deslizante(corpo, 'Desvio inicial:', 0.01, 0.3, 0.01, desvio,
+      function (v) { desvio = v; desenhar(); }, function (v) { return F.fmt(v, 2); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: 'Regime', k: 'reg' },
+      { rot: 'Período da oscilação', k: 'per' },
+      { rot: 'Erro em \\(2T\\)', k: 'ene' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function trajetoria() {
+      var w = [0, 0, 0];
+      w[eixo] = 1;
+      w[(eixo + 1) % 3] = desvio;
+      w[(eixo + 2) % 3] = desvio / 2;
+      var h = 0.01, pontos = [], E0 = 0;
+      for (var i = 0; i < 3; i++) E0 += L[i] * w[i] * w[i];
+      var maxErro = 0;
+      for (var t = 0; t <= TMAX; t += h) {
+        pontos.push([t, w[0], w[1], w[2]]);
+        var E = 0;
+        for (i = 0; i < 3; i++) E += L[i] * w[i] * w[i];
+        maxErro = Math.max(maxErro, Math.abs(E - E0) / E0);
+        w = passoEuler(w, L, h);
+      }
+      return { pontos: pontos, erro: maxErro };
+    }
+
+    function desenhar() {
+      var r = trajetoria();
+      var g = G.eixos(cv, {
+        xmin: 0, xmax: TMAX, ymin: -1.15, ymax: 1.15, divY: 4,
+        altura: Math.min(300, Math.max(220, cv.clientWidth * 0.42)),
+        rotX: 'tempo (unidades de 1/ω)',
+        marcasX: G.marcasLineares(0, TMAX, 6, 0),
+        formataY: function (v) { return F.fmt(v, 1); }
+      });
+      var cores = [G.COR.bronze, G.COR.mestra, G.COR.azul];
+      for (var c = 0; c < 3; c++) {
+        g.ct.beginPath();
+        r.pontos.forEach(function (p, i) {
+          var x = g.X(p[0]), y = g.Y(p[c + 1]);
+          if (i === 0) g.ct.moveTo(x, y); else g.ct.lineTo(x, y);
+        });
+        g.ct.strokeStyle = cores[c]; g.ct.lineWidth = 1.8; g.ct.stroke();
+      }
+      G.legenda(g, [{ texto: 'ω₁', cor: cores[0] }, { texto: 'ω₂', cor: cores[1] },
+                    { texto: 'ω₃', cor: cores[2] }]);
+
+      /* o eixo escolhido virou? procura troca de sinal na componente principal */
+      var virou = false, extremo = 0;
+      r.pontos.forEach(function (p) {
+        if (p[eixo + 1] < -0.5) virou = true;
+        extremo = Math.max(extremo, Math.abs(p[((eixo + 1) % 3) + 1]));
+      });
+
+      /* período previsto pela análise de estabilidade */
+      var a = L[eixo], b = L[(eixo + 1) % 3], c2 = L[(eixo + 2) % 3];
+      var fator = (a - b) * (a - c2) / (b * c2);
+      var per = fator > 0 ? 2 * Math.PI / Math.sqrt(fator) : NaN;
+
+      mostrar({
+        reg: virou ? 'instável' : 'estável',
+        per: isNaN(per) ? 'não oscila' : F.fmt(per, 2),
+        ene: r.erro < 1e-9 ? 'abaixo de 10⁻⁷ %'
+             : (100 * r.erro).toExponential(1).replace('.', ',') + ' %'
+      });
+
+      saida.innerHTML = virou
+        ? 'Em torno do eixo intermediário o desvio cresce até o corpo dar meia-volta, e '
+          + 'então recomeça. Nenhuma aproximação foi feita: as equações de Euler foram '
+          + 'integradas com Runge-Kutta de quarta ordem, e o erro na energia está no último '
+          + 'cartão. É o efeito que Dzhanibekov filmou em 1985.'
+        : 'Em torno do maior e do menor momento o desvio apenas oscila, com o período do '
+          + 'cartão, e a componente principal mal se move. A rotação é estável, e é por isso '
+          + 'que se pode jogar uma bola de futebol americano girando em torno do eixo longo '
+          + 'ou do eixo curto, mas não do intermediário.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+  /* =================================================================
+     8. A polhodia
+     As duas constantes do movimento livre, 2T e L², são dois
+     elipsoides no espaço de ω. A trajetória é a interseção deles, e
+     projetá-la no plano ω₁ω₂ mostra de uma vez a razão geométrica da
+     instabilidade: as curvas em torno dos eixos extremos são fechadas
+     e pequenas, e as que passam perto do eixo intermediário dão a
+     volta no corpo inteiro.
+     ================================================================= */
+  REGISTRO.polhodia = function (raiz) {
+    var corpo = moldura(raiz, 'As trajetórias de ω no referencial do corpo');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var L = [1, 2, 3];
+    var l2 = 2, giro = 0.9;
+
+    deslizante(corpo, 'Momento intermediário \\(\\lambda_2\\):', 1.05, 2.95, 0.05, l2,
+      function (v) { l2 = v; desenhar(); }, function (v) { return F.fmt(v, 2); });
+    deslizante(corpo, 'Girar a figura:', 0, 180, 1, 52,
+      function (v) { giro = v * Math.PI / 180; desenhar(); },
+      function (v) { return v.toFixed(0) + '°'; });
+
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    function desenhar() {
+      L[1] = l2;
+      var p = G.preparar(cv, Math.min(340, Math.max(260, cv.clientWidth * 0.56)));
+      var ct = p.ct, cx = p.L / 2, cy = p.A / 2, esc = Math.min(p.L, p.A) * 0.38;
+      var P = projetor(giro, 0.5, esc, cx, cy);
+
+      /* a esfera |ω| = 1, que contém todas as trajetórias deste desenho */
+      ct.beginPath(); ct.arc(cx, cy, esc, 0, 2 * Math.PI);
+      ct.fillStyle = '#fbf7fa'; ct.strokeStyle = '#dde3e8'; ct.lineWidth = 1;
+      ct.fill(); ct.stroke();
+
+      /* os três eixos principais */
+      [[1, 0, 0, 'e₁ (menor)'], [0, 1, 0, 'e₂ (intermediário)'],
+       [0, 0, 1, 'e₃ (maior)']].forEach(function (e) {
+        var q = P([e[0] * 1.3, e[1] * 1.3, e[2] * 1.3]);
+        var o = P([0, 0, 0]);
+        ct.strokeStyle = '#c3ccd4'; ct.lineWidth = 1.2;
+        ct.beginPath(); ct.moveTo(o.x, o.y); ct.lineTo(q.x, q.y); ct.stroke();
+        rotulo(ct, e[3], q.x, q.y - 12, '#4a5560');
+      });
+
+      /* uma família de condições iniciais espalhada pela esfera */
+      var inicios = [];
+      for (var a = 12; a < 90; a += 19)
+        for (var b = 0; b < 360; b += 60) {
+          var t = a * Math.PI / 180, f = b * Math.PI / 180;
+          inicios.push([Math.sin(t) * Math.cos(f), Math.sin(t) * Math.sin(f), Math.cos(t)]);
+        }
+
+      inicios.forEach(function (w) {
+        var frente = [], tras = [];
+        for (var i = 0; i < 800; i++) {
+          var q = P(w);
+          (q.z > 0 ? frente : tras).push([q, i]);
+          w = passoEuler(w, L, 0.02);
+        }
+        [[tras, 'rgba(122,58,107,.18)'], [frente, 'rgba(122,58,107,.6)']]
+          .forEach(function (par) {
+            ct.strokeStyle = par[1]; ct.lineWidth = 1.1;
+            ct.beginPath();
+            var ult = -2;
+            par[0].forEach(function (d) {
+              if (d[1] === ult + 1) ct.lineTo(d[0].x, d[0].y);
+              else ct.moveTo(d[0].x, d[0].y);
+              ult = d[1];
+            });
+            ct.stroke();
+          });
+      });
+
+      var meio = (l2 > L[0] + 0.08 && l2 < L[2] - 0.08);
+      saida.innerHTML = meio
+        ? 'Cada curva é uma trajetória possível de \\(\\vet{\\omega}\\) vista do corpo. '
+          + 'Em torno de \\(\\vers{e}_1\\) e de \\(\\vers{e}_3\\) elas se fecham em laços '
+          + 'pequenos; em torno de \\(\\vers{e}_2\\) não há laço nenhum, e as curvas '
+          + 'atravessam a esfera de um polo ao outro. As duas famílias são separadas pela '
+          + 'separatriz, que passa exatamente por \\(\\vers{e}_2\\).'
+        : 'Com \\(\\lambda_2\\) encostado num dos extremos o corpo vira um pião simétrico: '
+          + 'a separatriz desaparece e todas as trajetórias viram paralelos em torno do '
+          + 'eixo de simetria. É o caso da Terra e de qualquer corpo de revolução.';
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {
     Array.prototype.forEach.call(document.querySelectorAll('[data-widget]'), function (n) {
