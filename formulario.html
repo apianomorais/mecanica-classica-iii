@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formulário e tabelas | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091531">
+<script src="assets/js/comum.js?v=202611091531"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<style>
+  /* O formulário é denso de propósito: as fórmulas vêm em linhas curtas,
+     separadas por ponto médio, e as tabelas usam corpo menor que o do texto
+     corrido para caberem numa tela sem rolagem lateral. */
+  .formulario .bloco p{margin:.35rem 0}
+  .formulario table{font-size:.86rem}
+  .formulario th,.formulario td{padding:.3rem .45rem}
+  /* a linha que diz de qual aula vem a seção, logo abaixo do título */
+  .fonte-aula{margin:-.4rem 0 .9rem;font-size:.8rem;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--tinta-suave)}
+</style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+      <a href="aula02.html" class="num" title="Aula 2: O tensor de inércia">2</a>
+      <a href="aula03.html" class="num" title="Aula 3: Eixos principais e a equação secular">3</a>
+      <a href="aula04.html" class="num" title="Aula 4: Equações de Euler e a rotação livre">4</a>
+      <a href="aula05.html" class="num" title="Aula 5: Ângulos de Euler e o pião simétrico">5</a>
+      <a href="aula06.html" class="num" title="Aula 6: Giroscópios, moedas e a precessão dos equinócios">6</a>
+      <span class="grupo">Gravitação</span>
+      <a href="aula07.html" class="num" title="Aula 7: Campo gravitacional, potencial e a lei de Gauss">7</a>
+      <a href="aula08.html" class="num" title="Aula 8: Autogravidade: Lane-Emden e estruturas estelares">8</a>
+      <span class="grupo">Vibrações</span>
+      <a href="aula09.html" class="num" title="Aula 9: Equilíbrio e pequenas oscilações">9</a>
+      <a href="aula10.html" class="num" title="Aula 10: Modos normais e coordenadas normais">10</a>
+      <a href="aula11.html" class="num" title="Aula 11: A cadeia de N osciladores e o limite contínuo">11</a>
+      <span class="grupo">Ondas</span>
+      <a href="aula12.html" class="num" title="Aula 12: Densidade, fluxo e a equação da continuidade">12</a>
+      <a href="aula13.html" class="num" title="Aula 13: A corda vibrante e a equação de onda">13</a>
+      <a href="aula14.html" class="num" title="Aula 14: Modos, séries de Fourier e a membrana">14</a>
+      <a href="aula15.html" class="num" title="Aula 15: Ondas sonoras e ondas em barras">15</a>
+      <span class="grupo">Caos</span>
+      <a href="aula16.html" class="num" title="Aula 16: Sistemas integráveis, toros e seções de Poincaré">16</a>
+      <a href="aula17.html" class="num" title="Aula 17: O rotor pulsado e o caos determinístico">17</a>
+      <a href="formulario.html" class="ativo">Formulário</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta página</h4>
+  <ol>
+    <li><a href="#f1">1. Notação indicial</a></li>
+    <li><a href="#f2">2. Tensor de inércia</a></li>
+    <li><a href="#f3">3. Momentos de inércia</a></li>
+    <li><a href="#f4">4. Equações de Euler</a></li>
+    <li><a href="#f5">5. Ângulos de Euler e o pião</a></li>
+    <li><a href="#f6">6. Gravitação</a></li>
+    <li><a href="#f7">7. Autogravidade</a></li>
+    <li><a href="#f8">8. Pequenas oscilações</a></li>
+    <li><a href="#f9">9. Cadeia e dispersão</a></li>
+    <li><a href="#f10">10. Meios contínuos</a></li>
+    <li><a href="#f11">11. Ondas</a></li>
+    <li><a href="#f12">12. Caos determinístico</a></li>
+    <li><a href="#f13">13. Números úteis</a></li>
+    <li><a href="#f14">14. Matemática de apoio</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo formulario">
+
+  <p class="chapeu">Consulta rápida</p>
+  <h1>Formulário e tabelas</h1>
+  <p class="subtitulo">Tudo o que o curso usa, numa página só, na ordem das aulas</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Como usar</span>
+    <p>Cada seção corresponde a uma ou duas aulas e traz as fórmulas na forma em que
+    aparecem nelas, com a mesma notação: vetores com seta, tensores em sem-serifa, soma
+    implícita em índices repetidos. Os números das tabelas foram todos conferidos por cálculo
+    próprio, e as fórmulas remetem à aula em que são deduzidas.</p>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="f1">1. Notação indicial e álgebra tensorial</h2>
+  <p class="fonte-aula">Aula 1</p>
+
+  <div class="bloco">
+    <p>Convenção de Einstein: \(a_ib_i\equiv\sum_{i=1}^{3}a_ib_i\) &nbsp;·&nbsp;
+    \(\delta_{ij}=1\) se \(i=j\), zero caso contrário</p>
+    <p>\(\delta_{ii}=3\) &nbsp;·&nbsp; \(\delta_{ij}a_j=a_i\) &nbsp;·&nbsp;
+    \(\varepsilon_{ijk}\): \(+1\) para permutação par de \((1,2,3)\), \(-1\) para ímpar,
+    \(0\) com índices repetidos</p>
+    <p>\(\left(\vet{a}\cruz\vet{b}\right)_i=\varepsilon_{ijk}a_jb_k\) &nbsp;·&nbsp;
+    \(\left(\nabla\cruz\vet{v}\right)_i=\varepsilon_{ijk}\pder{v_k}{x_j}\)</p>
+    <p>Identidade \(\varepsilon\)-\(\delta\):
+    \(\varepsilon_{ijk}\varepsilon_{ilm}=\delta_{jl}\delta_{km}-\delta_{jm}\delta_{kl}\)
+    &nbsp;·&nbsp; \(\varepsilon_{ijk}\varepsilon_{ijm}=2\delta_{km}\) &nbsp;·&nbsp;
+    \(\varepsilon_{ijk}\varepsilon_{ijk}=6\)</p>
+  </div>
+
+  <div class="bloco">
+    <span class="rotulo">O que define um tensor</span>
+    <p>escalar: \(s'=s\) &nbsp;·&nbsp; vetor: \(v'_i=R_{ij}v_j\) &nbsp;·&nbsp;
+    tensor de 2.ª ordem: \(T'_{ij}=R_{ik}R_{jl}T_{kl}\)</p>
+    <p>Rotação: \(R_{ik}R_{jk}=\delta_{ij}\), \(\det\Ten{R}=+1\)</p>
+    <p>Invariantes: \(\Tr\Ten{T}=T_{ii}\), \(\det\Ten{T}\) e a soma dos menores principais não
+    mudam com a rotação</p>
+    <p>Decomposição: \(T_{ij}=\underbrace{\tfrac12\left(T_{ij}+T_{ji}\right)}_{\text{simétrica}}
+    +\underbrace{\tfrac12\left(T_{ij}-T_{ji}\right)}_{\text{antissimétrica}}\)</p>
+    <p>Autovalores: \(T_{ij}n_j=\lambda n_i\ \Longleftrightarrow\
+    \left(T_{ij}-\lambda\delta_{ij}\right)n_j=0\ \Longleftrightarrow\
+    \det\left(\Ten{T}-\lambda\Ten{1}\right)=0\)</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f2">2. Tensor de inércia e eixos principais</h2>
+  <p class="fonte-aula">Aulas 2 e 3</p>
+
+  <div class="destaque">
+    <span class="anuncio">Tensor de inércia</span>
+    \[L_i=I_{ij}\omega_j,\qquad
+    I_{ij}=\sum_\alpha m_\alpha\left(r_\alpha^2\delta_{ij}-r_{\alpha i}r_{\alpha j}\right)
+    =\int\rho\left(r^2\delta_{ij}-x_ix_j\right)d^3r.\]
+  </div>
+
+  <div class="bloco">
+    <p>Diagonal: \(I_{11}=\int\rho\left(y^2+z^2\right)d^3r\), e as outras por permutação
+    cíclica</p>
+    <p>Produtos de inércia: \(I_{12}=-\int\rho\,xy\,d^3r\), e assim por diante</p>
+    <p>Energia cinética:
+    \(T=\frac12\vet{\omega}\cdot\Ten{I}\cdot\vet{\omega}=\frac12I_{ij}\omega_i\omega_j
+    =\frac12\vet{\omega}\cdot\vet{L}\)</p>
+    <p>Steiner tensorial:
+    \(I_{ij}=I^{cm}_{ij}+M\left(R^2\delta_{ij}-R_iR_j\right)\) &nbsp;·&nbsp; na diagonal isso
+    dá o teorema usual \(I=I_{cm}+Md^2\)</p>
+    <p>Eixos principais: autovetores de \(\Ten{I}\); nesses eixos
+    \(\vet{L}=\left(\lambda_1\omega_1,\lambda_2\omega_2,\lambda_3\omega_3\right)\) e
+    \(T=\frac12\sum_k\lambda_k\omega_k^2\)</p>
+    <p>Elipsoide de inércia: \(I_{ij}x_ix_j=1\), com semieixos \(1/\sqrt{\lambda_k}\)</p>
+    <p>Desigualdade triangular: \(\lambda_1+\lambda_2\geq\lambda_3\) e permutações</p>
+  </div>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Três regras que evitam quase todo erro</span>
+    <p>Um eixo de simetria é sempre principal &nbsp;·&nbsp; um plano de simetria tem a sua
+    normal como eixo principal &nbsp;·&nbsp; se dois momentos principais são iguais, qualquer
+    eixo do plano correspondente é principal</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f3">3. Momentos de inércia de corpos comuns</h2>
+  <p class="fonte-aula">Aulas 2 e 3</p>
+
+  <div class="tabela-rolavel">
+  <table>
+    <thead><tr><th>Corpo</th><th>Eixo</th><th>Momento</th></tr></thead>
+    <tbody>
+      <tr><td>Barra fina de comprimento \(L\)</td><td>perpendicular, pelo centro</td><td>\(\dfrac{1}{12}ML^2\)</td></tr>
+      <tr><td>Barra fina de comprimento \(L\)</td><td>perpendicular, pela ponta</td><td>\(\dfrac{1}{3}ML^2\)</td></tr>
+      <tr><td>Aro de raio \(R\)</td><td>eixo de simetria</td><td>\(MR^2\)</td></tr>
+      <tr><td>Aro de raio \(R\)</td><td>diâmetro</td><td>\(\dfrac{1}{2}MR^2\)</td></tr>
+      <tr><td>Disco ou cilindro maciço</td><td>eixo de simetria</td><td>\(\dfrac{1}{2}MR^2\)</td></tr>
+      <tr><td>Disco de raio \(R\)</td><td>diâmetro</td><td>\(\dfrac{1}{4}MR^2\)</td></tr>
+      <tr><td>Cilindro de raio \(R\), altura \(h\)</td><td>transversal, pelo centro</td><td>\(\dfrac{M}{12}\left(3R^2+h^2\right)\)</td></tr>
+      <tr><td>Esfera maciça</td><td>diâmetro</td><td>\(\dfrac{2}{5}MR^2\)</td></tr>
+      <tr><td>Casca esférica fina</td><td>diâmetro</td><td>\(\dfrac{2}{3}MR^2\)</td></tr>
+      <tr><td>Cone maciço de raio \(R\)</td><td>eixo de simetria</td><td>\(\dfrac{3}{10}MR^2\)</td></tr>
+      <tr><td>Paralelepípedo \(a\cruz b\cruz c\)</td><td>pelo centro, paralelo a \(c\)</td><td>\(\dfrac{M}{12}\left(a^2+b^2\right)\)</td></tr>
+      <tr><td>Cubo de aresta \(a\)</td><td>qualquer eixo pelo centro</td><td>\(\dfrac{1}{6}Ma^2\)</td></tr>
+      <tr><td>Cubo de aresta \(a\)</td><td>diagonal pelo vértice</td><td>\(\dfrac{1}{6}Ma^2\)</td></tr>
+      <tr><td>Cubo de aresta \(a\)</td><td>os outros dois pelo vértice</td><td>\(\dfrac{11}{12}Ma^2\)</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="bloco">
+    <p>Cubo pelo vértice, nos eixos das arestas:
+    \(\Ten{I}=\dfrac{Ma^2}{12}\begin{pmatrix}8&amp;-3&amp;-3\\-3&amp;8&amp;-3\\-3&amp;-3&amp;8\end{pmatrix}\)
+    &nbsp;·&nbsp; autovalores \(\dfrac{Ma^2}{6}\) e \(\dfrac{11Ma^2}{12}\) (duplo)</p>
+    <p>Cubo pelo centro: o tensor é isótropo,
+    \(\Ten{I}=\dfrac{Ma^2}{6}\Ten{1}\), e todo eixo é principal</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f4">4. Equações de Euler e rotação livre</h2>
+  <p class="fonte-aula">Aula 4</p>
+
+  <div class="destaque">
+    <span class="anuncio">Equações de Euler</span>
+    \[\begin{aligned}
+    \lambda_1\dot\omega_1-\left(\lambda_2-\lambda_3\right)\omega_2\omega_3&amp;=\Gamma_1\\
+    \lambda_2\dot\omega_2-\left(\lambda_3-\lambda_1\right)\omega_3\omega_1&amp;=\Gamma_2\\
+    \lambda_3\dot\omega_3-\left(\lambda_1-\lambda_2\right)\omega_1\omega_2&amp;=\Gamma_3
+    \end{aligned}\]
+  </div>
+
+  <div class="bloco">
+    <p>Origem: \(\left(\der{\vet{L}}{t}\right)_{\text{corpo}}
+    +\vet{\omega}\cruz\vet{L}=\vet{\Gamma}\)</p>
+    <p>Mudança de referencial, para qualquer vetor:
+    \(\left(\der{\vet{A}}{t}\right)_{\text{fixo}}
+    =\left(\der{\vet{A}}{t}\right)_{\text{corpo}}+\vet{\omega}\cruz\vet{A}\)</p>
+    <p>Sem torque: \(L^2\) e \(T\) são constantes, e a ponta de \(\vet{\omega}\) percorre a
+    polhódia, interseção do elipsoide de energia com o de momento angular</p>
+    <p>Pião simétrico livre (\(\lambda_1=\lambda_2=\lambda_\perp\)): \(\omega_3\) é constante e
+    \(\vet{\omega}_\perp\) gira no corpo com
+    \(\Omega=\dfrac{\lambda_3-\lambda_\perp}{\lambda_\perp}\,\omega_3\)</p>
+    <p>Estabilidade: rotação estável em torno do eixo de maior e do de menor momento, instável
+    em torno do intermediário</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f5">5. Ângulos de Euler, pião e giroscópio</h2>
+  <p class="fonte-aula">Aulas 5 e 6</p>
+
+  <div class="bloco">
+    <p>Sequência \(z\)-\(x'\)-\(z''\): precessão \(\varphi\), nutação \(\theta\), rotação
+    própria \(\psi\)</p>
+    <p>\(\omega_1=\dot\varphi\sen\theta\cos\psi+\dot\theta\sen\psi\) &nbsp;·&nbsp;
+    \(\omega_2=-\dot\varphi\sen\theta\sen\psi+\dot\theta\cos\psi\) &nbsp;·&nbsp;
+    \(\omega_3=\dot\varphi\cos\theta+\dot\psi\)</p>
+    <p>Pião pesado:
+    \(\Lag=\frac{\lambda_1}{2}\left(\dot\theta^2+\dot\varphi^2\sen^2\theta\right)
+    +\frac{\lambda_3}{2}\left(\dot\psi+\dot\varphi\cos\theta\right)^2-MgR\cos\theta\)</p>
+    <p>Constantes: \(L_3=\lambda_3\left(\dot\psi+\dot\varphi\cos\theta\right)\) &nbsp;·&nbsp;
+    \(L_z=\lambda_1\dot\varphi\sen^2\theta+L_3\cos\theta\) &nbsp;·&nbsp; e a energia</p>
+    <p>Potencial efetivo:
+    \(U_{\text{ef}}(\theta)=\dfrac{\left(L_z-L_3\cos\theta\right)^2}{2\lambda_1\sen^2\theta}
+    +MgR\cos\theta\)</p>
+    <p>Giroscópio rápido (\(\lambda_3\omega_3\) grande):
+    \(\dot\varphi\approx\dfrac{MgR}{\lambda_3\omega_3}\), independente do ângulo</p>
+    <p>Condição de precessão rápida e lenta:
+    \(\dot\varphi_\pm=\dfrac{L_3}{2\lambda_1\cos\theta}
+    \left(1\pm\sqrt{1-\dfrac{4\lambda_1MgR\cos\theta}{L_3^2}}\right)\)</p>
+  </div>
+
+  <div class="bloco">
+    <span class="rotulo">Precessão dos equinócios</span>
+    <p>\(\Omega_p=\dfrac32\,\dfrac{C-A}{C}\,\dfrac{\cos\varepsilon}{\omega}
+    \left(n_{\odot}^2+\dfrac{M_{\text{L}}}{M_{\text{T}}+M_{\text{L}}}\,n_{\text{L}}^2\right)\)</p>
+    <p>com \(\left(C-A\right)/C=3{,}27\cruz10^{-3}\) e \(\varepsilon=23{,}44°\); a Lua responde
+    por cerca de 68 % do efeito</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f6">6. Gravitação: campo, potencial e multipolos</h2>
+  <p class="fonte-aula">Aula 7</p>
+
+  <div class="bloco">
+    <p>\(\vet{g}=-\nabla\Psi\) &nbsp;·&nbsp;
+    \(\Psi(\vet{r})=-G\displaystyle\int\frac{\rho(\vet{r}\,')}{\left|\vet{r}-\vet{r}\,'\right|}d^3r'\)
+    &nbsp;·&nbsp; \(\vet{F}=m\vet{g}\)</p>
+    <p>Gauss: \(\displaystyle\oint_S\vet{g}\cdot d\vet{A}=-4\pi G\,M_{\text{int}}\)
+    &nbsp;·&nbsp; Poisson: \(\nabla^2\Psi=4\pi G\rho\) &nbsp;·&nbsp; no vazio
+    \(\nabla^2\Psi=0\)</p>
+    <p>Casca esférica: \(\Psi=-GM/r\) fora, \(\Psi=-GM/R\) constante dentro, e \(\vet{g}=0\)
+    dentro</p>
+    <p>Esfera homogênea, dentro: \(g=-\dfrac{GM}{R^3}r\) &nbsp;·&nbsp;
+    \(\Psi=-\dfrac{GM}{2R}\left(3-\dfrac{r^2}{R^2}\right)\)</p>
+    <p>Energia potencial própria: \(U=-\dfrac{3}{5}\dfrac{GM^2}{R}\) para a esfera homogênea
+    &nbsp;·&nbsp; em geral \(U=\frac12\displaystyle\int\rho\Psi\,d^3r\)</p>
+    <p>Expansão multipolar:
+    \(\Psi=-\dfrac{G}{r}\left[M+\dfrac{\vet{p}\cdot\vers{r}}{r}
+    +\dfrac{Q_{ij}\hat r_i\hat r_j}{2r^2}+\dots\right]\), com
+    \(Q_{ij}=\displaystyle\int\rho\left(3x_ix_j-r^2\delta_{ij}\right)d^3r\)</p>
+    <p>Teorema do virial, para sistema ligado: \(2\med{T}+\med{U}=0\)</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f7">7. Autogravidade e politropos</h2>
+  <p class="fonte-aula">Aula 8</p>
+
+  <div class="bloco">
+    <p>Equilíbrio hidrostático: \(\nabla p=-\rho\nabla\Psi=\rho\vet{g}\) &nbsp;·&nbsp; com
+    simetria esférica, \(\der{p}{r}=-\dfrac{Gm(r)\rho}{r^2}\) e
+    \(\der{m}{r}=4\pi r^2\rho\)</p>
+    <p>Politropo: \(p=K\rho^{1+1/n}\), \(\rho=\rho_c\theta^{\,n}\),
+    \(r=a\xi\) com
+    \(a=\sqrt{\dfrac{\left(n+1\right)K\rho_c^{1/n-1}}{4\pi G}}\)</p>
+    <p>Lane-Emden:
+    \(\dfrac{1}{\xi^2}\der{}{\xi}\left(\xi^2\der{\theta}{\xi}\right)=-\theta^{\,n}\),
+    com \(\theta(0)=1\) e \(\theta'(0)=0\)</p>
+    <p>Massa e raio: \(R=a\xi_1\) &nbsp;·&nbsp;
+    \(M=4\pi a^3\rho_c\left(-\xi^2\theta'\right)_{\xi_1}\) &nbsp;·&nbsp;
+    \(R\propto K^{\frac{n}{3-n}}M^{\frac{1-n}{3-n}}\)</p>
+  </div>
+
+  <div class="tabela-rolavel">
+  <table>
+    <thead><tr><th>\(n\)</th><th>\(\xi_1\)</th><th>\(\left(-\xi^2\theta'\right)_{\xi_1}\)</th><th>Observação</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td>2,4495</td><td>4,8990</td><td>exato: \(\sqrt6\) e \(2\sqrt6\), densidade uniforme</td></tr>
+      <tr><td>1</td><td>3,1416</td><td>3,1416</td><td>exato: \(\pi\) e \(\pi\), raio não depende da massa</td></tr>
+      <tr><td>1,5</td><td>3,6538</td><td>2,7141</td><td>gás degenerado não relativístico, \(R\propto M^{-1/3}\)</td></tr>
+      <tr><td>2</td><td>4,3529</td><td>2,4110</td><td></td></tr>
+      <tr><td>3</td><td>6,8968</td><td>2,0182</td><td>modelo padrão de Eddington; massa independe de \(\rho_c\)</td></tr>
+      <tr><td>4</td><td>14,9715</td><td>1,7972</td><td></td></tr>
+      <tr><td>5</td><td>\(\infty\)</td><td>\(\sqrt3\)</td><td>exato; raio infinito, massa finita</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f8">8. Pequenas oscilações e modos normais</h2>
+  <p class="fonte-aula">Aulas 9 e 10</p>
+
+  <div class="destaque">
+    <span class="anuncio">Problema de autovalor generalizado</span>
+    \[\Lag=\frac12M_{ij}\dot q_i\dot q_j-\frac12K_{ij}q_iq_j,\qquad
+    \left(\Ten{K}-\omega^2\Ten{M}\right)\vet{a}=0,\qquad
+    \det\left(\Ten{K}-\omega^2\Ten{M}\right)=0.\]
+  </div>
+
+  <div class="bloco">
+    <p>\(M_{ij}=\dpar{^2T}{\dot q_i\partial\dot q_j}{0}\) &nbsp;·&nbsp;
+    \(K_{ij}=\dpar{^2U}{q_i\partial q_j}{0}\), ambas simétricas e avaliadas no
+    equilíbrio</p>
+    <p>Equilíbrio estável se \(\Ten{K}\) é positiva definida; cada \(\omega^2&lt;0\) é uma
+    direção instável</p>
+    <p>Ortogonalidade: \(\vet{a}^{(r)}\cdot\Ten{M}\,\vet{a}^{(s)}=0\) para
+    \(\omega_r\neq\omega_s\) &nbsp;·&nbsp; normalização
+    \(\vet{a}^{(r)}\cdot\Ten{M}\,\vet{a}^{(r)}=1\)</p>
+    <p>Coordenadas normais: \(q_i=\sum_r a_i^{(r)}\eta_r\), com
+    \(\ddot\eta_r+\omega_r^2\eta_r=0\)</p>
+    <p>Modo de frequência nula: aparece sempre que o sistema pode transladar ou girar sem
+    custo de energia</p>
+    <p>Dois pêndulos acoplados: \(\omega_1^2=\dfrac{g}{\ell}\) (em fase) e
+    \(\omega_2^2=\dfrac{g}{\ell}+\dfrac{2k}{m}\) (em oposição)</p>
+    <p>Batimento: \(T_{\text{bat}}=\dfrac{2\pi}{\omega_2-\omega_1}\)</p>
+    <p>Correção anarmônica do pêndulo:
+    \(T=T_0\left(1+\dfrac{\theta_0^2}{16}+\dots\right)\)</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f9">9. Cadeia de osciladores e dispersão</h2>
+  <p class="fonte-aula">Aula 11</p>
+
+  <div class="bloco">
+    <p>Cadeia infinita: \(\omega(q)=2\sqrt{\dfrac{k}{m}}\left|\sen\dfrac{qa}{2}\right|\)</p>
+    <p>\(N\) massas com extremidades fixas:
+    \(u_j^{(n)}=A\sen\left(\dfrac{jn\pi}{N+1}\right)\),
+    \(\omega_n=2\sqrt{\dfrac{k}{m}}\,\sen\left(\dfrac{n\pi}{2\left(N+1\right)}\right)\)</p>
+    <p>Primeira zona de Brillouin: \(-\pi/a&lt;q\leq\pi/a\) &nbsp;·&nbsp; frequência de corte
+    \(\omega_{\max}=2\sqrt{k/m}\)</p>
+    <p>Velocidades: fase \(v_f=\omega/q\), grupo \(v_g=\der{\omega}{q}\); as duas coincidem só
+    no limite \(qa\ll1\)</p>
+    <p>Limite contínuo: \(\pder{^2u}{t^2}=v^2\pder{^2u}{x^2}\) com
+    \(v^2=\dfrac{ka^2}{m}=\dfrac{Y}{\rho}\)</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f10">10. Meios contínuos</h2>
+  <p class="fonte-aula">Aula 12</p>
+
+  <div class="bloco">
+    <p>Continuidade: \(\pder{\rho}{t}+\nabla\cdot\left(\rho\vet{v}\right)=0\) &nbsp;·&nbsp; na
+    forma integral,
+    \(\der{}{t}\displaystyle\int_\Omega\rho\,d^3r=-\oint_S\rho\vet{v}\cdot d\vet{A}\)</p>
+    <p>Derivada convectiva:
+    \(\dfrac{Df}{Dt}=\pder{f}{t}+\left(\vet{v}\cdot\nabla\right)f\)</p>
+    <p>Incompressível: \(\nabla\cdot\vet{v}=0\), que não é o mesmo que estacionário
+    (\(\partial/\partial t=0\))</p>
+    <p>Descrição de Euler: campos em pontos fixos &nbsp;·&nbsp; de Lagrange: acompanhando a
+    parcela de fluido</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f11">11. Ondas: corda, membrana, som e barras</h2>
+  <p class="fonte-aula">Aulas 13, 14 e 15</p>
+
+  <div class="bloco">
+    <span class="rotulo">Corda</span>
+    <p>\(\pder{^2y}{t^2}=v^2\pder{^2y}{x^2}\), \(v=\sqrt{\tau/\mu}\) &nbsp;·&nbsp;
+    d'Alembert: \(y=f\left(x-vt\right)+g\left(x+vt\right)\)</p>
+    <p>Reflexão e transmissão em junção:
+    \(r=\dfrac{v_2-v_1}{v_2+v_1}\), \(t=\dfrac{2v_2}{v_2+v_1}\) &nbsp;·&nbsp; extremidade fixa
+    inverte o pulso, livre não inverte</p>
+    <p>Modos da corda presa: \(y_n=A_n\sen\left(\dfrac{n\pi x}{L}\right)
+    \cos\left(\omega_nt+\delta_n\right)\), \(\omega_n=n\omega_1=\dfrac{n\pi v}{L}\)</p>
+    <p>Série de Fourier: \(A_n=\dfrac{2}{L}\displaystyle\int_0^L y(x,0)
+    \sen\dfrac{n\pi x}{L}\,dx\) &nbsp;·&nbsp; dedilhada em \(x_0\):
+    \(A_n\propto\dfrac{1}{n^2}\sen\dfrac{n\pi x_0}{L}\)</p>
+    <p>Energia: \(\mathcal{E}=\frac12\mu\dot y^2+\frac12\tau y'^2\) &nbsp;·&nbsp; potência
+    \(P=-\tau y'\dot y\)</p>
+    <p>Gibbs: numa descontinuidade a série ultrapassa o salto em 8,95 %, e isso não melhora com
+    mais termos</p>
+  </div>
+
+  <div class="bloco">
+    <span class="rotulo">Membrana circular</span>
+    <p>\(u_{mn}=J_m\!\left(\dfrac{j_{mn}r}{R}\right)\cos m\theta\cos\omega_{mn}t\),
+    \(\omega_{mn}=\dfrac{j_{mn}v}{R}\), \(v=\sqrt{\sigma/\rho_s}\)</p>
+    <p>Zeros de Bessel: \(j_{01}=2{,}4048\), \(j_{11}=3{,}8317\), \(j_{21}=5{,}1356\),
+    \(j_{02}=5{,}5201\) &nbsp;·&nbsp; razões 1 : 1,593 : 2,136 : 2,295, nada harmônicas</p>
+  </div>
+
+  <div class="bloco">
+    <span class="rotulo">Som</span>
+    <p>\(v=\sqrt{B/\rho}\) &nbsp;·&nbsp; gás ideal:
+    \(v=\sqrt{\gamma p/\rho}=\sqrt{\gamma k_BT/m}\), e \(v\propto\sqrt{T}\)</p>
+    <p>Tubo aberto nas duas pontas: \(f_n=\dfrac{nv}{2L}\), todos os harmônicos &nbsp;·&nbsp;
+    tubo fechado numa ponta: \(f_n=\dfrac{nv}{4L}\) com \(n\) ímpar</p>
+    <p>Pressão e deslocamento: \(p_0=\rho v\omega s_0\) &nbsp;·&nbsp; intensidade
+    \(I=\frac12\rho v\omega^2s_0^2=\dfrac{p_0^2}{2\rho v}\)</p>
+    <p>Nível sonoro: \(\beta=10\log_{10}\left(I/I_0\right)\) dB, com
+    \(I_0=10^{-12}\) W/m²</p>
+  </div>
+
+  <div class="bloco">
+    <span class="rotulo">Barras fletidas, Euler-Bernoulli</span>
+    <p>\(\pder{^2y}{t^2}=-\dfrac{YI}{\rho A}\pder{^4y}{x^4}\) &nbsp;·&nbsp; dispersão
+    \(\omega=\sqrt{\dfrac{YI}{\rho A}}\,k^2\), com \(v_g=2v_f\)</p>
+    <p>\(f_n=\dfrac{\left(\beta_nL\right)^2}{2\pi L^2}\sqrt{\dfrac{YI}{\rho A}}\) &nbsp;·&nbsp;
+    seção retangular \(b\cruz h\): \(I=\dfrac{bh^3}{12}\) &nbsp;·&nbsp; circular:
+    \(I=\dfrac{\pi R^4}{4}\)</p>
+  </div>
+
+  <div class="tabela-rolavel">
+  <table>
+    <thead><tr><th>Condição de contorno</th><th>Equação característica</th><th>\(\beta_nL\)</th><th>Razões \(f_n/f_1\)</th></tr></thead>
+    <tbody>
+      <tr><td>Livre-livre</td><td>\(\cos\beta L\cosh\beta L=1\)</td><td>4,7300; 7,8532; 10,9956</td><td>1; 2,757; 5,404</td></tr>
+      <tr><td>Engastada-livre</td><td>\(\cos\beta L\cosh\beta L=-1\)</td><td>1,8751; 4,6941; 7,8548</td><td>1; 6,267; 17,55</td></tr>
+      <tr><td>Apoiada nas duas pontas</td><td>\(\sen\beta L=0\)</td><td>\(\pi\); \(2\pi\); \(3\pi\)</td><td>1; 4; 9</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f12">12. Caos determinístico</h2>
+  <p class="fonte-aula">Aulas 16 e 17</p>
+
+  <div class="bloco">
+    <p>Parêntese de Poisson:
+    \(\{f,g\}=\displaystyle\sum_k\left(\pder{f}{q_k}\pder{g}{p_k}
+    -\pder{f}{p_k}\pder{g}{q_k}\right)\) &nbsp;·&nbsp;
+    \(\der{f}{t}=\{f,H\}+\pder{f}{t}\)</p>
+    <p>\(\{q_i,p_j\}=\delta_{ij}\) &nbsp;·&nbsp; \(\{L_x,L_y\}=L_z\) &nbsp;·&nbsp;
+    \(\{L^2,L_z\}=0\)</p>
+    <p>Integrabilidade de Liouville: \(n\) constantes independentes e em involução
+    (\(\{F_i,F_j\}=0\)), uma delas \(H\)</p>
+    <p>Ação e ângulo: \(I_k=\dfrac{1}{2\pi}\displaystyle\oint_{C_k}p_k\,dq_k\),
+    \(H=H(I)\), \(\theta_k(t)=\theta_k(0)+\omega_kt\) com
+    \(\omega_k=\pder{H}{I_k}\)</p>
+    <p>Oscilador harmônico: \(I=E/\omega\) e \(H=\omega I\)</p>
+    <p>Seção de Poincaré: ponto \(\to\) órbita periódica &nbsp;·&nbsp; curva fechada \(\to\)
+    toro invariante &nbsp;·&nbsp; nuvem de pontos \(\to\) órbita caótica</p>
+    <p>KAM: sobrevivem os toros com
+    \(\left|\vet{m}\cdot\vet{\omega}\right|\geq\gamma/\left|\vet{m}\right|^\tau\); o mais
+    resistente é o de razão áurea \(\left(\sqrt5-1\right)/2\)</p>
+  </div>
+
+  <div class="bloco">
+    <span class="rotulo">Mapa padrão e expoente de Lyapunov</span>
+    <p>\(p_{n+1}=p_n+K\sen\theta_n\), \(\theta_{n+1}=\theta_n+p_{n+1}\pmod{2\pi}\)</p>
+    <p>\(\Ten{M}=\begin{pmatrix}1+K\cos\theta_n&amp;1\\K\cos\theta_n&amp;1\end{pmatrix}\),
+    \(\det\Ten{M}=1\): o mapa é simplético e preserva área</p>
+    <p>Limiar da última barreira invariante: \(K_c=0{,}971635406\ldots\)</p>
+    <p>Difusão em momento, \(K\gg1\): \(\med{p^2}\approx Dn\) com \(D\approx K^2/2\)</p>
+    <p>Benettin: \(\lambda\approx\dfrac{1}{N}\sum_n\ln r_n\), com \(r_n\) o fator retirado na
+    renormalização do vetor tangente &nbsp;·&nbsp; para \(K\) grande,
+    \(\lambda\approx\ln\left(K/2\right)\)</p>
+    <p>Tempo de previsão: um erro inicial \(\epsilon_0\) chega a \(\epsilon\) em
+    \(n\approx\dfrac{1}{\lambda}\ln\dfrac{\epsilon}{\epsilon_0}\)</p>
+    <p>Sistema hamiltoniano não tem atrator: a área se conserva, e o que existe é mar caótico
+    com ilhas, não um atrator estranho</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f13">13. Números úteis do curso</h2>
+  <p class="fonte-aula">Resultados conferidos ao longo das aulas</p>
+
+  <div class="tabela-rolavel">
+  <table>
+    <thead><tr><th>Grandeza</th><th>Valor</th><th>Onde aparece</th></tr></thead>
+    <tbody>
+      <tr><td>Constante da gravitação \(G\)</td><td>\(6{,}674\cruz10^{-11}\) m³ kg⁻¹ s⁻²</td><td>Aulas 7 e 8</td></tr>
+      <tr><td>Achatamento da Terra \(\left(C-A\right)/C\)</td><td>\(3{,}27\cruz10^{-3}\)</td><td>Aula 6</td></tr>
+      <tr><td>Obliquidade \(\varepsilon\)</td><td>23,44°</td><td>Aula 6</td></tr>
+      <tr><td>Precessão dos equinócios</td><td>25,8 ka (cálculo do curso: 25,6 ka)</td><td>Aula 6</td></tr>
+      <tr><td>Bamboleio de Chandler</td><td>305 d se a Terra fosse rígida; 433 d observados</td><td>Aula 4</td></tr>
+      <tr><td>Velocidade do som no ar a 20 °C</td><td>343 m/s</td><td>Aula 15</td></tr>
+      <tr><td>Limiar da audição \(I_0\)</td><td>\(10^{-12}\) W/m², \(s_0\approx1{,}1\cruz10^{-11}\) m a 1 kHz</td><td>Aula 15</td></tr>
+      <tr><td>Pêndulo duplo, modos</td><td>\(0{,}765\) e \(1{,}848\ \sqrt{g/\ell}\)</td><td>Aula 10</td></tr>
+      <tr><td>Cadeia de 3 massas</td><td>\(0{,}765\); \(1{,}414\); \(1{,}848\ \sqrt{k/m}\)</td><td>Aula 11</td></tr>
+      <tr><td>Tambor: razões dos modos</td><td>1 : 1,593 : 2,136</td><td>Aula 14</td></tr>
+      <tr><td>Barra livre-livre: razões</td><td>1 : 2,757 : 5,404, com nós a 22,4 % das pontas</td><td>Aula 15</td></tr>
+      <tr><td>Fenômeno de Gibbs</td><td>8,95 % de excesso no salto</td><td>Aula 14</td></tr>
+      <tr><td>Limiar do mapa padrão \(K_c\)</td><td>0,971635406</td><td>Aula 17</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="f14">14. Matemática de apoio</h2>
+
+  <div class="bloco">
+    <span class="rotulo">Identidades vetoriais</span>
+    <p>\(\vet{a}\cruz\left(\vet{b}\cruz\vet{c}\right)
+    =\vet{b}\left(\vet{a}\cdot\vet{c}\right)-\vet{c}\left(\vet{a}\cdot\vet{b}\right)\)</p>
+    <p>\(\nabla\cdot\left(\nabla\cruz\vet{A}\right)=0\) &nbsp;·&nbsp;
+    \(\nabla\cruz\left(\nabla f\right)=0\) &nbsp;·&nbsp;
+    \(\nabla\cruz\left(\nabla\cruz\vet{A}\right)=\nabla\left(\nabla\cdot\vet{A}\right)-\nabla^2\vet{A}\)</p>
+    <p>Divergência: \(\displaystyle\int_\Omega\nabla\cdot\vet{A}\,d^3r=\oint_S\vet{A}\cdot d\vet{A}\)
+    &nbsp;·&nbsp; Stokes:
+    \(\displaystyle\int_S\left(\nabla\cruz\vet{A}\right)\cdot d\vet{A}=\oint_C\vet{A}\cdot d\vet{\ell}\)</p>
+  </div>
+
+  <div class="bloco">
+    <span class="rotulo">Laplaciano</span>
+    <p>Esféricas:
+    \(\nabla^2f=\dfrac{1}{r^2}\pder{}{r}\left(r^2\pder{f}{r}\right)
+    +\dfrac{1}{r^2\sen\theta}\pder{}{\theta}\left(\sen\theta\pder{f}{\theta}\right)
+    +\dfrac{1}{r^2\sen^2\theta}\pder{^2f}{\phi^2}\)</p>
+    <p>Cilíndricas:
+    \(\nabla^2f=\dfrac{1}{r}\pder{}{r}\left(r\pder{f}{r}\right)
+    +\dfrac{1}{r^2}\pder{^2f}{\phi^2}+\pder{^2f}{z^2}\)</p>
+  </div>
+
+  <div class="bloco">
+    <span class="rotulo">Integrais e séries que aparecem</span>
+    <p>\(\displaystyle\int_0^L\sen\dfrac{m\pi x}{L}\sen\dfrac{n\pi x}{L}\,dx
+    =\dfrac{L}{2}\delta_{mn}\)</p>
+    <p>\(\displaystyle\int_0^\infty e^{-ax^2}dx=\dfrac12\sqrt{\dfrac{\pi}{a}}\) &nbsp;·&nbsp;
+    \(\displaystyle\int_0^{2\pi}\sen^2\theta\,d\theta=\pi\)</p>
+    <p>\(\sen\theta\approx\theta-\dfrac{\theta^3}{6}\) &nbsp;·&nbsp;
+    \(\cos\theta\approx1-\dfrac{\theta^2}{2}+\dfrac{\theta^4}{24}\) &nbsp;·&nbsp;
+    \(\left(1+x\right)^\alpha\approx1+\alpha x+\dfrac{\alpha\left(\alpha-1\right)}{2}x^2\)</p>
+    <p>Período exato do pêndulo:
+    \(T=\dfrac{4}{\omega_0}K\!\left(\sen\dfrac{\theta_0}{2}\right)\), com \(K\) a integral
+    elíptica completa de primeira espécie</p>
+  </div>
+
+  <div class="bloco">
+    <span class="rotulo">Métodos numéricos usados nas aulas</span>
+    <p>Runge-Kutta de 4.ª ordem, para \(\dot{\vet{y}}=\vet{f}(\vet{y})\):
+    \(\vet{y}_{n+1}=\vet{y}_n+\dfrac{h}{6}
+    \left(\vet{k}_1+2\vet{k}_2+2\vet{k}_3+\vet{k}_4\right)\)</p>
+    <p>Autovalores de matriz simétrica: rotações de Jacobi &nbsp;·&nbsp; problema generalizado
+    \(\Ten{K}\vet{a}=\omega^2\Ten{M}\vet{a}\): fatorar \(\Ten{M}=\Ten{L}\Ten{L}^{\mathsf T}\)
+    por Cholesky e resolver
+    \(\Ten{L}^{-1}\Ten{K}\Ten{L}^{-\mathsf T}\vet{b}=\omega^2\vet{b}\)</p>
+    <p>Conferência obrigatória: exibir, junto de qualquer integração longa, a constante que
+    deveria ser conservada</p>
+  </div>
+
+  <nav class="nav-aulas">
+    <a href="aula17.html"><small>Última aula</small>← 17. Rotor pulsado</a>
+    <a class="prox" href="index.html"><small>Voltar</small>Página inicial →</a>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091531"></script>
+</body>
+</html>
