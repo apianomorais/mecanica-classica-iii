@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 1: Álgebra tensorial e notação indicial | Mecânica Clássica III</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091351">
+<script src="assets/js/comum.js?v=202611091351"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num ativo" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+
+<aside class="lateral">
+  <h4>Nesta aula</h4>
+  <ol>
+    <li><a href="#s1">1. Um número não dá conta</a></li>
+    <li><a href="#s2">2. Notação indicial</a></li>
+    <li><a href="#s3">3. Delta de Kronecker e símbolo de Levi-Civita</a></li>
+    <li><a href="#s4">4. O que faz de um objeto um tensor</a></li>
+    <li><a href="#s5">5. Simétrico e antissimétrico</a></li>
+    <li><a href="#s6">6. Invariantes</a></li>
+    <li><a href="#s7">7. Autovalores, autovetores e diagonalização</a></li>
+    <li><a href="#s8">8. Exercícios resolvidos</a></li>
+    <li><a href="#s9">9. Exercícios propostos</a></li>
+  </ol>
+</aside>
+
+<main class="conteudo">
+
+  <p class="chapeu">Aula 1 · Álgebra tensorial e corpo rígido</p>
+  <h1>Álgebra tensorial e notação indicial</h1>
+  <p class="subtitulo">A relação entre velocidade angular e momento angular continua sendo linear quando o eixo de rotação é livre, mas deixa de ser uma multiplicação por número. Esta aula monta a linguagem dos tensores cartesianos, que é a ferramenta de toda a primeira unidade e reaparece na gravitação, nas pequenas vibrações e nos meios contínuos.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Objetivos</span>
+    <ul>
+      <li>Escrever equações vetoriais em notação indicial com a convenção de Einstein;</li>
+      <li>Usar o delta de Kronecker e o símbolo de Levi-Civita para demonstrar identidades;</li>
+      <li>Reconhecer um tensor pela regra de transformação das suas componentes;</li>
+      <li>Separar um tensor nas partes simétrica e antissimétrica e interpretar cada uma;</li>
+      <li>Identificar os invariantes e calcular autovalores e autovetores;</li>
+      <li>Enunciar o teorema espectral e dizer o que ele garante para o tensor de inércia.</li>
+    </ul>
+  </div>
+
+  <hr class="linha">
+
+  <!-- ================================================== -->
+  <h2 id="s1">1. Um número não dá conta</h2>
+
+  <p>Em <a href="https://apianomorais.github.io/mecanica-classica-ii/aula02.html">Mecânica
+  Clássica II</a> o momento de inércia era um número. Um corpo girava em torno de um eixo
+  fixo, o momento angular em relação a esse eixo valia \(L=I\omega\), e a rotação de um
+  pêndulo físico ou de uma polia ficava resolvida com uma conta de uma linha. Esse arranjo
+  funciona enquanto alguém segura o eixo no lugar.</p>
+
+  <p>Solte o eixo e o arranjo desmonta. Tome uma barra fina presa pelo centro a um mancal,
+  inclinada em relação ao eixo de giro, e ponha o conjunto a girar. A velocidade angular
+  \(\vet{\omega}\) aponta ao longo do mancal, que é o que define o giro. O momento angular
+  não aponta na mesma direção: a barra tem massa longe do eixo de um lado em cima e do outro
+  embaixo, e a soma dos \(\vet{r}\cruz m\vet{v}\) resulta num vetor inclinado, que gira junto
+  com a barra e varre um cone. Como \(\vet{L}\) muda de direção o tempo todo, há torque, e é
+  por isso que esse mancal vibra.</p>
+
+  <div class="bloco int">
+    <span class="rotulo">O ponto</span>
+    <p>A relação entre \(\vet{\omega}\) e \(\vet{L}\) continua sendo linear: dobre
+    \(\vet{\omega}\) e \(\vet{L}\) dobra; some duas rotações e os momentos angulares se somam.
+    O que ela deixou de ser é uma multiplicação por número, porque uma multiplicação por
+    número nunca muda a direção de um vetor. O objeto que faz isso, que é linear e ainda assim
+    entorta a direção, tem nove componentes e chama-se <strong>tensor</strong>.</p>
+  </div>
+
+  <p>O mesmo tipo de objeto aparece em toda a física. A tensão num meio contínuo relaciona a
+  força por unidade de área com a orientação da superfície, e as duas não são paralelas em
+  geral: é o <a href="https://pt.wikipedia.org/wiki/Tensor_de_tens%C3%A3o_de_Cauchy">tensor de
+  tensões de Cauchy</a>, que aparece na aula 12. A polarização de um cristal não aponta
+  necessariamente ao longo do campo elétrico aplicado, e a relação entre os dois é o tensor de
+  susceptibilidade. Esta aula monta a linguagem que serve para todos eles, e a aula 2 a usa
+  para escrever o tensor de inércia.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s2">2. Notação indicial</h2>
+
+  <p>Escrever \(\vet{a}=\vet{b}\cruz\vet{c}\) é econômico e esconde o que está acontecendo nas
+  componentes. Escrever as três componentes uma a uma é explícito e insuportavelmente longo
+  assim que aparecem dois tensores no mesmo produto. A saída é a notação indicial: cada
+  equação vale para um índice genérico, que percorre os valores 1, 2 e 3.</p>
+
+  <p>Um vetor \(\vet{v}\) passa a ser \(v_i\), com o índice livre \(i\) significando "escolha
+  você qual componente". Uma equação como \(F_i=ma_i\) são três equações escritas de uma vez.
+  Um tensor de segunda ordem é \(T_{ij}\), com dois índices, e portanto nove componentes.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Convenção de Einstein</span>
+    \[a_i b_i \equiv \sum_{i=1}^{3} a_i b_i = a_1b_1+a_2b_2+a_3b_3.\]
+  </div>
+
+  <p>A convenção é a de que índice repetido num mesmo termo está somado, e o símbolo de
+  somatório pode ser omitido. <a href="https://pt.wikipedia.org/wiki/Albert_Einstein">Einstein</a>
+  a propôs em 1916, no artigo da relatividade geral, e comentou em carta a um amigo que tinha
+  feito uma grande descoberta na matemática. O índice repetido é chamado <strong>mudo</strong>,
+  porque o nome dele não importa: \(a_ib_i\) e \(a_kb_k\) são o mesmo número. O índice que
+  aparece uma vez só é <strong>livre</strong>, e precisa ser o mesmo nos dois lados da
+  igualdade.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Três regras que evitam quase todo erro</span>
+    <ul>
+      <li>Um índice aparece no máximo duas vezes por termo. Se aparecer três, há erro na
+      conta, e quase sempre é um índice mudo reaproveitado sem querer;</li>
+      <li>os índices livres do lado esquerdo são exatamente os do lado direito, em todos os
+      termos da soma;</li>
+      <li>na dúvida sobre o que um índice mudo significa, troque o nome dele. Se a troca
+      estragar a equação, ele não era mudo.</li>
+    </ul>
+  </div>
+
+  <p>Com essa notação, o produto escalar é \(\vet{a}\cdot\vet{b}=a_ib_i\), o quadrado do módulo
+  é \(v_iv_i\), a aplicação de um tensor a um vetor é \(L_i=I_{ij}\omega_j\) (soma em \(j\),
+  índice livre \(i\)) e o produto de dois tensores é \((AB)_{ij}=A_{ik}B_{kj}\). Essa última
+  mostra bem a economia: do lado direito há nove somas de três parcelas, e a expressão cabe em
+  oito caracteres.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s3">3. Delta de Kronecker e símbolo de Levi-Civita</h2>
+
+  <p>Duas quantidades com nome próprio tornam a notação indicial autossuficiente, no sentido
+  de que qualquer identidade vetorial pode ser demonstrada com elas e um pouco de álgebra.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Delta de Kronecker</span>
+    \[\delta_{ij}=\begin{cases}1,& i=j\\ 0,& i\neq j\end{cases}\]
+  </div>
+
+  <p>O <a href="https://pt.wikipedia.org/wiki/Delta_de_Kronecker">delta de Kronecker</a> é a
+  matriz identidade escrita com índices, e é também a condição de ortonormalidade da base:
+  \(\vers{e}_i\cdot\vers{e}_j=\delta_{ij}\). A sua propriedade de trabalho é trocar o nome de
+  um índice numa soma, \(\delta_{ij}a_j=a_i\), o que lhe vale o apelido de operador de
+  substituição. Note que \(\delta_{ii}=3\), e não 1, porque o índice repetido está somado.</p>
+
+  <div class="destaque">
+    <span class="anuncio">Símbolo de Levi-Civita</span>
+    \[\varepsilon_{ijk}=\begin{cases}
+    +1,& (i,j,k) \text{ permutação par de } (1,2,3)\\
+    -1,& \text{permutação ímpar}\\
+    0,& \text{dois índices iguais}\end{cases}\]
+  </div>
+
+  <p>O <a href="https://pt.wikipedia.org/wiki/S%C3%ADmbolo_de_Levi-Civita">símbolo de
+  Levi-Civita</a>, devido a <a href="https://pt.wikipedia.org/wiki/Tullio_Levi-Civita">Tullio
+  Levi-Civita</a>, tem 27 componentes das quais apenas seis não são nulas. Ele é
+  completamente antissimétrico: trocar dois índices quaisquer troca o sinal. Com ele, o produto
+  vetorial e o determinante ficam em uma linha cada:</p>
+
+  <p>\[(\vet{a}\cruz\vet{b})_i=\varepsilon_{ijk}a_jb_k,\qquad
+  \det \Ten{A}=\varepsilon_{ijk}A_{1i}A_{2j}A_{3k}.\]</p>
+
+  <p>Vale conferir a primeira numa componente. Para \(i=1\), os únicos termos não nulos têm
+  \(\{j,k\}=\{2,3\}\): \(\varepsilon_{123}a_2b_3+\varepsilon_{132}a_3b_2=a_2b_3-a_3b_2\), que
+  é a primeira componente do produto vetorial, como deveria.</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">A identidade que resolve quase tudo</span>
+    <p>\[\varepsilon_{ijk}\varepsilon_{ilm}=\delta_{jl}\delta_{km}-\delta_{jm}\delta_{kl}.\]</p>
+    <p>Dela sai o produto triplo vetorial sem decorar fórmula nenhuma. Começando pela
+    componente \(i\) de \(\vet{a}\cruz(\vet{b}\cruz\vet{c})\):</p>
+    <p>\[\varepsilon_{ijk}a_j(\vet{b}\cruz\vet{c})_k
+    =\varepsilon_{ijk}\varepsilon_{klm}a_jb_lc_m
+    =(\delta_{il}\delta_{jm}-\delta_{im}\delta_{jl})a_jb_lc_m
+    =b_i(a_jc_j)-c_i(a_jb_j),\]</p>
+    <p>ou seja, a regra BAC-CAB,
+    \(\vet{a}\cruz(\vet{b}\cruz\vet{c})=\vet{b}(\vet{a}\cdot\vet{c})-\vet{c}(\vet{a}\cdot\vet{b})\).
+    Ela reaparece na aula 2, na dedução do tensor de inércia, e vale a pena saber reproduzi-la
+    em vez de procurá-la na tabela.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. O que faz de um objeto um tensor</h2>
+
+  <p>Um conjunto de nove números arrumados em quadro não é um tensor, do mesmo modo que três
+  números numa coluna não são um vetor. O que define as duas coisas é o comportamento sob
+  mudança de base. Em <a href="https://apianomorais.github.io/mecanica-classica-ii/aula05.html">MC
+  II, módulo 5</a>, vimos que a matriz de mudança de base tem componentes
+  \(R_{ij}=\vers{e}\,'_i\cdot\vers{e}_j\), os cossenos diretores, e que as componentes de um
+  vetor mudam segundo \(v'_i=R_{ij}v_j\).</p>
+
+  <div class="destaque">
+    <span class="anuncio">Definição</span>
+    \[\text{escalar: } s'=s,\qquad
+    \text{vetor: } v'_i=R_{ij}v_j,\qquad
+    \text{tensor de 2.ª ordem: } T'_{ij}=R_{ik}R_{jl}T_{kl}.\]
+  </div>
+
+  <p>A regra se lê assim: um índice, uma matriz \(R\). Um tensor de ordem \(n\) tem \(n\)
+  índices, \(3^n\) componentes e \(n\) fatores \(R\) na transformação. O escalar é o tensor de
+  ordem zero, e o vetor é o de ordem um. Em notação matricial, a regra do tensor de segunda
+  ordem é \(\Ten{T}'=\Ten{R}\,\Ten{T}\,\Ten{R}^{\mathsf T}\).</p>
+
+  <p>Essa definição parece burocrática e é o contrário disso. Ela diz que a relação
+  \(L_i=I_{ij}\omega_j\) vale em qualquer base, com as componentes de cada objeto tomadas
+  naquela base. Uma afirmação feita em termos de tensores é uma afirmação sobre o mundo, e não
+  sobre a escolha de eixos de quem escreve. É a mesma ideia que, levada a sério e estendida a
+  transformações mais gerais, dá a estrutura da relatividade geral.</p>
+
+  <div data-widget="tensorgira"></div>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Cuidado</span>
+    <p>Nem todo quadro de nove números se transforma assim. Monte um quadro escrevendo na
+    primeira linha as componentes da velocidade do seu carro e nas outras duas as da
+    aceleração e da posição. Ao girar os eixos, cada linha gira por conta própria e nada
+    garante a regra com dois fatores \(R\). Esse quadro é uma tabela, não um tensor, e nenhuma
+    conclusão física pode ser tirada dos seus autovalores.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. Simétrico e antissimétrico</h2>
+
+  <p>Um tensor é <strong>simétrico</strong> quando \(T_{ij}=T_{ji}\) e
+  <strong>antissimétrico</strong> quando \(T_{ij}=-T_{ji}\). A segunda condição obriga a
+  diagonal a ser nula, porque \(T_{11}=-T_{11}\). Qualquer tensor se separa em duas parcelas,
+  uma de cada tipo, e a separação é única:</p>
+
+  <p>\[T_{ij}=\underbrace{\tfrac12\left(T_{ij}+T_{ji}\right)}_{S_{ij}}
+  +\underbrace{\tfrac12\left(T_{ij}-T_{ji}\right)}_{A_{ij}}.\]</p>
+
+  <p>A separação sobrevive à mudança de base, e é aí que ela ganha sentido físico: a parte
+  simétrica de um tensor continua simétrica em qualquer sistema de eixos. Se não fosse assim,
+  a distinção seria um acidente de escrita.</p>
+
+  <p>A parte antissimétrica de segunda ordem tem só três componentes independentes, as mesmas
+  três de um vetor. Essa coincidência não é coincidência, e o símbolo de Levi-Civita a
+  formaliza: a todo tensor antissimétrico \(A_{ij}\) corresponde um vetor
+  \(\omega_k=-\tfrac12\varepsilon_{kij}A_{ij}\) tal que</p>
+
+  <p>\[A_{ij}v_j=(\vet{\omega}\cruz\vet{v})_i.\]</p>
+
+  <p>Em outras palavras, um tensor antissimétrico não é um objeto novo: é um produto vetorial
+  vestido de matriz. É por isso que a velocidade angular, que em MC II aparecia como vetor,
+  pode ser escrita como o tensor antissimétrico das rotações infinitesimais, e é também por
+  isso que \(\vet{\omega}\) troca de sinal numa reflexão enquanto um vetor de verdade não
+  troca. O nome disso é pseudovetor.</p>
+
+  <div data-widget="decompor"></div>
+
+  <div class="bloco fisica">
+    <span class="rotulo">Onde isso aparece</span>
+    <p>No escoamento de um fluido, o gradiente de velocidade \(\partial v_i/\partial x_j\) é um
+    tensor cuja parte simétrica é a taxa de deformação, que estica e cisalha o elemento de
+    fluido, e cuja parte antissimétrica é metade da <strong>vorticidade</strong>, que apenas o
+    gira sem deformar. Um fluido pode girar em bloco sem nenhuma tensão viscosa, e essa
+    separação é exatamente a razão. O assunto volta na unidade de meios contínuos.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s6">6. Invariantes</h2>
+
+  <p>Se as componentes mudam com a base, o que é que fica? As combinações que não mudam são
+  chamadas <strong>invariantes</strong>, e são elas que carregam informação física. A mais
+  simples é o traço:</p>
+
+  <p>\[\Tr \Ten{T}=T_{ii}=T_{11}+T_{22}+T_{33}.\]</p>
+
+  <p>A demonstração de que ele não muda cabe em uma linha com a notação indicial e usa apenas
+  a ortogonalidade \(R_{ik}R_{il}=\delta_{kl}\):</p>
+
+  <p>\[T'_{ii}=R_{ik}R_{il}T_{kl}=\delta_{kl}T_{kl}=T_{kk}.\]</p>
+
+  <p>O determinante é o segundo invariante, e há um terceiro, menos conhecido, que é a soma
+  dos menores principais. Os três aparecem juntos nos coeficientes do polinômio
+  característico, e é por isso que os autovalores são invariantes: eles são as raízes de um
+  polinômio cujos coeficientes não dependem da base.</p>
+
+  <div class="bloco ex">
+    <span class="rotulo">Exemplo</span>
+    <p>Para \(\Ten{T}=\begin{pmatrix}3&1\\1&2\end{pmatrix}\), o traço vale 5 e o determinante
+    vale \(6-1=5\). Gire a base de 31,7° e as componentes passam a 3,618 e 1,382 na diagonal,
+    com zero fora dela. O traço continua \(3{,}618+1{,}382=5\) e o determinante continua
+    \(3{,}618\cruz1{,}382=5\). É o que o simulador da seção 4 mostra ao arrastar o
+    ângulo.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s7">7. Autovalores, autovetores e diagonalização</h2>
+
+  <p>Um <strong>autovetor</strong> de \(\Ten{T}\) é uma direção que o tensor não entorta: ele
+  só a estica ou encolhe, por um fator \(\lambda\) que é o <strong>autovalor</strong>
+  correspondente. Em componentes,</p>
+
+  <div class="destaque">
+    <span class="anuncio">Problema de autovalor</span>
+    \[T_{ij}n_j=\lambda n_i \quad\Longleftrightarrow\quad
+    \left(T_{ij}-\lambda\delta_{ij}\right)n_j=0.\]
+  </div>
+
+  <p>Esse é um sistema linear homogêneo. Ele só tem solução diferente da trivial \(\vet{n}=0\)
+  se o determinante da matriz dos coeficientes for nulo, o que dá a <strong>equação
+  secular</strong>:</p>
+
+  <p>\[\det\left(T_{ij}-\lambda\delta_{ij}\right)=0,\]</p>
+
+  <p>um polinômio de grau três em \(\lambda\), cujas três raízes são os autovalores. O nome
+  "secular" vem da astronomia do século XVIII, de equações semelhantes que apareciam no estudo
+  das perturbações lentas, ditas seculares, das órbitas planetárias.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Teorema espectral</span>
+    <p>Se \(\Ten{T}\) é simétrico e real, então os seus autovalores são reais e os autovetores
+    de autovalores distintos são ortogonais entre si. Existe, portanto, uma base ortonormal
+    formada por autovetores, e nela a matriz do tensor é diagonal, com os autovalores na
+    diagonal.</p>
+  </div>
+
+  <p>A ortogonalidade sai em três linhas. Sejam \(\vet{n}^{(1)}\) e \(\vet{n}^{(2)}\)
+  autovetores com \(\lambda_1\neq\lambda_2\). Multiplicando a equação do primeiro por
+  \(n^{(2)}_i\) e a do segundo por \(n^{(1)}_i\) e subtraindo, a simetria faz os lados
+  esquerdos se cancelarem e sobra
+  \((\lambda_1-\lambda_2)\,n^{(1)}_i n^{(2)}_i=0\). Como os autovalores são diferentes, o
+  produto escalar é nulo.</p>
+
+  <p>Esse teorema é a razão de tudo o que vem nas próximas aulas. O tensor de inércia é
+  simétrico, logo existe sempre uma base em que ele é diagonal, e os três eixos dessa base são
+  os <strong>eixos principais de inércia</strong> do corpo. Nela, e só nela,
+  \(L_i=I_i\omega_i\) sem soma, com cada componente do momento angular proporcional à
+  componente correspondente da velocidade angular. A aula 3 faz essa conta por extenso num
+  cubo.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s8">8. Exercícios resolvidos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 1.1</span>
+    <p><strong>Mostre que \(\varepsilon_{ijk}\varepsilon_{ijk}=6\).</strong></p>
+    <p>Use a identidade da seção 3 com \(l=j\) e \(m=k\):</p>
+    <p>\[\varepsilon_{ijk}\varepsilon_{ijk}=\delta_{jj}\delta_{kk}-\delta_{jk}\delta_{kj}
+    =3\cruz3-\delta_{jj}=9-3=6.\]</p>
+    <p>Confere com a contagem direta: das 27 componentes, seis valem \(\pm1\) e o quadrado de
+    cada uma vale 1.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 1.2</span>
+    <p><strong>Demonstre que \(\nabla\cdot(\nabla\cruz\vet{A})=0\) em notação
+    indicial.</strong></p>
+    <p>\[\partial_i(\varepsilon_{ijk}\partial_jA_k)=\varepsilon_{ijk}\partial_i\partial_jA_k.\]</p>
+    <p>O fator \(\partial_i\partial_j\) é simétrico na troca de \(i\) com \(j\), porque a ordem
+    das derivadas parciais não importa para um campo bem comportado. O fator
+    \(\varepsilon_{ijk}\) é antissimétrico nessa mesma troca. A soma de um produto entre um
+    objeto simétrico e um antissimétrico nos mesmos índices é sempre nula, porque cada termo
+    cancela o seu par trocado. Logo a divergência é zero.</p>
+    <p>Vale guardar o argumento, que é geral: \(S_{ij}A_{ij}=0\) sempre que \(S\) for
+    simétrico e \(A\) antissimétrico nos índices somados.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercício resolvido 1.3</span>
+    <p><strong>Encontre os autovalores e os eixos principais de
+    \(\Ten{T}=\begin{pmatrix}2&0&0\\0&3&1\\0&1&3\end{pmatrix}\).</strong></p>
+    <p>O bloco \(1\cruz1\) já está separado: \(\vers{e}_1\) é autovetor com \(\lambda=2\). No
+    bloco de baixo, a equação secular é \((3-\lambda)^2-1=0\), ou seja
+    \(\lambda=3\pm1\).</p>
+    <p>Para \(\lambda=4\), o sistema dá \(n_2=n_3\), e o autovetor normalizado é
+    \((0,1,1)/\sqrt2\). Para \(\lambda=2\), dá \(n_2=-n_3\), e o autovetor é
+    \((0,1,-1)/\sqrt2\). Os três são mutuamente ortogonais, como o teorema espectral
+    garante.</p>
+    <p>Confira pelos invariantes: o traço é \(2+3+3=8\) e a soma dos autovalores é
+    \(2+4+2=8\). O determinante é \(2\cruz(9-1)=16\) e o produto dos autovalores é
+    \(2\cruz4\cruz2=16\).</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s9">9. Exercícios propostos</h2>
+
+  <div class="bloco exe">
+    <span class="rotulo">Exercícios propostos</span>
+    <ol>
+      <li><b>1.1</b> Escreva em notação indicial, e simplifique quando possível:
+      \(\vet{a}\cdot(\vet{b}\cruz\vet{c})\), \(\nabla\cruz(\nabla f)\),
+      \(\nabla\cruz(\nabla\cruz\vet{A})\).</li>
+
+      <li><b>1.2</b> Mostre que \(\varepsilon_{ijk}a_ja_k=0\) para qualquer vetor
+      \(\vet{a}\), e diga em uma frase o que esse resultado significa geometricamente.</li>
+
+      <li><b>1.3</b> Prove que, se \(T_{ij}\) é um tensor, então \(T_{ii}\) é um escalar e
+      \(\varepsilon_{ijk}T_{jk}\) é um pseudovetor. Para o segundo, verifique também que ele é
+      nulo quando \(T\) é simétrico.</li>
+
+      <li><b>1.4</b> Escreva a matriz antissimétrica associada a
+      \(\vet{\omega}=(1,2,3)\) rad/s e confirme, numa componente, que
+      \(A_{ij}v_j=(\vet{\omega}\cruz\vet{v})_i\) para \(\vet{v}=(0,1,0)\) m.</li>
+
+      <li><b>1.5</b> Separe \(\begin{pmatrix}1&3&0\\-1&2&4\\2&0&1\end{pmatrix}\) nas partes
+      simétrica e antissimétrica, identifique o vetor associado à segunda, e verifique que os
+      traços das duas somam o traço original.</li>
+
+      <li><b>1.6</b> Um tensor tem a forma \(T_{ij}=\alpha\delta_{ij}+\beta a_ia_j\), com
+      \(\vet{a}\) unitário. Calcule os autovalores e as suas multiplicidades sem escrever
+      matriz nenhuma, apenas aplicando \(T\) a um vetor paralelo a \(\vet{a}\) e a um vetor
+      perpendicular.</li>
+
+      <li><b>1.7</b> Escreva um programa em Python que receba uma matriz simétrica
+      \(3\cruz3\), devolva os seus autovalores e autovetores com
+      <code>numpy.linalg.eigh</code>, e verifique numericamente que a matriz de autovetores é
+      ortogonal e que o traço e o determinante coincidem com a soma e o produto dos
+      autovalores. Use o que foi visto em
+      <a href="https://apianomorais.github.io/informatica-fisica/aula15.html">Informática para
+      Física</a>.</li>
+
+      <li><b>1.8</b> Em duas dimensões, mostre que a condição \(T'_{12}=0\) leva a
+      \(\tg 2\theta=\dfrac{2T_{12}}{T_{11}-T_{22}}\), e confirme que o ângulo 31,7° do
+      simulador sai dessa fórmula para o tensor genérico.</li>
+    </ol>
+  </div>
+
+
+  <nav class="nav-aulas">
+    <a href="index.html"><small>Voltar</small>← Início</a>
+    <span class="em-breve"><small>Em preparação</small>2. Tensor de inércia</span>
+  </nav>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+<script src="assets/js/widgets.js?v=202611091351"></script>
+</body>
+</html>

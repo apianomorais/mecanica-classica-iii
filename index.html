@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mecânica Clássica III | LFCA/URCA</title>
+<link rel="icon" type="image/png" href="assets/img/favicon.png">
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611091351">
+<script src="assets/js/comum.js?v=202611091351"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+
+<header class="topo">
+  <div class="topo-interno">
+    <a class="marca" href="index.html">Mecânica Clássica III <span>· LFCA/URCA</span></a>
+    <nav class="menu">
+      <a href="index.html" class="ativo">Início</a>
+      <span class="grupo">Corpo rígido</span>
+      <a href="aula01.html" class="num" title="Aula 1: Álgebra tensorial e notação indicial">1</a>
+    </nav>
+  </div>
+</header>
+
+<div class="envoltorio">
+<main class="conteudo">
+
+  <div class="heroi">
+    <span class="placa-logo">
+      <img src="assets/img/logo-lfca.png" alt="LFCA | URCA (Laboratório de Física Computacional Aplicada)" style="width: 80%; height: auto;">
+    </span>
+    <h1>Mecânica Clássica III</h1>
+    <p>Material interativo da disciplina · DF007</p>
+    <p class="meta">
+      Prof. Apiano Morais · Laboratório de Física Computacional Aplicada (LFCA)<br>
+      Universidade Regional do Cariri (URCA) · apiano.morais@urca.br
+    </p>
+  </div>
+
+  <h2 id="apresentacao">A porca que vira sozinha</h2>
+
+  <p>Em junho de 1985, a bordo da estação <a href="https://pt.wikipedia.org/wiki/Salyut_7">Salyut 7</a>,
+  o cosmonauta <a href="https://pt.wikipedia.org/wiki/Vladimir_Dzhanibekov">Vladimir Dzhanibekov</a>
+  soltou uma porca-borboleta de um parafuso e a viu seguir girando no ar. A porca girava em
+  torno de um eixo, mantinha-se assim por alguns segundos e então dava uma cambalhota
+  completa, voltava à posição anterior, girava de novo e tornava a virar, sempre no mesmo
+  ritmo. Nada a tocava. Nenhum torque agia sobre ela. Dzhanibekov filmou, e a filmagem ficou
+  guardada por anos como curiosidade constrangedora: parecia que o momento angular estava
+  mudando de direção sozinho.</p>
+
+  <p>Não estava. O momento angular apontava firme para a mesma direção o tempo todo, como
+  manda a conservação. O que virava era o <em>corpo</em>, e ele virava porque a rotação em
+  torno do eixo de momento de inércia intermediário é instável: qualquer desvio minúsculo
+  cresce exponencialmente até o corpo dar meia-volta, e então recomeça. As equações que
+  dizem isso foram escritas por <a href="https://pt.wikipedia.org/wiki/Leonhard_Euler">Euler</a>
+  em 1758, mais de dois séculos antes do vídeo.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">O que muda nesta disciplina</span>
+    <p>Em <a href="https://apianomorais.github.io/mecanica-classica-ii/">Mecânica Clássica II</a>
+    um corpo rígido girava em torno de um eixo fixo, e o momento de inércia era um número.
+    Aqui o eixo é livre, e um número não dá conta: é preciso um objeto com nove componentes
+    que transforma o vetor velocidade angular no vetor momento angular, e que em geral não
+    os deixa paralelos. Esse objeto é um <strong>tensor</strong>, e boa parte do curso é
+    aprender a trabalhar com ele.</p>
+    <p>O mesmo salto acontece três vezes mais. A gravidade deixa de ser uma força entre dois
+    pontos e vira um campo com fontes. Um sistema de muitos osciladores acoplados deixa de
+    ser um emaranhado e vira um conjunto de modos independentes. E um sistema contínuo deixa
+    de ter coordenadas numeradas e passa a ter um campo definido em cada ponto. Em todos os
+    casos, o que permite o salto é a mesma álgebra linear.</p>
+  </div>
+
+  <p>O curso termina onde a mecânica clássica encontra o seu limite. Um sistema com tantas
+  constantes de movimento quanto graus de liberdade é integrável, e as suas órbitas vivem
+  em toros no espaço de fase. Perturbe-o um pouco e os toros começam a se desmanchar. O que
+  aparece no lugar deles não é ruído nem erro numérico: é uma estrutura determinística,
+  perfeitamente definida pelas equações de Hamilton, e ainda assim imprevisível a longo
+  prazo. Chama-se caos, e a sua descoberta é a razão pela qual a mecânica clássica continua
+  sendo pesquisa e não apenas história.</p>
+
+  <hr class="linha">
+
+  <h2 id="aulas">As aulas</h2>
+
+  <h3 class="unidade">Álgebra tensorial e corpo rígido</h3>
+
+  <div class="cartoes">
+    <a class="cartao" href="aula01.html">
+      <span class="numero">Aula 1</span>
+      <h3>Álgebra tensorial e notação indicial</h3>
+      <p>Notação indicial, delta de Kronecker e símbolo de Levi-Civita, a regra de transformação que define um tensor, simetria e antissimetria, traço e diagonalização, e o produto diádico que monta tensores a partir de vetores.</p>
+      <div class="etiquetas">
+        <span class="etiqueta">Notação indicial</span>
+        <span class="etiqueta">Levi-Civita</span>
+        <span class="etiqueta">Transformação</span>
+      </div>
+    </a>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 2</span>
+      <h3>O tensor de inércia</h3>
+      <p>Por que \(\vet{L}\) deixa de ser paralelo a \(\vet{\omega}\), os produtos de inércia, o tensor para distribuições discretas e contínuas, a energia cinética de rotação como forma quadrática e o teorema de Steiner tensorial.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 3</span>
+      <h3>Eixos principais e a equação secular</h3>
+      <p>A equação secular e os autovalores do tensor, os eixos principais como autovetores, a diagonalização passo a passo no cubo, o elipsoide de inércia e o que a simetria do corpo adianta sem conta nenhuma.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 4</span>
+      <h3>Equações de Euler e a rotação livre</h3>
+      <p>As equações de Euler no referencial do corpo, a rotação livre do pião simétrico, a precessão livre e o bamboleio de Chandler, e a instabilidade do eixo intermediário que faz a porca de Dzhanibekov virar sozinha.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 5</span>
+      <h3>Ângulos de Euler e o pião simétrico</h3>
+      <p>Os três ângulos e a ordem em que se aplicam, a velocidade angular em termos de \(\dot\phi\), \(\dot\theta\) e \(\dot\psi\), a lagrangiana do pião pesado, os momentos conservados e a equação do ângulo de nutação.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 6</span>
+      <h3>Giroscópios, moedas e a precessão dos equinócios</h3>
+      <p>O giroscópio e a precessão rápida, a moeda que roda e tomba, o rolamento sem deslizamento como vínculo, e a precessão dos equinócios calculada do achatamento da Terra.</p>
+    </div>
+  </div>
+
+  <h3 class="unidade">Gravitação</h3>
+
+  <div class="cartoes">
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 7</span>
+      <h3>Campo gravitacional, potencial e a lei de Gauss</h3>
+      <p>O campo como objeto físico, o potencial gravitacional e a sua equação, o fluxo e a lei de Gauss, a equação de Poisson, e os potenciais de casca, esfera e disco resolvidos pelos dois caminhos.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 8</span>
+      <h3>Autogravidade: Lane-Emden e estruturas estelares</h3>
+      <p>Equilíbrio hidrostático de um corpo que se segura pela própria gravidade, a relação politrópica, a equação de Lane-Emden e as suas soluções exatas, e o que isso diz sobre estrelas e sobre nuvens que colapsam.</p>
+    </div>
+  </div>
+
+  <h3 class="unidade">Pequenas vibrações</h3>
+
+  <div class="cartoes">
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 9</span>
+      <h3>Equilíbrio e pequenas oscilações</h3>
+      <p>Equilíbrio estável, instável e indiferente pela segunda derivada do potencial, a expansão quadrática em torno do mínimo, as matrizes de massa e de rigidez, e o problema de autovalor generalizado que resolve tudo de uma vez.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 10</span>
+      <h3>Modos normais e coordenadas normais</h3>
+      <p>Dois pêndulos acoplados resolvidos à mão e pela matriz, as frequências próprias, as coordenadas normais que desacoplam o sistema, o batimento como soma de dois modos e a ortogonalidade dos modos.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 11</span>
+      <h3>A cadeia de N osciladores e o limite contínuo</h3>
+      <p>N massas e N+1 molas, a solução por ondas progressivas, a relação de dispersão e a sua saturação, a primeira zona de Brillouin, e a passagem ao contínuo que faz a equação de onda nascer da cadeia.</p>
+    </div>
+  </div>
+
+  <h3 class="unidade">Meios contínuos e ondas</h3>
+
+  <div class="cartoes">
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 12</span>
+      <h3>Densidade, fluxo e a equação da continuidade</h3>
+      <p>Quando um sistema de partículas pode ser tratado como contínuo, densidade local, densidade de corrente e fluxo, a equação da continuidade em forma integral e diferencial, e a derivada convectiva.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 13</span>
+      <h3>A corda vibrante e a equação de onda</h3>
+      <p>A força sobre um elemento de corda, a equação de onda deduzida da segunda lei, a velocidade de propagação, a solução de d'Alembert e o que acontece quando um pulso encontra a extremidade.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 14</span>
+      <h3>Modos, séries de Fourier e a membrana</h3>
+      <p>Separação de variáveis e os modos de uma corda presa, a série de Fourier que monta qualquer condição inicial, a corda dedilhada e a percutida, e a membrana circular com as suas funções de Bessel.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 15</span>
+      <h3>Ondas sonoras e ondas em barras</h3>
+      <p>Compressão, pressão sonora e a equação de onda acústica, a velocidade do som a partir do módulo de compressibilidade, tubos abertos e fechados, intensidade, e a equação de quarta ordem das barras fletidas.</p>
+    </div>
+  </div>
+
+  <h3 class="unidade">Caos determinístico</h3>
+
+  <div class="cartoes">
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 16</span>
+      <h3>Sistemas integráveis, toros e seções de Poincaré</h3>
+      <p>Constantes de movimento em involução, o teorema de Liouville-Arnold, as variáveis de ação e ângulo, os toros invariantes, a seção de Poincaré como instrumento de medida e o teorema KAM.</p>
+    </div>
+    <div class="cartao em-preparo">
+      <span class="numero">Aula 17</span>
+      <h3>O rotor pulsado e o caos determinístico</h3>
+      <p>O rotor pulsado e o mapa de Taylor-Chirikov, a condição simplética que o mapa satisfaz, a transição de regular a caótico conforme o parâmetro cresce, e o expoente de Lyapunov medido pelo método de Benettin.</p>
+    </div>
+  </div>
+
+  <hr class="linha">
+
+  <h2 id="plano">O plano de ensino</h2>
+
+  <div class="bloco def">
+    <span class="rotulo">Identificação</span>
+    <ul>
+      <li><strong>Curso:</strong> Bacharelado em Física</li>
+      <li><strong>Disciplina:</strong> Mecânica Clássica III (DF007), obrigatória, 6.º semestre</li>
+      <li><strong>Pré-requisito:</strong> DF006</li>
+      <li><strong>Carga horária:</strong> 60 h teóricas, 4 h semanais, 4 créditos</li>
+    </ul>
+  </div>
+
+  <h3>Ementa</h3>
+
+  <p>Gravitação, álgebra tensorial, rotação de corpo rígido pelo formalismo lagrangiano,
+  teoria das pequenas vibrações e introdução aos meios contínuos.</p>
+
+  <h3>Objetivos</h3>
+
+  <p>Desenvolver o tratamento tensorial da rotação de corpos rígidos e resolvê-la pelo
+  formalismo lagrangiano. Tratar a gravitação como teoria de campo, com potencial, lei de
+  Gauss e aplicação a corpos autogravitantes. Construir a teoria das pequenas vibrações em
+  torno do equilíbrio e os seus modos normais. Introduzir a descrição de meios contínuos e
+  a propagação de ondas, e apresentar o caos determinístico como limite do tratamento
+  clássico.</p>
+
+  <h3>Metodologia</h3>
+
+  <p>Aulas expositivas, resolução de problemas e atividades computacionais em Python. As
+  aulas deste site trazem os simuladores que acompanham a exposição: cada afirmação que
+  depende de ver para convencer tem aqui o seu experimento numérico.</p>
+
+  <h3>Avaliação</h3>
+
+  <div class="tabela-rolavel">
+  <table>
+    <thead><tr><th>Instrumento</th><th>Peso</th><th>O que cobre</th></tr></thead>
+    <tbody>
+      <tr><td>Provas teóricas</td><td>40%</td>
+        <td>Álgebra tensorial, rotação de corpos rígidos, gravitação, pequenas vibrações e
+        meios contínuos.</td></tr>
+      <tr><td>Trabalhos práticos</td><td>30%</td>
+        <td>Resolução de problemas em sala e implementações numéricas dos sistemas
+        estudados.</td></tr>
+      <tr><td>Projeto final</td><td>30%</td>
+        <td>Projeto de aplicação, com apresentação e defesa perante a turma.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Bibliografia básica</h3>
+
+  <ul>
+    <li>THORNTON, S. T.; MARION, J. B. <em>Classical Dynamics of Particles and Systems</em>.
+      5. ed. Cengage Learning, 2003.</li>
+    <li>GOLDSTEIN, H.; POOLE, C.; SAFKO, J. <em>Classical Mechanics</em>. 3. ed.
+      Addison-Wesley, 2001.</li>
+    <li>LANDAU, L. D.; LIFSHITZ, E. M. <em>Mechanics</em>. 3. ed. Butterworth-Heinemann, 1976.</li>
+  </ul>
+
+  <div class="bloco def">
+    <span class="rotulo">Disciplinas vizinhas</span>
+    <p>O que vem antes está em
+    <a href="https://apianomorais.github.io/mecanica-classica-ii/">Mecânica Clássica II</a>
+    (DF006): cinemática e dinâmica do corpo rígido em torno de eixo fixo, referenciais em
+    rotação, cálculo variacional e os formalismos lagrangiano e hamiltoniano. Onde uma aula
+    daqui depende de um resultado de lá, o texto aponta o módulo exato.</p>
+    <p>As equações de onda e de continuidade desta disciplina reaparecem, com outra
+    finalidade, em
+    <a href="https://apianomorais.github.io/fenomenos-transporte/">Fenômenos de Transporte</a>,
+    e o espaço de fase da última unidade é o ponto de partida de
+    <a href="https://apianomorais.github.io/fisica-estatistica/">Física Estatística</a>. As
+    atividades numéricas usam o Python de
+    <a href="https://apianomorais.github.io/informatica-fisica/">Informática para Física</a>.</p>
+  </div>
+
+</main>
+</div>
+
+<footer class="rodape">
+  <img class="logo-rodape" src="assets/img/logo-lfca.png" alt="LFCA | URCA">
+  <p><strong>Prof. Apiano Morais</strong> · <a href="mailto:apiano.morais@urca.br">apiano.morais@urca.br</a><br>
+  Laboratório de Física Computacional Aplicada (LFCA) · Universidade Regional do Cariri</p>
+</footer>
+
+</body>
+</html>
