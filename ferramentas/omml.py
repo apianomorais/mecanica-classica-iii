@@ -148,7 +148,9 @@ def conv(no):
         corpo = filhos(_um(no, 'e'))
         return r'\sqrt[%s]{%s}' % (d, corpo) if d.strip() else r'\sqrt{%s}' % corpo
     if t == M + 'nary':                                 # somatório, integral
-        op = NARY.get(_chr_de(no, 'chr', '∑'), r'\sum')
+        # no OMML, um n-ário sem m:chr é a integral, não o somatório: é o
+        # que o PowerPoint grava quando a equação foi escrita com ∫
+        op = NARY.get(_chr_de(no, 'chr', '∫'), r'\int')
         sub, sup = _um(no, 'sub'), _um(no, 'sup')
         s = op
         if sub is not None and filhos(sub).strip():
