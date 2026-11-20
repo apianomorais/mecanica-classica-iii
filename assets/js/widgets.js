@@ -3711,6 +3711,146 @@
     registrarRedesenho(desenhar);
   };
 
+  /* O transporte em momento acima do limiar. O ponto do painel é que a
+     barreira some em Kc e o transporte só aparece bem depois: entre os dois
+     fica o cantoro, que já não é barreira e ainda assim estrangula o fluxo.
+     Nada aqui é fórmula: as órbitas são iteradas e contadas. */
+  REGISTRO.transporte = function (raiz) {
+    var Kc = 0.971635406, TAU = 2 * Math.PI;
+    var corpo = moldura(raiz, 'A barreira caiu, e nada atravessa');
+    var cv = el('canvas');
+    corpo.appendChild(cv);
+
+    var K = 1.05, NORB = 24, NIT = 50000;
+
+    var desl = deslizante(corpo, 'Intensidade do pulso \\(K\\):', 0.9, 2, 0.01, K,
+      function (v) { K = v; desenhar(); }, function (v) { return F.fmt(v, 2); });
+    opcoes(corpo, [{ rot: 'K = 0,95', v: 0.95 }, { rot: 'K crítico', v: 0.97 },
+                   { rot: 'K = 1,05', v: 1.05 }, { rot: 'K = 1,2', v: 1.2 },
+                   { rot: 'K = 1,5', v: 1.5 }], 2,
+      function (v) { desl.value = v; desl.dispatchEvent(new Event('input')); });
+
+    var mostrar = cartoes(corpo, [
+      { rot: '\\(K-K_c\\)', k: 'dk' },
+      { rot: 'Atravessaram \\(|p|=2\\pi\\)', k: 'fr' },
+      { rot: 'Tempo mediano', k: 'tm' },
+      { rot: 'Maior \\(|p|\\) alcançado', k: 'pm' }
+    ]);
+    var saida = el('div', { class: 'saida' });
+    corpo.appendChild(saida);
+
+    /* Uma semente fixa, e não Math.random: o painel tem de dar a mesma
+       figura em todo computador para poder ser discutido em sala. */
+    function sorteio(i) {
+      var x = Math.sin(i * 12.9898 + 78.233) * 43758.5453;
+      return x - Math.floor(x);
+    }
+
+    function simular() {
+      var trilhas = [], tempos = [], pmax = 0;
+      var guarda = Math.max(1, Math.round(NIT / 900));
+      for (var o = 0; o < NORB; o++) {
+        var th = TAU * sorteio(o * 2 + 1);
+        var p = -Math.PI + TAU * sorteio(o * 2 + 2);
+        var tr = [[0, p]], cruzou = -1;
+        for (var n = 1; n <= NIT; n++) {
+          p = p + K * Math.sin(th);
+          th = th + p;
+          th = th - TAU * Math.floor(th / TAU);
+          if (cruzou < 0 && Math.abs(p) > TAU) cruzou = n;
+          if (Math.abs(p) > pmax) pmax = Math.abs(p);
+          if (n % guarda === 0) tr.push([n, p]);
+        }
+        trilhas.push(tr);
+        if (cruzou > 0) tempos.push(cruzou);
+      }
+      tempos.sort(function (a, b) { return a - b; });
+      return { trilhas: trilhas, tempos: tempos, pmax: pmax };
+    }
+
+    function desenhar() {
+      var d = simular();
+      /* O limite é um múltiplo PAR de pi para que as marcas do eixo, que
+         são o limite e a metade dele, caiam em múltiplos inteiros. Com um
+         limite qualquer, a marca do meio ficava em 1,54 pi e era rotulada
+         "2pi", bem ao lado da linha tracejada que está no 2pi de verdade. */
+      var lim = 2 * Math.PI * Math.max(2,
+                  Math.ceil(d.pmax * 1.1 / (2 * Math.PI)));
+      var g = G.eixos(cv, {
+        xmin: 0, xmax: NIT, ymin: -lim, ymax: lim, divY: 4,
+        altura: Math.min(340, Math.max(260, cv.clientWidth * 0.5)),
+        rotX: 'número de pulsos', rotY: 'p',
+        marcasX: G.marcasLineares(0, NIT, 5, 0),
+        formataY: function (v) {
+          var r = v / Math.PI;
+          return Math.abs(r) < 1e-9 ? '0' : F.fmt(r, 0) + 'π';
+        }
+      });
+      var ct = g.ct;
+      ct.save();
+      ct.beginPath();
+      ct.rect(g.x0, g.y0, g.x1 - g.x0, g.y1 - g.y0);
+      ct.clip();
+
+      /* onde ficava a última curva invariante */
+      ct.save();
+      ct.strokeStyle = G.COR.vinho; ct.lineWidth = 1.4; ct.setLineDash([6, 4]);
+      [-TAU, TAU].forEach(function (y) {
+        ct.beginPath(); ct.moveTo(g.x0, g.Y(y)); ct.lineTo(g.x1, g.Y(y)); ct.stroke();
+      });
+      ct.restore();
+
+      var cores = [G.COR.mestra, G.COR.azul, G.COR.bronze, G.COR.roxo,
+                   '#4f7a4f', '#2f6f7a', G.COR.ambar, '#8c5a7a'];
+      d.trilhas.forEach(function (tr, i) {
+        ct.save();
+        ct.strokeStyle = cores[i % cores.length];
+        ct.globalAlpha = 0.75; ct.lineWidth = 1.1;
+        ct.beginPath();
+        tr.forEach(function (w, j) {
+          if (j === 0) ct.moveTo(g.X(w[0]), g.Y(w[1]));
+          else ct.lineTo(g.X(w[0]), g.Y(w[1]));
+        });
+        ct.stroke(); ct.restore();
+      });
+      ct.restore();
+
+      rotulo(ct, 'última barreira', g.x0 + 8, g.Y(TAU) - 10, G.COR.vinho, 'left');
+
+      var frac = d.tempos.length / NORB;
+      var med = d.tempos.length
+        ? d.tempos[Math.floor((d.tempos.length - 1) / 2)] : null;
+      mostrar({
+        dk: (K < Kc ? '−' : '+') + F.fmt(Math.abs(K - Kc), 4),
+        fr: F.fmt(100 * frac, 1) + ' %',
+        tm: med === null ? 'nenhuma' : F.fmt(med, 0) + ' pulsos',
+        pm: F.fmt(d.pmax / Math.PI, 2) + 'π'
+      });
+
+      saida.innerHTML = K < Kc
+        ? 'Abaixo de \\(K_c\\) a curva invariante de número de rotação áureo ainda '
+          + 'existe, e o momento de cada órbita fica preso entre duas barreiras. As '
+          + 'trilhas são limitadas, e seriam limitadas por mais tempo que se iterasse.'
+        : (frac === 0
+          ? 'A barreira já se rompeu, e mesmo assim nenhuma das ' + NORB
+            + ' órbitas atravessou em ' + NIT + ' pulsos. O que sobrou do toro é um '
+            + '<strong>cantoro</strong>, um conjunto de Cantor com os mesmos buracos '
+            + 'por onde o fluxo tem de passar. O fluxo cresce como '
+            + '\\(\\left(K-K_c\\right)^3\\), e tão perto do limiar ele é pequeno '
+            + 'demais para se ver numa conta deste tamanho.'
+          : 'Algumas órbitas atravessam, e as outras não: num espaço de fases misto, '
+            + 'a mesma lei produz comportamentos qualitativamente diferentes conforme '
+            + 'onde a órbita começou. Conforme \\(K\\) cresce, as ilhas encolhem, o '
+            + 'fluxo pelo cantoro aumenta como \\(\\left(K-K_c\\right)^3\\), e o tempo '
+            + 'de travessia despenca.');
+      tipografar(saida);
+      tipografar(raiz);
+    }
+
+    registrarRedesenho(desenhar);
+  };
+
+
 
   /* ---------- inicialização ---------- */
   document.addEventListener('DOMContentLoaded', function () {

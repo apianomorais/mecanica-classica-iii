@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aula 17: O rotor pulsado e o caos determinístico | Mecânica Clássica III</title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="stylesheet" href="assets/css/estilo.css?v=202611091531">
-<script src="assets/js/comum.js?v=202611091531"></script>
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611201053">
+<script src="assets/js/comum.js?v=202611201053"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
@@ -62,9 +62,12 @@
     <li><a href="#s1">1. O rotor pulsado e o mapa padrão</a></li>
     <li><a href="#s2">2. A condição simplética</a></li>
     <li><a href="#s3">3. De regular a caótico</a></li>
-    <li><a href="#s4">4. O expoente de Lyapunov</a></li>
-    <li><a href="#s5">5. Exercícios resolvidos</a></li>
-    <li><a href="#s6">6. Exercícios propostos</a></li>
+    <li><a href="#s4">4. Quando as barreiras caem</a></li>
+    <li><a href="#s5">5. O que resta de um toro quebrado</a></li>
+    <li><a href="#s6">6. O expoente de Lyapunov</a></li>
+    <li><a href="#s7">7. Dois graus não são três</a></li>
+    <li><a href="#s8">8. Exercícios resolvidos</a></li>
+    <li><a href="#s9">9. Exercícios propostos</a></li>
   </ol>
 </aside>
 
@@ -160,9 +163,21 @@
 
   <p>Um corolário imediato: um sistema hamiltoniano não pode ter atrator. Se a área se conserva,
   nenhum conjunto de condições iniciais pode encolher para um ponto ou para uma curva. O caos
-  hamiltoniano é, por isso, diferente do caos dissipativo de Lorenz ou da aplicação logística:
-  aqui não existe atrator estranho, e o que existe é uma região do espaço de fases visitada de
-  modo irregular, com a área preservada em cada passo.</p>
+  hamiltoniano é, por isso, de outra espécie que o caos dissipativo dos
+  <a href="https://apianomorais.github.io/mecanica-classica-i/aula10.html">módulos 9 e 10 de
+  Mecânica Clássica I</a>, em que o ciclo-limite, o atrator estranho e a cascata de duplicação
+  de período são todos consequência de o volume encolher. Aqui não existe atrator de espécie
+  alguma, e o que existe é uma região do espaço de fases visitada de modo irregular, com a área
+  preservada em cada passo.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">A divisão de trabalho entre as duas disciplinas</span>
+    <p>Mecânica Clássica I trata o caos de sistemas que perdem volume: retratos de fase, bacias
+    de atração, ciclo-limite, mapa logístico, cascata de Feigenbaum e o expoente de Lyapunov em
+    uma dimensão. Daqui em diante tudo é conservativo, e nenhuma das ferramentas de lá se
+    aplica sem tradução. O que esta disciplina assume de lá é a ideia de medir caos por
+    separação exponencial, retomada na seção 6; o resto é construído do zero.</p>
+  </div>
 
   <!-- ================================================== -->
   <h2 id="s3">3. De regular a caótico</h2>
@@ -192,46 +207,204 @@
     \[K_c=0{,}971635406\ldots\]
   </div>
 
-  <p>Abaixo de \(K_c\) o momento de qualquer órbita é limitado para sempre. Acima, as barreiras
-  acabaram, e uma única trajetória pode subir no retrato sem limite. A mudança é de natureza, e
-  não de grau: o que muda em \(K_c\) não é quão rápido o momento cresce, e sim se ele pode
-  crescer.</p>
+  <p>Abaixo de \(K_c\) o momento de qualquer órbita é limitado para sempre. Acima, não há mais
+  obstrução: uma única trajetória pode, em princípio, subir no retrato sem limite. A mudança em
+  \(K_c\) é de natureza e não de grau, mas convém guardar a expressão <em>em princípio</em>,
+  porque a seção 5 vai mostrar que ela esconde um fator de cem mil no tempo de travessia.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s4">4. Quando as barreiras caem</h2>
+
+  <p>O valor crítico apareceu acima como um número de nove algarismos, calculado por um método
+  que serve só para este mapa. Vale perguntar se há como estimá-lo com uma conta de uma linha,
+  e há: é o critério de superposição de ressonâncias, de Boris Chirikov, e ele é o argumento
+  mais usado do caos hamiltoniano justamente por não depender do sistema.</p>
+
+  <p>Comece pela ilha em torno de \(p=0\). Enquanto \(p\) for pequeno o ângulo avança pouco a
+  cada pulso, e a sucessão de empurrões pode ser trocada por um torque contínuo. O que sobra é
+  um pêndulo:</p>
+
+  \[\der{p}{t}=K\sen\theta,\qquad \der{\theta}{t}=p
+    \qquad\Longleftrightarrow\qquad
+    H_{\rm loc}=\frac{p^2}{2}+K\cos\theta.\]
+
+  <p>A separatriz desse pêndulo passa pelo máximo do potencial, de modo que nela
+  \(p^2/2+K\cos\theta=K\). A maior altura é atingida no fundo, \(\theta=\pi\), e dá a
+  semilargura da ilha:</p>
+
+  <div class="destaque">
+    <span class="anuncio">A largura de uma ressonância</span>
+    \[\Delta p=2\sqrt{K}.\]
+  </div>
+
+  <p>Essa ilha não é a única. Troque \(p\) por \(2\pi m+\delta\) com \(m\) inteiro: como
+  \(\theta\) está definido módulo \(2\pi\), o avanço \(\theta\to\theta+p\) é o mesmo que
+  \(\theta\to\theta+\delta\), e o mapa perto de \(p=2\pi m\) é <em>idêntico</em> ao mapa perto
+  de \(p=0\). Há, portanto, uma cadeia infinita de ressonâncias primárias igualmente espaçadas,
+  todas com a mesma largura.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">Critério de Chirikov</span>
+    <p>Duas ressonâncias vizinhas cujas ilhas se tocam deixam de ter entre si uma curva
+    invariante: a órbita presa numa delas passa a poder migrar para a outra, e daí para a
+    seguinte. A condição de superposição é que a soma das duas semilarguras alcance a
+    separação entre os centros,</p>
+    <p>\[2\Delta p\ \geq\ 2\pi
+      \quad\Longrightarrow\quad
+      4\sqrt{K}\geq 2\pi
+      \quad\Longrightarrow\quad
+      K\ \geq\ \frac{\pi^2}{4}=2{,}467.\]</p>
+  </div>
+
+  <p>A estimativa erra por um fator 2,5 para mais, e o modo como ela erra é instrutivo. Ela
+  conta apenas as ressonâncias primárias, e entre cada par delas existe uma de segunda ordem,
+  centrada em \(p=\pi(2m+1)\), que também cresce com \(K\) e come parte do vão; incluí-la
+  derruba a estimativa para a vizinhança de 1,2. Além disso cada separatriz vem envolvida por
+  uma camada estocástica de espessura finita, de modo que as ilhas se comunicam um pouco antes
+  de encostarem geometricamente, e somando essa espessura chega-se perto de 1.</p>
+
+  <p>O que o critério oferece não é precisão. É um argumento que se aplica a qualquer sistema
+  quase integrável em que se saiba localizar as ressonâncias e estimar as suas larguras, e que
+  dá a resposta certa em ordem de grandeza sem computador nenhum. Chirikov usou-o em 1959 para
+  estimar o confinamento de partículas em armadilhas magnéticas, e ele continua sendo a
+  primeira conta que se faz em qualquer problema de transporte caótico, do cinturão de
+  asteroides ao feixe de um acelerador. O número de Greene e MacKay, exato em nove casas, vale
+  para o mapa padrão e para mais nada.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s5">5. O que resta de um toro quebrado</h2>
+
+  <p>Dizer que a última curva invariante desaparece em \(K_c\) sugere que, logo acima, o
+  momento passa a crescer. A experiência numérica diz outra coisa, e vale fazê-la antes de
+  acreditar na frase.</p>
+
+  <p>Duzentas órbitas começam espalhadas pelo retrato e são iteradas duzentas mil vezes,
+  contando-se quantas conseguem ultrapassar \(|p|=2\pi\), isto é, atravessar a região onde
+  ficava a última barreira:</p>
+
+  <div data-widget="transporte"></div>
+
+  <p>O painel faz o mesmo experimento com vinte e quatro órbitas e cinquenta mil pulsos, e a
+  tabela abaixo traz a conta maior:</p>
+
+  <div class="tabela-rolavel">
+  <table>
+    <thead><tr><th>\(K\)</th><th>barreira</th><th>atravessaram</th>
+      <th>tempo mediano de travessia</th></tr></thead>
+    <tbody>
+      <tr><td>0,950</td><td>intacta</td><td>0 %</td><td>nunca</td></tr>
+      <tr><td>0,971635</td><td>no limiar</td><td>0 %</td><td>nunca</td></tr>
+      <tr><td>1,000</td><td>rompida</td><td>0 %</td><td>nunca</td></tr>
+      <tr><td>1,050</td><td>rompida</td><td>16,5 %</td><td>91 000 pulsos</td></tr>
+      <tr><td>1,100</td><td>rompida</td><td>49,0 %</td><td>71 000 pulsos</td></tr>
+      <tr><td>1,200</td><td>rompida</td><td>55,5 %</td><td>9 400 pulsos</td></tr>
+      <tr><td>1,500</td><td>rompida</td><td>68,5 %</td><td>780 pulsos</td></tr>
+      <tr><td>2,000</td><td>rompida</td><td>74,5 %</td><td>84 pulsos</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Em \(K=1\), com a barreira comprovadamente rompida, nenhuma das duzentas órbitas
+  atravessa em duzentas mil iterações. Quem medisse o limiar por este experimento concluiria
+  que ele fica entre 1,00 e 1,05, e estaria enganado por um motivo que é o assunto desta
+  seção.</p>
+
+  <p>Quando um toro invariante se desmancha, ele não desaparece: sobra dele um conjunto
+  invariante de medida nula, cheio de buracos, com o mesmo número de rotação do toro original.
+  É um conjunto de Cantor, e por isso recebeu de Ian Percival o nome de <strong>cantoro</strong>.
+  A sua existência foi provada por Serge Aubry e John Mather, independentemente, no começo dos
+  anos 1980.</p>
+
+  <div class="bloco def">
+    <span class="rotulo">A torniquete, e o fluxo</span>
+    <p>Uma órbita só pode cruzar o cantoro pelos buracos, e os buracos têm área. A área que
+    passa de um lado ao outro por iteração é o <em>fluxo</em>, e MacKay, Meiss e Percival
+    mostraram em 1984 que, para o cantoro áureo do mapa padrão, ele cresce como</p>
+    <p>\[\Phi\ \propto\ \left(K-K_c\right)^{\beta},\qquad \beta\simeq3{,}01.\]</p>
+    <p>Um expoente 3 é brutal. Entre \(K=1{,}05\) e \(K=1{,}5\) a distância ao limiar cresce
+    por 6,7, e o fluxo, por \(6{,}7^3\simeq300\). O tempo mediano de travessia medido cai por
+    117, que é da mesma ordem: a diferença fica por conta de o tempo de travessia não ser o
+    inverso exato do fluxo, já que a órbita ainda precisa encontrar a passagem.</p>
+  </div>
+
+  <p>A distinção que isso impõe é fina e vale fixá-la. Em \(K_c\) muda a <strong>topologia</strong>
+  do espaço de fases: deixa de existir obstrução absoluta, e o conjunto acessível a uma órbita
+  passa a ser ilimitado. O que não muda em \(K_c\) é a <strong>escala de tempo</strong>: ela
+  permanece astronômica por uma faixa inteira de \(K\) acima do limiar, e só desce a valores
+  praticáveis bem depois. Um sistema pode ser instável no sentido rigoroso e perfeitamente
+  estável no sentido de que importa, e distinguir as duas coisas é metade do ofício de quem
+  trabalha com estabilidade de órbitas.</p>
 
   <div class="bloco ex">
     <span class="rotulo">A difusão em momento</span>
-    <p>Acima do limiar, e para \(K\) grande, os pulsos sucessivos encontram a órbita em fases
-    praticamente descorrelacionadas. Cada pulso soma \(K\sen\theta_n\) ao momento, com
-    \(\theta_n\) quase aleatório, de modo que \(\med{\Delta p}=0\) e
+    <p>Bem acima do limiar, os pulsos sucessivos encontram a órbita em fases praticamente
+    descorrelacionadas. Cada pulso soma \(K\sen\theta_n\) ao momento, com \(\theta_n\) quase
+    aleatório, de modo que \(\med{\Delta p}=0\) e
     \(\med{\Delta p^2}=K^2\med{\sen^2\theta}=K^2/2\) por passo. Depois de \(n\) pulsos,</p>
-    <p>\[\med{p^2}\approx D\,n,\qquad D\approx\frac{K^2}{2}.\]</p>
-    <p>É a estimativa quase linear de Chirikov, e ela funciona razoavelmente: para \(K=5\) a
-    medida numérica dá \(D\approx12{,}2\) contra \(K^2/2=12{,}5\). Para outros valores de \(K\) o
-    desvio é maior e oscila, porque sobrevivem ilhas e, em certas janelas de \(K\), órbitas
-    aceleradoras em que o momento cresce linearmente em vez de difundir.</p>
+    <p>\[\med{p^2}\approx D\,n,\qquad D_{\rm ql}=\frac{K^2}{2}.\]</p>
+    <p>É a estimativa quase linear de Chirikov. Ela acerta a ordem de grandeza e erra o resto,
+    porque as fases não são de fato independentes: a correlação entre dois pulsos consecutivos
+    acrescenta um termo que se escreve com uma função de Bessel,</p>
+    <p>\[D\simeq\frac{K^2}{2}\left[1-2J_2(K)\right],\]</p>
+    <p>e como \(J_2\) oscila e troca de sinal, a difusão medida ora supera a estimativa quase
+    linear, ora fica abaixo dela. A tabela mostra as duas contra a medida.</p>
   </div>
+
+  <div class="tabela-rolavel">
+  <table>
+    <thead><tr><th>\(K\)</th><th>\(D\) medido</th><th>\(K^2/2\)</th>
+      <th>\(\frac{K^2}{2}\left[1-2J_2(K)\right]\)</th></tr></thead>
+    <tbody>
+      <tr><td>4,0</td><td>5,29</td><td>8,00</td><td>2,17</td></tr>
+      <tr><td>5,0</td><td>12,55</td><td>12,50</td><td>11,34</td></tr>
+      <tr><td>6,0</td><td>27,75</td><td>18,00</td><td>26,74</td></tr>
+      <tr><td>7,0</td><td>27 899</td><td>24,50</td><td>39,27</td></tr>
+      <tr><td>8,0</td><td>56,10</td><td>32,00</td><td>39,23</td></tr>
+      <tr><td>10,0</td><td>32,14</td><td>50,00</td><td>24,54</td></tr>
+      <tr><td>12,0</td><td>88,60</td><td>72,00</td><td>84,23</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <p>Sobram desvios, e eles têm nome. Em certas janelas de \(K\), logo acima de
+  \(K=2\pi m\), existem <em>órbitas aceleradoras</em>: pontos fixos do mapa em que o momento
+  cresce por uma quantidade fixa a cada pulso, de modo que \(p\) sobe linearmente em vez de
+  difundir. Uma pequena fração do ensemble presa a elas basta para dominar \(\med{p^2}\), que
+  cresce como \(n^2\), e a difusão medida dispara. É o lembrete de sempre: num espaço de fases
+  misto, uma média sobre condições iniciais pode ser dominada por uma minoria de órbitas que
+  não faz o que a maioria faz.</p>
 
   <!-- ================================================== -->
-  <h2 id="s4">4. O expoente de Lyapunov</h2>
+  <h2 id="s6">6. O expoente de Lyapunov</h2>
 
-  <p>Dizer que o movimento é caótico, e não apenas complicado, exige medir alguma coisa. A medida
-  usual é a taxa com que duas condições iniciais vizinhas se separam. Tome duas órbitas que
-  partem de pontos a uma distância \(d_0\) e acompanhe a distância \(d_n\) entre elas: num
-  sistema regular ela cresce como uma potência de \(n\), e num sistema caótico, como
-  \(d_0e^{\lambda n}\).</p>
+  <p>Dizer que o movimento é caótico, e não apenas complicado, exige medir. A medida é o
+  expoente de Lyapunov, a taxa com que duas condições iniciais vizinhas se separam,
+  \(d_n\simeq d_0e^{\lambda n}\), introduzido no
+  <a href="https://apianomorais.github.io/mecanica-classica-i/aula10.html">módulo 10 de
+  Mecânica Clássica I</a> com o mapa logístico, que tem uma dimensão só. Lá estão também as
+  consequências gerais: o tempo de previsão, a saturação e a troca ruim entre precisão da
+  medida inicial e alcance da previsão.</p>
+
+  <p>Duas coisas mudam aqui, e são elas que esta seção acrescenta. A primeira é que o espaço
+  tem duas dimensões, de modo que o que se propaga é um vetor, e não a derivada escalar
+  \(f'(x_n)\) do caso unidimensional. A segunda é que o mapa é simplético, e isso impõe uma
+  relação entre os dois expoentes que o caso dissipativo não tem.</p>
 
   <div class="bloco def">
-    <span class="rotulo">Expoente de Lyapunov</span>
-    <p>\[\lambda=\lim_{n\to\infty}\lim_{d_0\to0}\frac{1}{n}\ln\frac{d_n}{d_0}.\]</p>
-    <p>Um expoente positivo é a definição operacional de caos. O limite \(d_0\to0\) vem antes do
-    limite \(n\to\infty\), e por isso o que se acompanha é o vetor tangente, e não uma segunda
-    órbita de verdade.</p>
+    <span class="rotulo">Num mapa que preserva área, os expoentes somam zero</span>
+    <p>O produto dos autovalores da jacobiana acumulada é o determinante, que vale 1 em todo
+    passo pela seção 2. Tomando o logaritmo e dividindo por \(n\),</p>
+    <p>\[\lambda_1+\lambda_2=\lim_{n\to\infty}\frac1n\ln\left|\det\Ten{M}^{(n)}\right|=0.\]</p>
+    <p>Um único número descreve o esticamento: o que estica numa direção comprime na outra, na
+    mesma taxa. Daí não existir atrator, e daí também bastar medir \(\lambda_1\), que é o que
+    se chama simplesmente de expoente de Lyapunov do mapa. Num sistema dissipativo a soma é
+    negativa, e é ela que faz o volume encolher até o atrator.</p>
   </div>
 
-  <p>Essa ordem dos limites é o que impede o cálculo direto. Duas órbitas vizinhas de verdade se
-  separam até o tamanho do retrato e param de se separar, e a média do logaritmo satura. A saída
-  é devida a Giancarlo Benettin e colaboradores, e é simples: propaga-se o vetor tangente pela
-  matriz jacobiana, e a cada passo ele é renormalizado para comprimento um, guardando-se o
-  logaritmo do fator que foi retirado.</p>
+  <p>Medir \(\lambda_1\) acompanhando duas órbitas de verdade não funciona: elas se separam
+  até o tamanho do retrato e param, e a média do logaritmo satura. A saída é de Giancarlo
+  Benettin e colaboradores, e é propagar o vetor tangente pela jacobiana, renormalizando-o a
+  cada passo e guardando o logaritmo do fator retirado.</p>
 
   <div class="destaque">
     <span class="anuncio">Método de Benettin</span>
@@ -242,27 +415,84 @@
   </div>
 
   <p>A renormalização não altera a direção em que o vetor aponta, e é a direção que carrega a
-  informação sobre o esticamento. O que se evita com ela é o estouro numérico: sem renormalizar,
-  um expoente de 1,6 por passo faz o comprimento do vetor passar de \(10^{300}\) em pouco mais de
-  quatrocentos passos.</p>
+  informação sobre o esticamento. O que se evita com ela é o estouro numérico: sem
+  renormalizar, um expoente de 1,6 por passo faz o comprimento do vetor passar de
+  \(10^{300}\) em pouco mais de quatrocentos passos.</p>
 
   <div data-widget="lyapunov"></div>
 
-  <p>A curva medida tem duas regiões claramente diferentes. Abaixo de \(K_c\) o expoente típico é
-  nulo, porque a órbita fica presa a uma curva invariante. Acima, ele cresce e, para \(K\)
-  grande, encosta na estimativa \(\lambda\approx\ln\left(K/2\right)\), que sai do mesmo argumento
-  de fases descorrelacionadas usado na difusão: o fator de esticamento típico por passo é da
-  ordem de \(K\cos\theta\), cuja média geométrica é \(K/2\).</p>
+  <p>A curva medida tem duas regiões claramente diferentes. Abaixo de \(K_c\) o expoente
+  típico é nulo, porque a órbita fica presa a uma curva invariante. Acima, ele cresce e, para
+  \(K\) grande, encosta na estimativa \(\lambda\approx\ln\left(K/2\right)\), que sai do mesmo
+  argumento de fases descorrelacionadas usado na difusão: o fator de esticamento típico por
+  passo é da ordem de \(K\cos\theta\), cuja média geométrica é \(K/2\). Medindo numa órbita do
+  mar caótico, \(\lambda=0{,}448\) em \(K=2\), \(0{,}974\) em \(K=5\) contra
+  \(\ln2{,}5=0{,}916\), e \(1{,}801\) em \(K=12\) contra \(1{,}792\).</p>
 
   <div class="bloco fisica">
-    <span class="rotulo">O que o expoente diz sobre previsão</span>
-    <p>Com o valor típico \(\lambda\approx0{,}40\) medido em \(K=2\), uma incerteza inicial
-    dobra a cada \(\ln2/\lambda\approx1{,}7\) pulsos e cresce dez vezes a cada 5,8. Para prever
-    o estado depois de cem pulsos com erro de 1 % seria preciso conhecer a condição inicial com
-    precisão de \(10^{-19}\), que é menos do que um número de dupla precisão consegue guardar. O
-    sistema continua determinístico: o que acaba é a utilidade de conhecer a condição inicial com
-    precisão finita.</p>
+    <span class="rotulo">Dois expoentes diferentes, e qual deles o painel mostra</span>
+    <p>O valor medido depende de onde a órbita começa, e num espaço de fases misto essa
+    dependência não é ruído. Dentro de uma ilha o expoente é nulo; no mar caótico ele é o
+    valor acima. O painel mostra uma média sobre oito condições iniciais espalhadas, que em
+    \(K=2\) dá cerca de 0,40 em vez de 0,448, porque parte delas cai em região regular. Os
+    dois números estão certos e respondem perguntas diferentes: um descreve o mar, o outro
+    descreve o retrato. Dizer qual se está medindo é parte da medida.</p>
   </div>
+
+  <p>A consequência prática é a mesma do módulo 10 de Mecânica I, agora com números deste
+  sistema: com \(\lambda=0{,}448\) a incerteza dobra a cada 1,5 pulso, e prever cem pulsos
+  com 1 % de erro exigiria conhecer a condição inicial com precisão de \(10^{-22}\), que é
+  menos do que um número de dupla precisão consegue guardar. O sistema continua
+  determinístico. O que acaba é a utilidade de conhecer a condição inicial.</p>
+
+  <!-- ================================================== -->
+  <h2 id="s7">7. Dois graus não são três</h2>
+
+  <p>Tudo o que se disse sobre barreiras depende de um acidente de dimensão, e convém
+  explicitá-lo antes de fechar, porque ele é a diferença entre um rotor pulsado e o sistema
+  solar.</p>
+
+  <p>Fixada a energia, o movimento de um sistema de \(n\) graus de liberdade vive numa
+  superfície de \(2n-1\) dimensões. Um toro invariante do teorema KAM tem \(n\) dimensões.
+  Para que uma superfície separe esse espaço em duas partes desconexas, ela precisa ter
+  codimensão um, isto é, \(2n-2\) dimensões. Igualando:</p>
+
+  <div class="destaque">
+    <span class="anuncio">Quando um toro é barreira</span>
+    \[n=2n-2\quad\Longleftrightarrow\quad n=2.\]
+  </div>
+
+  <p>Só com <em>dois</em> graus de liberdade os toros KAM dividem a superfície de energia.
+  Com três ou mais eles têm dimensão insuficiente, e são como linhas dentro de um volume:
+  dá para contorná-las. As camadas caóticas que envolvem cada ressonância deixam de ser
+  bolsões isolados e passam a formar uma rede conexa, a <strong>teia de Arnold</strong>, que
+  atravessa toda a superfície de energia.</p>
+
+  <div class="bloco fisica">
+    <span class="rotulo">Difusão de Arnold</span>
+    <p>Vladimir Arnold construiu em 1964 um exemplo explícito em que as ações migram ao longo
+    dessa teia para <em>qualquer</em> perturbação não nula, por menor que seja. Não há limiar:
+    o análogo do \(K_c\) desta aula simplesmente não existe acima de dois graus de liberdade.
+    O que existe é lentidão, e ela é quantificada pelo teorema de Nekhoroshev, de 1977:</p>
+    <p>\[\left|\vet{I}(t)-\vet{I}(0)\right|\leq\epsilon^{\,b}
+      \qquad\text{para}\qquad |t|\leq \exp\!\left(\frac{c}{\epsilon^{\,a}}\right).\]</p>
+    <p>A deriva é limitada por um tempo <em>exponencialmente</em> longo na pequenez da
+    perturbação. Para \(\epsilon\) pequeno esse tempo passa da idade do universo, e o sistema
+    é estável para todos os efeitos, sem ser estável para sempre.</p>
+  </div>
+
+  <p>Essa é a razão pela qual a pergunta da aula anterior, sobre a estabilidade do sistema
+  solar, não se fecha com o teorema KAM mesmo quando ele se aplica. Oito planetas dão muito
+  mais que dois graus de liberdade, os toros sobreviventes não separam nada, e a deriva
+  existe por princípio. A questão deixa de ser <em>se</em> o sistema é instável e passa a ser
+  <em>em quanto tempo</em>, que é exatamente o que as integrações de longo prazo respondem:
+  cerca de cem milhões de anos de previsibilidade, com Mercúrio acumulando, em bilhões de
+  anos, alguns por cento de probabilidade de sair da sua órbita.</p>
+
+  <p>O mesmo mecanismo limita o tempo de vida de um feixe num acelerador, e por isso os
+  projetistas medem a <em>abertura dinâmica</em>, que é a região em que a deriva é lenta o
+  bastante para o turno de operação, e não a região em que ela não existe. Essa região não
+  existe.</p>
 
   <p>Esse é o fecho do curso, e vale dizê-lo sem rodeios. Começamos com o corpo rígido, em que
   seis números dizem tudo o que vai acontecer para sempre, e terminamos com um rotor de um grau
@@ -272,7 +502,7 @@
   nos permite calcular.</p>
 
   <!-- ================================================== -->
-  <h2 id="s5">5. Exercícios resolvidos</h2>
+  <h2 id="s8">8. Exercícios resolvidos</h2>
 
   <div class="bloco exe">
     <span class="rotulo">Exercício resolvido 17.1</span>
@@ -322,7 +552,7 @@
   </div>
 
   <!-- ================================================== -->
-  <h2 id="s6">6. Exercícios propostos</h2>
+  <h2 id="s9">9. Exercícios propostos</h2>
 
   <div class="bloco exe">
     <span class="rotulo">Exercícios propostos</span>
@@ -338,7 +568,9 @@
 
       <li><b>17.3</b> Meça numericamente, no seu programa, o maior valor de \(p\) alcançado por
       uma órbita que parte de \(p=0\) depois de \(10^5\) iterações, para \(K\) de 0,8 a 1,2 em
-      passos de 0,01. Localize o limiar e compare com \(K_c=0{,}9716\).</li>
+      passos de 0,01. O limiar que você vai encontrar <em>não</em> é \(K_c=0{,}9716\). Diga de
+      quanto ele erra, em que sentido, e por quê, usando a seção 5. Depois repita com
+      \(10^7\) iterações e veja o limiar medido descer.</li>
 
       <li><b>17.4</b> Implemente o método de Benettin e obtenha \(\lambda(K)\) para \(K\) de 0 a
       10. Faça a média sobre várias condições iniciais e explique por que uma só condição inicial
@@ -360,6 +592,30 @@
       pulsado quântico, em que a difusão em momento cessa depois de um tempo finito. Leia sobre a
       localização dinâmica e escreva meia página sobre o que acontece ao expoente de Lyapunov
       quando a mecânica quântica entra.</li>
+
+      <li><b>17.9</b> Refaça a conta da seção 4 para o mapa
+      \(p_{n+1}=p_n+K\sen\theta_n\), \(\theta_{n+1}=\theta_n+\tau p_{n+1}\), em que o
+      intervalo entre pulsos é \(\tau\) em vez de 1. Mostre que a semilargura da ressonância
+      passa a \(2\sqrt{K/\tau}\) e que o critério de superposição dá
+      \(K\tau\geq\pi^2/4\), isto é, que só a combinação \(K\tau\) importa. Explique por que
+      isso tinha de acontecer.</li>
+
+      <li><b>17.10</b> Repita a medida da tabela da seção 5 para dez valores de \(K\) entre
+      1,02 e 1,6, com pelo menos quinhentas órbitas cada. Ajuste o tempo mediano de travessia a
+      \(\left(K-K_c\right)^{-\beta}\) e compare o \(\beta\) obtido com o expoente 3,01 do
+      fluxo. Eles não têm de coincidir: diga qual das duas grandezas você mediu e por que a
+      relação entre elas não é exata.</li>
+
+      <li><b>17.11</b> Faça a contagem de dimensões da seção 7 para \(n=3\): quantas dimensões
+      tem a superfície de energia, quantas tem um toro KAM, e quantas faltam para que ele separe
+      o espaço. Em seguida explique, sem conta nenhuma, por que não existe um \(K_c\) acima de
+      dois graus de liberdade, e o que substitui o limiar como grandeza de interesse
+      prático.</li>
+
+      <li><b>17.12</b> O cinturão de asteroides tem falhas nas razões 3:1, 5:2 e 2:1 com
+      Júpiter, e um acúmulo na razão 3:2 com Netuno, que são os plutinos. Use o critério de
+      Chirikov para argumentar por que uma ressonância pode tanto esvaziar quanto povoar uma
+      região, e diga o que distingue os dois casos. Meia página.</li>
     </ol>
   </div>
 
@@ -379,6 +635,6 @@
   <!--PORTAL--><p><small><a href="https://apianomorais.github.io/">Todas as disciplinas e a pesquisa em apianomorais.github.io</a></small></p><!--/PORTAL-->
 </footer>
 
-<script src="assets/js/widgets.js?v=202611091531"></script>
+<script src="assets/js/widgets.js?v=202611201053"></script>
 </body>
 </html>
