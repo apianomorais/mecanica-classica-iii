@@ -137,6 +137,16 @@ code{font-family:var(--mono);font-size:.88em;background:var(--papel-alt);
 .bloco.alerta .rotulo{color:var(--vinho)}
 .bloco.fisica{border-left-color:var(--ambar);background:#fdf8ec}
 .bloco.fisica .rotulo{color:var(--ambar)}
+/* exe: exercícios, resolvidos e propostos. São muitos, e por isso ficam
+   sem fundo tingido, só com a borda na cor dos títulos. */
+.bloco.exe{border-left-color:var(--azul)}
+.bloco.exe .rotulo{color:var(--azul)}
+/* cuidado: o mesmo papel de alerta, com o nome que as aulas usam */
+.bloco.cuidado{border-left-color:var(--vinho);background:#fdf3f4}
+.bloco.cuidado .rotulo{color:var(--vinho)}
+/* int: o comentário interpretativo, irmão tingido de def */
+.bloco.int{border-left-color:var(--azul-claro);background:var(--azul-pastel)}
+.bloco.int .rotulo{color:var(--azul-claro)}
 .destaque{
   background:linear-gradient(0deg,#fff8dd,#fff8dd);border:1px solid #e8d79a;
   border-radius:var(--raio);padding:.75rem 1.1rem;margin:1.2rem 0;text-align:center;

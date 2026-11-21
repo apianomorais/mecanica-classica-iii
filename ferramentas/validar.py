@@ -5,6 +5,7 @@ import glob, os, re, sys
 erros = []
 avisos = []
 paginas = sorted(glob.glob('*.html'))
+css = open('assets/css/estilo.css', encoding='utf-8').read()
 
 for p in paginas:
     t = open(p, encoding='utf-8').read()
@@ -87,6 +88,14 @@ for p in paginas:
         ini = max(0, m.start() - 30)
         erros.append('%s: "\\n" literal no HTML, em "...%s..."'
                      % (p, sem_codigo[ini:m.end() + 20].replace('\n', ' ')))
+    # 15. todo modificador de bloco tem regra no CSS. Sem a regra a página
+    #     continua válida e o bloco some visualmente: fica com a borda e o
+    #     rótulo da cor padrão, como se fosse uma definição. Foi assim que
+    #     "exe", "cuidado" e "int" passaram despercebidos em 86 blocos.
+    for mod in sorted(set(re.findall(r'class="bloco ([a-z]+)"', t))):
+        if not re.search(r'\.bloco\.%s\b' % mod, css):
+            erros.append('%s: class="bloco %s" sem regra no CSS' % (p, mod))
+
     # 10. tags equilibradas nos contêineres principais
     for tag in ('div', 'main', 'section', 'details', 'table'):
         a = len(re.findall(r'<%s[\s>]' % tag, t))

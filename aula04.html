@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aula 4: Equações de Euler e a rotação livre | Mecânica Clássica III</title>
 <link rel="icon" type="image/png" href="assets/img/favicon.png">
-<link rel="stylesheet" href="assets/css/estilo.css?v=202611201319">
-<script src="assets/js/comum.js?v=202611201319"></script>
+<link rel="stylesheet" href="assets/css/estilo.css?v=202611202103">
+<script src="assets/js/comum.js?v=202611202103"></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
@@ -64,8 +64,9 @@
     <li><a href="#s3">3. Rotação livre: as duas constantes</a></li>
     <li><a href="#s4">4. O pião simétrico livre e a precessão livre</a></li>
     <li><a href="#s5">5. Estabilidade: o teorema do eixo intermediário</a></li>
-    <li><a href="#s6">6. Exercícios resolvidos</a></li>
-    <li><a href="#s7">7. Exercícios propostos</a></li>
+    <li><a href="#s6">6. No Spyder</a></li>
+    <li><a href="#s7">7. Exercícios resolvidos</a></li>
+    <li><a href="#s8">8. Exercícios propostos</a></li>
   </ol>
 </aside>
 
@@ -263,7 +264,76 @@
   que dá o nome popular ao teorema.</p>
 
   <!-- ================================================== -->
-  <h2 id="s6">6. Exercícios resolvidos</h2>
+  <h2 id="s6">6. No Spyder</h2>
+
+  <p>O simulador da seção anterior mostra o movimento, e é bom para isso. O que ele não pode
+  fazer é provar que a conta está certa: para isso é preciso medir, com números, cada
+  afirmação que as cinco seções acima fizeram. O programa abaixo faz exatamente isso, e cada
+  seção dele termina comparando uma medida com uma previsão fechada.</p>
+
+  <div class="cartoes">
+    <a class="cartao" href="codigo/euler.py">
+      <span class="numero">Programa</span>
+      <h3>euler.py</h3>
+      <p>Integra as equações de Euler e mede o que acontece com as duas constantes, acha o
+      período da polhódia por seção de Poincaré, confere a precessão do pião simétrico, mede
+      a taxa de crescimento em torno dos três eixos, obtém a lei logarítmica do tempo de
+      virada e olha o movimento do laboratório.</p>
+    </a>
+  </div>
+
+  <p><strong>O que ele imprime, e o que conferir.</strong></p>
+
+  <ul>
+  <li>Com RK4, o desvio máximo de \(2T\) e de \(L^2\) cai por 16 quando o passo cai pela
+  metade, que é a quarta ordem; com Euler explícito ele cai por 2, e em \(\Delta t=0{,}02\)
+  a energia já erra 19 %. Nenhum dos dois conserva as constantes por construção.</li>
+  <li>A polhódia fecha com período \(T=15{,}24641483\) s, igual em oito algarismos para
+  quatro passos diferentes, e o afastamento medido no plano da seção cai de
+  \(2{,}6\times10^{-10}\) para \(7{,}2\times10^{-12}\) rad/s conforme a malha é refinada.</li>
+  <li>No pião simétrico, \(\omega_3\) não se move nem no último dígito, o módulo da parte
+  transversal varia \(4\times10^{-14}\), e a taxa de precessão medida bate com
+  \((\lambda_3-\lambda_\perp)\omega_3/\lambda_\perp\) em \(4\times10^{-16}\).</li>
+  <li>Em torno do eixo intermediário a perturbação cresce com taxa 0,577445 contra 0,577350
+  previsto pela linearização; em torno dos outros dois ela não cresce.</li>
+  <li>O tempo entre viradas cresce com \(\ln(1/\epsilon)\) com coeficiente angular 3,4641 s
+  contra \(2/\sigma=3{,}4641\) s previsto, e resíduo de \(2\times10^{-4}\) s.</li>
+  <li>Integrando junto a matriz de rotação, \(\vet{L}\) visto do laboratório fica parado em
+  \(4\times10^{-14}\) de \(|\vet{L}|\), e a matriz sai de ortogonal por
+  \(7\times10^{-14}\).</li>
+  </ul>
+
+  <div class="bloco cuidado">
+    <span class="rotulo">Duas armadilhas que o programa documenta</span>
+    <p>A primeira é de medida. Procurar o ponto integrado mais próximo do inicial para achar o
+    período dá \(7{,}5\times10^{-6}\) rad/s de afastamento, e esse número não mede o
+    fechamento da curva: ele mede o espaçamento da malha. Pior, se o período cair quase sobre
+    um ponto da malha, o valor se repete em vários \(\Delta t\) e parece ter convergido. A
+    seção de Poincaré resolve, porque o instante do cruzamento vem da interpolação e não da
+    malha.</p>
+    <p>A segunda é de ponto flutuante. A lei logarítmica do tempo de virada vale até
+    \(\epsilon\approx10^{-7}\) e depois desmorona, chegando a <em>diminuir</em>. O que
+    controla o tempo de virada não é \(\epsilon\) e sim a distância à separatriz, que é
+    quadrática em \(\epsilon\); quando \(\epsilon^2\) desce abaixo do último dígito de
+    \(2T\), o computador não distingue mais a trajetória da separatriz. Isso prevê que o
+    limite caia com a <em>raiz</em> do \(\epsilon\) de máquina, e o programa confirma
+    repetindo a medida em precisão estendida, onde a lei sobrevive uma década mais.</p>
+  </div>
+
+  <div class="bloco exe">
+    <span class="rotulo">Para mexer</span>
+    <p>Troque o RK4 pelo integrador <em>midpoint implícito</em>, que é simplético, e veja o
+    que acontece com o desvio das duas constantes em uma integração muito longa: ele deixa de
+    crescer com o tempo, ao custo de resolver uma equação implícita a cada passo. Depois ligue
+    um torque constante no referencial do corpo, \(\vet{\Gamma}=\Gamma\vers{e}_1\), e descubra
+    numericamente a partir de que valor de \(\Gamma\) a rotação em torno do eixo de maior
+    momento deixa de ser estável. Por fim, troque a matriz de rotação por um quatérnio
+    normalizado a cada passo e compare o desvio de ortogonalidade com o da seção 6 do
+    programa.</p>
+  </div>
+
+  <!-- ================================================== -->
+  <h2 id="s7">7. Exercícios resolvidos</h2>
 
   <div class="bloco exe">
     <span class="rotulo">Exercício resolvido 4.1</span>
@@ -310,7 +380,7 @@
   </div>
 
   <!-- ================================================== -->
-  <h2 id="s7">7. Exercícios propostos</h2>
+  <h2 id="s8">8. Exercícios propostos</h2>
 
   <div class="bloco exe">
     <span class="rotulo">Exercícios propostos</span>
@@ -337,12 +407,21 @@
       proporcionais a 1, 3 e 4. Estime o tempo em que o desvio cresce por um fator \(e\)
       quando ele é lançado girando a 6 rad/s em torno do eixo intermediário.</li>
 
-      <li><b>4.7</b> Escreva um programa em Python que integre as equações de Euler com
-      <code>scipy.integrate.solve_ivp</code> para \(\lambda=(1,2,3)\), e verifique
-      numericamente que \(2T\) e \(L^2\) se conservam com erro relativo abaixo de
-      \(10^{-8}\). Reproduza os três regimes do simulador da seção 5.</li>
+      <li><b>4.7</b> Partindo do <code>euler.py</code> da seção 6, troque o RK4 de passo fixo
+      por <code>scipy.integrate.solve_ivp</code> e descubra qual tolerância
+      (<code>rtol</code>, <code>atol</code>) é preciso exigir para que o desvio de \(2T\)
+      fique abaixo do que o RK4 com \(\Delta t=0{,}005\) entrega. Compare também o número de
+      avaliações da derivada nos dois casos, e diga qual dos dois sai mais barato para a
+      mesma precisão.</li>
 
-      <li><b>4.8</b> Mostre que a polhodia é a interseção de dois elipsoides e que ela degenera
+      <li><b>4.8</b> Use a seção de Poincaré do <code>euler.py</code> para medir o período da
+      polhódia em função da energia, mantendo \(L^2\) fixo e aproximando-se do valor de
+      separatriz \(L^2=2T\lambda_2\) por baixo. Mostre numericamente que o período <em>diverge
+      logaritmicamente</em>, e compare o coeficiente da divergência com o \(1/\sigma\) da
+      análise de estabilidade. Explique por que esse resultado e a lei do tempo de virada da
+      seção 6 são a mesma afirmação vista de dois lados.</li>
+
+      <li><b>4.9</b> Mostre que a polhodia é a interseção de dois elipsoides e que ela degenera
       em duas retas quando \(L^2=2T\lambda_2\). Interprete essa condição à luz da
       separatriz.</li>
     </ol>
@@ -364,6 +443,6 @@
   <!--PORTAL--><p><small><a href="https://apianomorais.github.io/">Todas as disciplinas e a pesquisa em apianomorais.github.io</a></small></p><!--/PORTAL-->
 </footer>
 
-<script src="assets/js/widgets.js?v=202611201319"></script>
+<script src="assets/js/widgets.js?v=202611202103"></script>
 </body>
 </html>
